@@ -28,5 +28,8 @@ endif()
 add_executable(LDtkRaylib main.cpp)
 target_link_libraries(LDtkRaylib PRIVATE LDtkLoader raylib)
 
+add_executable(ldtkexample raylib-ldtk-example.c)
+target_link_libraries(ldtkexample raylib ldtk)
+
 file(CREATE_LINK ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets SYMBOLIC)
 file(CREATE_LINK ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources SYMBOLIC)
