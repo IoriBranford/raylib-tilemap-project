@@ -10,12 +10,3 @@
 [submodule "lib/LDtkLoader"]
 	path = lib/LDtkLoader
 	url = https://github.com/Madour/LDtkLoader.git
-[submodule "lib/c-list"]
-	path = lib/c-list
-	url = https://github.com/joelguittet/c-list.git
-[submodule "lib/c-hashtable"]
-	path = lib/c-hashtable
-	url = https://github.com/joelguittet/c-hashtable.git
-[submodule "lib/cJSON"]
-	path = lib/cJSON
-	url = https://github.com/DaveGamble/cJSON.git
