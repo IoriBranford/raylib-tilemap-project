@@ -1,0 +1,13 @@
+{
+    "dotnet.defaultSolution": "disable",
+    "files.associations": {
+        "*.ldtk": "json",
+        "*.h": "c",
+    },
+    "json.schemas": [
+        {
+            "fileMatch": ["*.ldtk"],
+            "url": "https://ldtk.io/files/JSON_SCHEMA.json"
+        }
+    ]
+}
