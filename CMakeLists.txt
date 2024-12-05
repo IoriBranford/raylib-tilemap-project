@@ -13,7 +13,7 @@ add_executable(${PROJECT_NAME} raylib-tmx-example.c)
 target_link_libraries(${PROJECT_NAME} raylib-tmx)
 
 # Web Configurations
-if (${PLATFORM} STREQUAL "Web")
+if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
     # Tell Emscripten to build an example.html file.
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
 endif()
