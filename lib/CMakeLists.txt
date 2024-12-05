@@ -1,7 +1,14 @@
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(BUILD_SHARED_LIBS OFF)
 
-add_subdirectory(raylib)
+option(USE_INCLUDED_RAYLIB "use raylib included as submodule in project" OFF)
+
+if(NOT ${USE_INCLUDED_RAYLIB})
+    find_package(raylib 5.5)
+endif()
+if(NOT ${RAYLIB_FOUND})
+    add_subdirectory(raylib)
+endif()
 
 add_subdirectory(tmx)
 
