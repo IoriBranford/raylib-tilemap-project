@@ -1,13 +1,16 @@
 {
     "dotnet.defaultSolution": "disable",
     "files.associations": {
+        "*.lua": "lua",
         "*.ldtk": "json",
         "*.h": "c",
+        "xiosbase": "c"
     },
     "json.schemas": [
         {
             "fileMatch": ["*.ldtk"],
             "url": "https://ldtk.io/files/JSON_SCHEMA.json"
         }
-    ]
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
