@@ -6,7 +6,7 @@
 	url = https://github.com/baylej/tmx.git
 [submodule "lib/raylib-tmx"]
 	path = lib/raylib-tmx
-	url = https://github.com/RobLoach/raylib-tmx.git
+	url = https://github.com/IoriBranford/raylib-tmx.git
 [submodule "lib/LDtkLoader"]
 	path = lib/LDtkLoader
 	url = https://github.com/Madour/LDtkLoader.git
