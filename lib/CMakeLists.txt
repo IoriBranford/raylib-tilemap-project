@@ -3,11 +3,13 @@ set(BUILD_SHARED_LIBS OFF)
 
 option(USE_INCLUDED_RAYLIB "use raylib included as submodule in project" ON)
 
-if(NOT ${USE_INCLUDED_RAYLIB})
-    find_package(raylib 5.5)
-endif()
-if(NOT ${RAYLIB_FOUND})
+if(${USE_INCLUDED_RAYLIB})
     add_subdirectory(raylib)
+else()
+    find_package(raylib 5.5)
+    if(NOT ${raylib_FOUND})
+        add_subdirectory(raylib)
+    endif()
 endif()
 
 add_subdirectory(tmx)
