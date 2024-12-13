@@ -7,6 +7,3 @@
 [submodule "lib/raylib-tmx"]
 	path = lib/raylib-tmx
 	url = https://github.com/IoriBranford/raylib-tmx.git
-[submodule "lib/LDtkLoader"]
-	path = lib/LDtkLoader
-	url = https://github.com/Madour/LDtkLoader.git
