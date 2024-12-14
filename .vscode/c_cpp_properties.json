@@ -32,6 +32,7 @@
                 "${workspaceFolder}/src/**",
                 "${workspaceFolder}/lib/**"
             ],
+            "compilerArgs": ["-fms-extensions"],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c17",

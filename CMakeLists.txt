@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_subdirectory(lib)
 
 # Our Project
+set(CMAKE_C_FLAGS "-fms-extensions")
 include_directories(include)
 add_executable(game
     src/engine/engine.c
