@@ -15,7 +15,7 @@ add_executable(game
     src/game/game.c
     src/main.c)
 #set(raylib_VERBOSE 1)
-target_link_libraries(game raylib-tmx)
+target_link_libraries(game raylib-tmx raylib_aseprite)
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
