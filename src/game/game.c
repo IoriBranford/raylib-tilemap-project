@@ -85,30 +85,30 @@ void UpdateEnding()
 void DrawLogo()
 {
     // TODO: Draw LOGO screen here!
-    DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
-    DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
+    DrawText("LOGO SCREEN", 0, 0, 40, LIGHTGRAY);
+    DrawText("WAIT for 2 SECONDS...", 0, 40, 20, GRAY);
 }
 
 void DrawTitle()
 {
     // TODO: Draw TITLE screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GREEN);
-    DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
-    DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+    DrawText("TITLE SCREEN", 0, 0, 40, DARKGREEN);
+    DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 0, 40, 20, DARKGREEN);
 }
 
 void DrawGameplay()
 {
     // TODO: Draw GAMEPLAY screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), PURPLE);
-    DrawText("GAMEPLAY SCREEN", 20, 20, 40, MAROON);
-    DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 130, 220, 20, MAROON);
+    DrawText("GAMEPLAY SCREEN", 0, 0, 40, MAROON);
+    DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 0, 40, 20, MAROON);
 }
 
 void DrawEnding()
 {
     // TODO: Draw ENDING screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLUE);
-    DrawText("ENDING SCREEN", 20, 20, 40, DARKBLUE);
-    DrawText("PRESS ENTER or TAP to RETURN to TITLE SCREEN", 120, 220, 20, DARKBLUE);
+    DrawText("ENDING SCREEN", 0, 0, 40, DARKBLUE);
+    DrawText("PRESS ENTER or TAP to RETURN to TITLE SCREEN", 0, 40, 20, DARKBLUE);
 }

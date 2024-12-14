@@ -2,7 +2,6 @@
 
 #include "raylib.h"
 
-
 static void Nop() {}
 
 static Phase currentPhase = {
@@ -15,8 +14,8 @@ void SetCurrentPhase(Phase newPhase) {
 }
 
 void InitEngine() {
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 480*2;
+    const int screenHeight = 270*2;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic screen manager");
 
