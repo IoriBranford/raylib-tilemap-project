@@ -12,6 +12,7 @@ set(CMAKE_C_FLAGS "-fms-extensions")
 include_directories(include)
 add_executable(game
     src/engine/engine.c
+    src/engine/graphics.c
     src/game/game.c
     src/main.c)
 #set(raylib_VERBOSE 1)
