@@ -14,7 +14,7 @@ add_executable(game
     src/engine/engine.c
     src/engine/graphics.c
     src/game/game.c
-    src/main.c)
+    src/game/main.c)
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib-tmx raylib_aseprite)
 
