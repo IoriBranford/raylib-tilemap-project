@@ -26,7 +26,12 @@ typedef struct GraphicBehavior {
 } GraphicBehavior;
 
 struct Graphic {
-    Rectangle rect;
+    union {
+        struct {
+            Vector2 position, size;
+        };
+        Rectangle rect;
+    };
     Vector2 origin;
     float rotationDeg;
     Color color;
@@ -74,8 +79,7 @@ void DrawGraphic_Texture(Graphic *g) {
 
 void DrawGraphic_Text(Graphic *g) {
     assert(g->behavior.type == GRAPHICTYPE_TEXT);
-    Vector2 position = { g->rect.x, g->rect.y };
-    DrawTextPro(g->text.font, g->text.text, position, g->origin, g->rotationDeg, g->text.fontSize, g->text.spacing, g->color);
+    DrawTextPro(g->text.font, g->text.text, g->position, g->origin, g->rotationDeg, g->text.fontSize, g->text.spacing, g->color);
 }
 
 void DrawGraphic_Tile(Graphic *g) {
