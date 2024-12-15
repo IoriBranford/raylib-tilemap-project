@@ -1,3 +1,4 @@
+#include <engine/graphics.h>
 #include <func.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -7,8 +8,7 @@
 #define RAYLIB_ASEPRITE_IMPLEMENTATION
 #include <raylib-aseprite.h>
 
-struct Graphic;
-typedef void (*GraphicFunction)(struct Graphic*);
+typedef void (*GraphicFunction)(Graphic*);
 
 typedef enum GraphicType {
     GRAPHICTYPE_NONE,
@@ -25,7 +25,7 @@ typedef struct GraphicBehavior {
     GraphicFunction update, draw;
 } GraphicBehavior;
 
-typedef struct Graphic {
+struct Graphic {
     Rectangle rect;
     Vector2 origin;
     float rotationDeg;
@@ -52,7 +52,7 @@ typedef struct Graphic {
 
         AsepriteTag asepriteTag;
     };
-} Graphic;
+};
 
 void UpdateGraphic(Graphic *g) {
     g->behavior.update(g);
