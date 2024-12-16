@@ -35,10 +35,28 @@ static int framesCounter = 0;          // Useful to count frames
 
 static int spriteIndex = 0;
 static Sprite *sprites[MAX_SPRITES];
+static tmx_map *map;
 
 void InitGame()
 {
+    map = LoadTMX("resources/desert.tmx");
     SetCurrentPhase(LogoPhase);
+}
+
+void CloseGame()
+{
+    UnloadTMX(map);
+}
+
+void InitLayersObjects(tmx_layer *head) {
+    for (tmx_layer *layer = head; layer; layer = layer->next) {
+        if (layer->type == L_GROUP) {
+            InitLayersObjects(layer->content.group_head);
+        } else if (layer->type == L_OBJGR) {
+            for (tmx_object *o = layer->content.objgr->head; o; o = o->next)
+                NewTMXObjectSprite(o, map->tiles, WHITE);
+        }
+    }
 }
 
 Sprite* GenRandomRect() {
@@ -102,14 +120,13 @@ void UpdateTitle()
     {
         memset(sprites, 0, sizeof(sprites));
         InitSprites(MAX_SPRITES);
+        InitLayersObjects(map->ly_head);
         SetCurrentPhase(GameplayPhase);
     }
 }
 
 void UpdateGameplay()
 {
-    UpdateRandomRects();
-
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {

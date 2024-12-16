@@ -2,9 +2,12 @@
 #include <game.h>
 
 int main() {
-    InitGame();
     InitEngine();
+    InitGame();
+
     RunEngine();
+
+    CloseGame();
     StopEngine();
     return 0;
 }

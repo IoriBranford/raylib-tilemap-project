@@ -2,5 +2,6 @@
 #define D10796F2_8026_4CC3_9559_1BD4883C2F7F
 
 void InitGame();
+void CloseGame();
 
 #endif /* D10796F2_8026_4CC3_9559_1BD4883C2F7F */
