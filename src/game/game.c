@@ -127,6 +127,8 @@ void UpdateTitle()
 
 void UpdateGameplay()
 {
+    UpdateSprites();
+
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
