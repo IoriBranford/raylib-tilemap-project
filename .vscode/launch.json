@@ -8,10 +8,10 @@
             "name": "(gdb) game",
             "type": "cppdbg",
             "request": "launch",
-            "program": "game",
+            "program": "${command:cmake.launchTargetPath}",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -28,6 +28,5 @@
                 }
             ]
         }
-
     ]
 }
