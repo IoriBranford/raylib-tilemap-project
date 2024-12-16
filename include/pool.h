@@ -7,7 +7,8 @@
 #define pool_alloc malloc
 #define pool_free free
 
-#define pool_struct(T, PT) typedef struct { T* objects; T** pointers; size_t used; size_t size; } PT;
+#define pool_struct(T, PT) struct PT { T* objects; T** pointers; size_t used; size_t size; }
+#define pool_typedef(T, PT) typedef pool_struct(T, PT) PT;
 
 #define pool_foreachall(pool, func) \
 { for (size_t n = pool->size, i = 0; n; --n, ++i) { func(pool->pointers[i]); } }
