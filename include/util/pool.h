@@ -47,9 +47,9 @@ PT* ctor(size_t size) { \
 #define prune_pool(pool, objused) { \
     size_t i = pool->used; \
     if (i) do { \
-        void *o = pool->pointers[--i]; \
-        if (objused(o)) continue; \
+        if (objused(pool->pointers[--i])) continue; \
         --pool->used; \
+        void *o = pool->pointers[i]; \
         pool->pointers[i] = pool->pointers[pool->used]; \
         pool->pointers[pool->used] = o; \
     } while (i); \
