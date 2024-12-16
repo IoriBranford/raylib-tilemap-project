@@ -4,8 +4,6 @@
 #include <assert.h>
 #include <util.h>
 
-#include <raylib-tmx.h>
-
 #define RAYLIB_ASEPRITE_IMPLEMENTATION
 #include <raylib-aseprite.h>
 
@@ -156,6 +154,10 @@ void CloseSprites() {
     sprites = NULL;
 }
 
+size_t NumSpritesAvailable() {
+    return count_free_pool_objs(sprites);
+}
+
 int CompareSprites(const void *ap, const void *bp) {
     const Sprite *a = ap, *b = bp;
     float diff;
@@ -178,9 +180,12 @@ int CompareSprites(const void *ap, const void *bp) {
 }
 
 void UpdateSprites() {
-    prune_pool(sprites, IsUsed);
     pool_foreachused(sprites, UpdateSprite);
     sort_pool_used(sprites, CompareSprites);
+}
+
+void PruneSprites() {
+    prune_pool(sprites, IsUsed);
 }
 
 void DrawSprites() {
@@ -198,4 +203,8 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
         g->color = color;
     }
     return g;
+}
+
+void ReleaseSprite(Sprite* sprite) {
+    sprite->used = false;
 }
