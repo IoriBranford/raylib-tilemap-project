@@ -1,7 +1,7 @@
-#include "game.h"
-
-#include "engine.h"
-#include "raylib.h"
+#include <game.h>
+#include <engine.h>
+#include <raylib.h>
+#include <string.h>
 
 void UpdateLogo();
 void DrawLogo();
@@ -30,10 +30,52 @@ const Phase EndingPhase = {
 };
 
 static int framesCounter = 0;          // Useful to count frames
+#define FRAMES_PER_SPRITE 10
+#define MAX_SPRITES 30
+
+static int spriteIndex = 0;
+static Sprite *sprites[MAX_SPRITES];
 
 void InitGame()
 {
     SetCurrentPhase(LogoPhase);
+}
+
+Sprite* GenRandomRect() {
+    Rectangle rect;
+    rect.width = 8.f * GetRandomValue(1,4);
+    rect.height = 8.f * GetRandomValue(1,4);
+    
+    Vector2 origin = {rect.width/2, rect.height/2};
+    rect.x = GetRandomValue(origin.x, 480*2-origin.x);
+    rect.y = GetRandomValue(origin.y, 270*2-origin.y);
+
+    float rotation = GetRandomValue(0, 179);
+
+    Color color = {
+        GetRandomValue(0,255),
+        GetRandomValue(0,255),
+        GetRandomValue(0,255),
+        255
+    };
+
+    return NewRectangleSprite(rect, origin, rotation, color);
+}
+
+void UpdateRandomRects() {
+    if (!NumSpritesAvailable()) {
+        ReleaseSprite(sprites[spriteIndex]);
+    }
+
+    PruneSprites();
+    UpdateSprites();
+
+    if (framesCounter == 0) {
+        sprites[spriteIndex++] = GenRandomRect();
+        spriteIndex %= MAX_SPRITES;
+    }
+    ++framesCounter;
+    framesCounter %= FRAMES_PER_SPRITE;
 }
 
 void UpdateLogo()
@@ -45,28 +87,34 @@ void UpdateLogo()
     // Wait for 2 seconds (120 frames) before jumping to TITLE screen
     if (framesCounter > 120)
     {
+        memset(sprites, 0, sizeof(sprites));
+        InitSprites(MAX_SPRITES);
         SetCurrentPhase(TitlePhase);
     }
 }
 
 void UpdateTitle()
 {
-    // TODO: Update TITLE screen variables here!
+    UpdateRandomRects();
 
     // Press enter to change to GAMEPLAY screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
+        memset(sprites, 0, sizeof(sprites));
+        InitSprites(MAX_SPRITES);
         SetCurrentPhase(GameplayPhase);
     }
 }
 
 void UpdateGameplay()
 {
-    // TODO: Update GAMEPLAY screen variables here!
+    UpdateRandomRects();
 
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
+        memset(sprites, 0, sizeof(sprites));
+        CloseSprites();
         SetCurrentPhase(EndingPhase);
     }
 }
@@ -78,6 +126,8 @@ void UpdateEnding()
     // Press enter to return to TITLE screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
+        memset(sprites, 0, sizeof(sprites));
+        InitSprites(MAX_SPRITES);
         SetCurrentPhase(TitlePhase);
     }
 }
@@ -93,6 +143,7 @@ void DrawTitle()
 {
     // TODO: Draw TITLE screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GREEN);
+    DrawSprites();
     DrawText("TITLE SCREEN", 0, 0, 40, DARKGREEN);
     DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 0, 40, 20, DARKGREEN);
 }
@@ -101,6 +152,7 @@ void DrawGameplay()
 {
     // TODO: Draw GAMEPLAY screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), PURPLE);
+    DrawSprites();
     DrawText("GAMEPLAY SCREEN", 0, 0, 40, MAROON);
     DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 0, 40, 20, MAROON);
 }
