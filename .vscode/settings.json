@@ -4,7 +4,7 @@
         "*.lua": "lua",
         "*.ldtk": "json",
         "*.h": "c",
-        "xiosbase": "c"
+        "*.c": "c"
     },
     "json.schemas": [
         {
