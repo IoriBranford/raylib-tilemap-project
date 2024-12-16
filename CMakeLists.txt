@@ -14,7 +14,7 @@ endif()
 include_directories(include)
 add_executable(game
     src/engine/engine.c
-    src/engine/graphics.c
+    src/engine/sprites.c
     src/game/game.c
     src/game/main.c)
 #set(raylib_VERBOSE 1)
