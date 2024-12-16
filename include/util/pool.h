@@ -30,6 +30,8 @@
     pool->size = size; \
 }
 
+#define count_free_pool_objs(pool) (pool->size - pool->used)
+
 #define pool_ctor(T, PT, ctor) \
 PT* ctor(size_t size) { \
     PT* pool = pool_alloc(sizeof(PT)); \
