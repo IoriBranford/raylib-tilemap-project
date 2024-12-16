@@ -145,12 +145,15 @@ static void InitEmptySprite(Sprite *sprite) {
 }
 
 void InitSprites(unsigned n) {
+    if (sprites)
+        CloseSprites();
     sprites = NewSpritePool(n);
     pool_foreachall(sprites, InitEmptySprite);
 }
 
 void CloseSprites() {
-    free_pool(sprites);
+    if (sprites)
+        free_pool(sprites);
     sprites = NULL;
 }
 
