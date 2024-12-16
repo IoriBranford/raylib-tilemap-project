@@ -2,6 +2,7 @@
 #include <func.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <util.h>
 
 #include <raylib-tmx.h>
 
@@ -35,6 +36,7 @@ struct Graphic {
     Vector2 origin;
     float rotationDeg;
     Color color;
+    bool used;
 
     GraphicBehavior behavior;
     union {
@@ -132,38 +134,61 @@ static const GraphicBehavior BEHAVIORS[GRAPHICTYPE_TYPES] = {
     }
 };
 
-Graphic* GraphicsAlloc(unsigned n) {
-    Graphic *graphics = MemAlloc(n*sizeof(Graphic));
-    Graphic *g = graphics;
-    for (unsigned i = 0; i < n; ++i) {
-        g->behavior = BEHAVIORS[GRAPHICTYPE_NONE];
-        ++g;
+pool_typedef(Graphic, GraphicPool)
+pool_ctor(Graphic, GraphicPool, NewGraphicPool)
+
+static GraphicPool *graphics;
+
+#define IsUsed(g) (g->used)
+
+void InitGraphics(unsigned n) {
+    graphics = NewGraphicPool(n);
+}
+
+void CloseGraphics() {
+    free_pool(graphics);
+    graphics = NULL;
+}
+
+int CompareGraphics(const void *ap, const void *bp) {
+    const Graphic *a = ap, *b = bp;
+    float diff;
+    // float diff = a->order - b->order;
+    // if (diff > 0.0f)
+    //     return 1;
+    // if (diff < 0.0f)
+    //     return -1;
+    diff = a->position.y - b->position.y;
+    if (diff > 0.0f)
+        return 1;
+    if (diff < 0.0f)
+        return -1;
+    diff = a->position.x - b->position.x;
+    if (diff > 0.0f)
+        return 1;
+    if (diff < 0.0f)
+        return -1;
+    return 0;
+}
+
+void UpdateGraphics() {
+    prune_pool(graphics, IsUsed);
+    pool_foreachused(graphics, UpdateGraphic);
+    sort_pool_used(graphics, CompareGraphics);
+}
+
+void DrawGraphics() {
+    pool_foreachused(graphics, DrawGraphic);
+}
+
+Graphic* NewRectangleGraphic(Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
+    Graphic *g = take_from_pool(graphics);
+    if (g) {
+        g->behavior = BEHAVIORS[GRAPHICTYPE_RECTANGLE];
+        g->rect = rect;
+        g->origin = origin;
+        g->rotationDeg = rotationDeg;
+        g->color = color;
     }
-    return graphics;
+    return g;
 }
-
-void GraphicsFree(Graphic *graphics) {
-    MemFree(graphics);
-}
-
-// int CompareSprites(Sprite **ap, Sprite **bp) {
-//     Sprite *a = *ap, *b = *bp;
-//     float diff = a->order - b->order;
-//     if (diff > 0.0f)
-//         return 1;
-//     if (diff < 0.0f)
-//         return -1;
-//     diff = a->dest.y - b->dest.y;
-//     if (diff > 0.0f)
-//         return 1;
-//     if (diff < 0.0f)
-//         return -1;
-// }
-
-// void SortSpriteList(unsigned n, Sprite **list, __compar_fn_t comp) {
-//     qsort(list, n, sizeof(Sprite*), comp);
-// }
-
-// void UpdateGraphicList(Graphic **list) {
-
-// }
