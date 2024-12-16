@@ -35,6 +35,7 @@ struct Sprite {
     float rotationDeg;
     Color color;
     bool used;
+    unsigned animSpeedMS;
 
     SpriteBehavior behavior;
     union {
@@ -54,6 +55,8 @@ struct Sprite {
             Texture2D *texture;
             Rectangle source;
             tmx_tile *tile;
+            unsigned frame;
+            float timer;
             // TODO animation vars
         } tile;
 
@@ -84,6 +87,13 @@ void DrawSprite_Text(Sprite *g) {
     DrawTextPro(*g->text.font, g->text.text, g->position, g->origin, g->rotationDeg, g->text.fontSize, g->text.spacing, g->color);
 }
 
+void SetTileSpriteSource(Sprite *g, tmx_tile *tile) {
+    g->tile.source.x  = tile->ul_x;
+    g->tile.source.y  = tile->ul_y;
+    g->tile.source.width  = tile->tileset->tile_width;
+    g->tile.source.height = tile->tileset->tile_height;
+}
+
 void SetSpriteTile(Sprite *g, tmx_tile *tile) {
     g->tile.tile = tile;
 
@@ -102,10 +112,7 @@ void SetSpriteTile(Sprite *g, tmx_tile *tile) {
     if (image == NULL)
         return;
 
-    g->tile.source.x  = tile->ul_x;
-    g->tile.source.y  = tile->ul_y;
-    g->tile.source.width  = tileset->tile_width;
-    g->tile.source.height = tileset->tile_height;
+    SetTileSpriteSource(g, tile);
     
     if (g->rect.width == 0.0f)
         g->rect.width = g->tile.source.width;
@@ -116,6 +123,28 @@ void SetSpriteTile(Sprite *g, tmx_tile *tile) {
         * g->rect.width / g->tile.source.width;
     g->origin.y = (g->tile.source.height - tileset->y_offset)
         * g->rect.height / g->tile.source.height;
+
+    g->tile.frame = 0;
+}
+
+void UpdateSprite_Tile(Sprite *g) {
+    tmx_tile *tile = g->tile.tile;
+    tmx_anim_frame *anim = tile->animation;
+    unsigned n = tile->animation_len;
+    if (anim && n) {
+        tmx_tile *tiles = tile->tileset->tiles;
+        tmx_anim_frame *frame = anim + g->tile.frame;
+
+        g->tile.timer += GetFrameTime()*g->animSpeedMS;
+
+        while (g->tile.timer >= frame->duration) {
+            g->tile.timer -= frame->duration;
+            ++g->tile.frame;
+            g->tile.frame %= n;
+            frame = anim + g->tile.frame;
+            SetTileSpriteSource(g, tiles + frame->tile_id);
+        }
+    }
 }
 
 void DrawSprite_Tile(Sprite *g) {
@@ -158,7 +187,7 @@ static const SpriteBehavior BEHAVIORS[SPRITETYPE_TYPES] = {
     },
     [SPRITETYPE_TILE] = {
         .type = SPRITETYPE_TILE,
-        .update = Nop,
+        .update = UpdateSprite_Tile,
         .draw = DrawSprite_Tile
     },
     [SPRITETYPE_ASEPRITETAG] = {
@@ -252,6 +281,7 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
         g->rotationDeg = rotationDeg;
         g->color = color;
         g->behavior = BEHAVIORS[SPRITETYPE_TILE];
+        g->animSpeedMS = 1000;
         SetSpriteTile(g, tile);
     }
     return g;
