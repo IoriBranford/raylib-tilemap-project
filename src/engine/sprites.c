@@ -184,6 +184,7 @@ void DrawSprites() {
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
     Sprite *g = take_from_pool(sprites);
     if (g) {
+        g->used = true;
         g->behavior = BEHAVIORS[SPRITETYPE_RECTANGLE];
         g->rect = rect;
         g->origin = origin;
