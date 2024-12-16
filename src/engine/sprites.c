@@ -39,18 +39,20 @@ struct Sprite {
     SpriteBehavior behavior;
     union {
         struct {
-            Texture2D texture;
+            Texture2D *texture;
             Rectangle source;
         } texture;
 
         struct {
-            Font font;
+            Font *font;
             const char *text;
             float fontSize;
             float spacing;
         } text;
 
         struct {
+            Texture2D *texture;
+            Rectangle source;
             tmx_tile *tile;
             // TODO animation vars
         } tile;
@@ -74,17 +76,51 @@ void DrawSprite_Rectangle(Sprite *g) {
 
 void DrawSprite_Texture(Sprite *g) {
     assert(g->behavior.type == SPRITETYPE_TEXTURE);
-    DrawTexturePro(g->texture.texture, g->texture.source, g->rect, g->origin, g->rotationDeg, g->color);
+    DrawTexturePro(*g->texture.texture, g->texture.source, g->rect, g->origin, g->rotationDeg, g->color);
 }
 
 void DrawSprite_Text(Sprite *g) {
     assert(g->behavior.type == SPRITETYPE_TEXT);
-    DrawTextPro(g->text.font, g->text.text, g->position, g->origin, g->rotationDeg, g->text.fontSize, g->text.spacing, g->color);
+    DrawTextPro(*g->text.font, g->text.text, g->position, g->origin, g->rotationDeg, g->text.fontSize, g->text.spacing, g->color);
+}
+
+void SetSpriteTile(Sprite *g, tmx_tile *tile) {
+    g->tile.tile = tile;
+
+    Texture* image = NULL;
+    tmx_tileset *tileset = tile->tileset;
+
+    tmx_image *im = tile->image;
+    if (im && im->resource_image) {
+        image = (Texture*)im->resource_image;
+    }
+    else if (tile->tileset->image->resource_image) {
+        image = (Texture*)tileset->image->resource_image;
+    }
+    g->tile.texture = image;
+
+    if (image == NULL)
+        return;
+
+    g->tile.source.x  = tile->ul_x;
+    g->tile.source.y  = tile->ul_y;
+    g->tile.source.width  = tileset->tile_width;
+    g->tile.source.height = tileset->tile_height;
+    
+    if (g->rect.width == 0.0f)
+        g->rect.width = g->tile.source.width;
+    if (g->rect.height == 0.0f)
+        g->rect.height = g->tile.source.height;
+
+    g->origin.x = -(float)tileset->x_offset
+        * g->rect.width / g->tile.source.width;
+    g->origin.y = (g->tile.source.height - tileset->y_offset)
+        * g->rect.height / g->tile.source.height;
 }
 
 void DrawSprite_Tile(Sprite *g) {
     assert(g->behavior.type == SPRITETYPE_TILE);
-    DrawTMXTilePro(g->tile.tile, g->rect, g->rotationDeg, g->color);
+    DrawTexturePro(*g->tile.texture, g->tile.source, g->rect, g->origin, g->rotationDeg, g->color);
 }
 
 void UpdateSprite_AsepriteTag(Sprite *g) {
@@ -206,6 +242,36 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
         g->color = color;
     }
     return g;
+}
+
+Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color) {
+    Sprite *g = take_from_pool(sprites);
+    if (g) {
+        g->used = true;
+        g->rect = rect;
+        g->rotationDeg = rotationDeg;
+        g->color = color;
+        g->behavior = BEHAVIORS[SPRITETYPE_TILE];
+        SetSpriteTile(g, tile);
+    }
+    return g;
+}
+
+Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
+    if (o->obj_type == OT_TILE) {
+        int gid = o->content.gid;
+        int i = gid & TMX_FLIP_BITS_REMOVAL;
+        float flipx = (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1;
+        float flipy = (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1;
+        tmx_tile *tile = maptiles[i];
+        Rectangle rect = {
+            .x = o->x, .y = o->y,
+            .width = flipx * o->width, .height = flipy * o->height
+        };
+        return NewTileSprite(tile, rect, o->rotation, color);
+    }
+
+    return NULL;
 }
 
 void ReleaseSprite(Sprite* sprite) {

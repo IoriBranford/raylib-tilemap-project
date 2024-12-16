@@ -15,6 +15,9 @@ void DrawSprites();
 
 size_t NumSpritesAvailable();
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
+Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
+Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
+void SetSpriteTile(Sprite *g, tmx_tile *tile);
 
 void ReleaseSprite(Sprite* sprite);
 
