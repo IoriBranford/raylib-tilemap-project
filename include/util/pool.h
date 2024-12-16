@@ -25,6 +25,7 @@
 #define init_pool(T, pool, size) { \
     pool->objects = pool_alloc(size*sizeof(T)); \
     pool->pointers = pool_alloc(size*sizeof(T*)); \
+    for (size_t i = 0; i < size; ++i) pool->pointers[i] = &pool->objects[i]; \
     pool->used = 0; \
     pool->size = size; \
 }
