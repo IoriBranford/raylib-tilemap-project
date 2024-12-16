@@ -141,8 +141,14 @@ static SpritePool *sprites;
 
 #define IsUsed(g) (g->used)
 
+static void InitEmptySprite(Sprite *sprite) {
+    sprite->used = false;
+    sprite->behavior = BEHAVIORS[SPRITETYPE_NONE];
+}
+
 void InitSprites(unsigned n) {
     sprites = NewSpritePool(n);
+    pool_foreachall(sprites, InitEmptySprite);
 }
 
 void CloseSprites() {
