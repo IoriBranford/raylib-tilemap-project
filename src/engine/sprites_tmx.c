@@ -28,15 +28,30 @@ void GetTileSource(Rectangle *source, tmx_tile *tile, Vector2 flip) {
         source->height *= -1;
 }
 
+static const Vector2 ALIGNMENT_ORIGIN[OA_BOTTOMRIGHT+1] = {
+    [OA_NONE]       = {0.0f, 1.0f},
+    [OA_TOPLEFT]    = {0.0f, 0.0f},
+    [OA_TOP]        = {0.5f, 0.0f},
+    [OA_TOPRIGHT]   = {1.0f, 0.0f},
+    [OA_LEFT]       = {0.0f, 0.5f},
+    [OA_CENTER]     = {0.5f, 0.5f},
+    [OA_RIGHT]      = {1.0f, 0.5f},
+    [OA_BOTTOMLEFT] = {0.0f, 1.0f},
+    [OA_BOTTOM]     = {0.5f, 1.0f},
+    [OA_BOTTOMRIGHT]= {1.0f, 1.0f},
+};
+
 void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
     tmx_tileset *tileset = tile->tileset;
 
-    Vector2 scale = {1, 1};
-    if (destSize.x) scale.x = destSize.x / tileset->tile_width;
-    if (destSize.y) scale.y = destSize.y / tileset->tile_height;
+    *origin = ALIGNMENT_ORIGIN[tileset->objectalignment];
+    origin->x *= tileset->tile_width;
+    origin->y *= tileset->tile_height;
+    origin->x -= tileset->x_offset;
+    origin->y -= tileset->y_offset;
 
-    origin->x = scale.x * -tileset->x_offset;
-    origin->y = scale.y * (tileset->tile_height - tileset->y_offset);
+    if (destSize.x) origin->x *= destSize.x / tileset->tile_width;
+    if (destSize.y) origin->y *= destSize.y / tileset->tile_height;
 }
 
 void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip) {
