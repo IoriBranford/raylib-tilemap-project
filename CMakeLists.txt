@@ -14,7 +14,7 @@ endif()
 include_directories(include)
 add_executable(game
     src/engine/engine.c
-    src/engine/sprites.c
+    src/engine/gfx2d.c
     src/engine/sprites_tmx.c
     src/game/game.c
     src/game/main.c)

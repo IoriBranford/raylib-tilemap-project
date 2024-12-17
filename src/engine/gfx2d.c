@@ -1,4 +1,4 @@
-#include "sprites.h"
+#include "gfx2d.h"
 
 #include <assert.h>
 

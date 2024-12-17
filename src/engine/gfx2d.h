@@ -1,7 +1,7 @@
 #ifndef CD4A975D_9FBF_43FB_A75D_C71DCA6AA83E
 #define CD4A975D_9FBF_43FB_A75D_C71DCA6AA83E
 
-#include <engine/sprites.h>
+#include <engine/gfx2d.h>
 
 Sprite* NewSprite();
 
