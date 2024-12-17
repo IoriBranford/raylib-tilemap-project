@@ -36,6 +36,7 @@ static int framesCounter = 0;          // Useful to count frames
 static int spriteIndex = 0;
 static Sprite *sprites[MAX_SPRITES];
 static tmx_map *map;
+static Camera2D camera;
 
 void InitGame()
 {
@@ -123,6 +124,11 @@ void UpdateTitle()
         memset(sprites, 0, sizeof(sprites));
         InitSprites(MAX_SPRITES);
         InitLayers(map->ly_head, map);
+        camera.offset.x = GetScreenWidth()/2;
+        camera.offset.y = GetScreenHeight()/2;
+        camera.target.x = camera.target.y = 0;
+        camera.rotation = 0;
+        camera.zoom = 1;
         SetCurrentPhase(GameplayPhase);
     }
 }
@@ -132,11 +138,18 @@ void UpdateGameplay()
     UpdateSprites();
 
     // Press enter to change to ENDING screen
-    if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+    if (IsKeyPressed(KEY_ENTER))
     {
         memset(sprites, 0, sizeof(sprites));
         CloseSprites();
         SetCurrentPhase(EndingPhase);
+        return;
+    }
+
+    if (IsMouseButtonDown(0)) {
+        Vector2 move = GetMouseDelta();
+        camera.target.x -= move.x;
+        camera.target.y -= move.y;
     }
 }
 
@@ -172,10 +185,12 @@ void DrawTitle()
 void DrawGameplay()
 {
     // TODO: Draw GAMEPLAY screen here!
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), PURPLE);
+    ClearBackground(ColorFromTMX(map->backgroundcolor));
+    BeginMode2D(camera);
     DrawSprites();
+    EndMode2D();
     DrawText("GAMEPLAY SCREEN", 0, 0, 40, MAROON);
-    DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 0, 40, 20, MAROON);
+    DrawText("PRESS ENTER to JUMP to ENDING SCREEN", 0, 40, 20, MAROON);
 }
 
 void DrawEnding()
