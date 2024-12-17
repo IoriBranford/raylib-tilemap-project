@@ -150,6 +150,27 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
     } else if (o->obj_type == OT_SQUARE) {
         Vector2 origin = { 0, 0 };
         return NewRectangleSprite(rect, origin, o->rotation, color);
+    } else if (o->obj_type == OT_TEXT) {
+        tmx_text *tmxText = o->content.text;
+        if (!tmxText && tmpl) {
+            tmxText = tmpl->object->content.text;
+        }
+        assert(tmxText);
+
+        SpriteText text = {
+            .font = GetFontDefault(),
+            .fontSize = tmxText->pixelsize,
+            .spacing = 2,
+            .text = tmxText->text,
+            .wrap = tmxText->wrap != 0
+        };
+
+        Color textColor = ColorFromTMX(tmxText->color);
+        if (ColorIsEqual(textColor, BLANK))
+            textColor = BLACK;
+        color = ColorTint(textColor, color);
+
+        return NewTextSprite(&text, rect, color);
     }
 
     return NULL;
