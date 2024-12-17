@@ -3,8 +3,67 @@
 
 #include <raylib-tmx.h>
 #include <raylib-aseprite.h>
+#include <util.h>
 
 typedef struct Sprite Sprite;
+typedef void (*SpriteFunction)(Sprite*);
+
+pool_typedef(Sprite, SpritePool)
+
+typedef enum SpriteType {
+    SPRITETYPE_NONE,
+    SPRITETYPE_RECTANGLE,
+    SPRITETYPE_TEXTURE,
+    SPRITETYPE_TEXT,
+    SPRITETYPE_TILE,
+    SPRITETYPE_ASEPRITETAG,
+    SPRITETYPE_TYPES
+} SpriteType;
+
+typedef struct SpriteBehavior {
+    SpriteType type;
+    SpriteFunction update, draw;
+} SpriteBehavior;
+
+struct Sprite {
+    union {
+        struct {
+            Vector2 position, size;
+        };
+        Rectangle rect;
+    };
+    Vector2 origin;
+    float rotationDeg;
+    Color color;
+    bool used;
+    unsigned animSpeedMS;
+
+    SpriteBehavior behavior;
+    union {
+        struct {
+            Texture2D *texture;
+            Rectangle source;
+        } texture;
+
+        struct {
+            Font *font;
+            const char *text;
+            float fontSize;
+            float spacing;
+        } text;
+
+        struct {
+            Texture2D *texture;
+            Rectangle source;
+            tmx_tile *tile;
+            unsigned frame;
+            float timer;
+            // TODO animation vars
+        } tile;
+
+        AsepriteTag asepriteTag;
+    };
+};
 
 void InitSprites(unsigned n);
 void CloseSprites();
