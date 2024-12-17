@@ -91,26 +91,40 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
 }
 
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
+    Rectangle rect = {
+        .x = o->x, .y = o->y,
+        .width = o->width, .height = o->height
+    };
+
+    tmx_template *tmpl = o->template_ref;
+    tmx_object *tmplObj = NULL;
+    if (tmpl) {
+        tmplObj = tmpl->object;
+        if (!rect.width)
+            rect.width = tmplObj->width;
+        if (!rect.height)
+            rect.height = tmplObj->height;
+    }
+
     if (o->obj_type == OT_TILE) {
         int gid = o->content.gid;
-        int i = gid & TMX_FLIP_BITS_REMOVAL;
-        if (!i)
-            return NULL;
-        float flipx = (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1;
-        float flipy = (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1;
-        tmx_tile *tile = maptiles[i];
-        if (!tile)
-            return NULL;
-        Rectangle rect = {
-            .x = o->x, .y = o->y,
-            .width = flipx * o->width, .height = flipy * o->height
-        };
+        tmx_tile *tile = NULL;
+        if (gid) {
+            int i = gid & TMX_FLIP_BITS_REMOVAL;
+            tile = maptiles[i];
+        } else if (tmpl && tmpl->tileset_ref) {
+            gid = tmplObj->content.gid;
+            int i = gid & TMX_FLIP_BITS_REMOVAL;
+            tile = tmpl->tileset_ref->tileset->tiles
+                + i - tmpl->tileset_ref->firstgid;
+        }
+        assert(tile);
+
+        rect.width *= (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1;
+        rect.height *= (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1;
+
         return NewTileSprite(tile, rect, o->rotation, color);
     } else if (o->obj_type == OT_SQUARE) {
-        Rectangle rect = {
-            .x = o->x, .y = o->y,
-            .width = o->width, .height = o->height
-        };
         Vector2 origin = { 0, 0 };
         return NewRectangleSprite(rect, origin, o->rotation, color);
     }
