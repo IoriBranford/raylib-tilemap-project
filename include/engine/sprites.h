@@ -83,7 +83,7 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
-void SetSpriteTile(Sprite *g, tmx_tile *tile);
+void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
 
 void ReleaseSprite(Sprite* sprite);
 

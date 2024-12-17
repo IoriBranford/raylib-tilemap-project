@@ -17,11 +17,15 @@ Texture* GetTileImage(tmx_tile *tile) {
     return image;
 }
 
-void GetTileSource(Rectangle *source, tmx_tile *tile) {
+void GetTileSource(Rectangle *source, tmx_tile *tile, Vector2 flip) {
     source->x  = tile->ul_x;
     source->y  = tile->ul_y;
     source->width  = tile->tileset->tile_width;
     source->height = tile->tileset->tile_height;
+    if (flip.x < 0)
+        source->width *= -1;
+    if (flip.y < 0)
+        source->height *= -1;
 }
 
 void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
@@ -35,14 +39,14 @@ void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
     origin->y = scale.y * (tileset->tile_height - tileset->y_offset);
 }
 
-void SetSpriteTile(Sprite *g, tmx_tile *tile) {
+void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip) {
     Texture *image = GetTileImage(tile);
     if (image == NULL)
         return;
 
     g->tile.tile = tile;
     g->tile.texture = image;
-    GetTileSource(&g->tile.source, tile);
+    GetTileSource(&g->tile.source, tile, flip);
     GetTileOrigin(&g->origin, tile, g->size);
 
     g->tile.frame = 0;
@@ -64,7 +68,8 @@ void UpdateSprite_Tile(Sprite *g) {
             ++g->tile.frame;
             g->tile.frame %= n;
             frame = anim + g->tile.frame;
-            GetTileSource(&g->tile.source, tiles + frame->tile_id);
+            Vector2 flip = {g->tile.source.width, g->tile.source.height};
+            GetTileSource(&g->tile.source, tiles + frame->tile_id, flip);
         }
     }
 }
@@ -85,7 +90,10 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
         g->behavior.update = UpdateSprite_Tile;
         g->behavior.draw = DrawSprite_Tile;
         g->animSpeedMS = 1000;
-        SetSpriteTile(g, tile);
+        Vector2 flip = {rect.width, rect.height};
+        rect.width = abs(rect.width);
+        rect.height = abs(rect.height);
+        SetSpriteTile(g, tile, flip);
     }
     return g;
 }
@@ -185,7 +193,11 @@ void DrawSprite_TileLayer(Sprite *g) {
 
             rect.width = tile->width;
             rect.height = tile->height;
-            GetTileSource(&source, tile);
+            Vector2 flip = {
+                (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1,
+                (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1
+            };
+            GetTileSource(&source, tile, flip);
             GetTileOrigin(&origin, tile, size);
 
             Texture *texture = GetTileImage(tile);
