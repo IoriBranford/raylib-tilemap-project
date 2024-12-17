@@ -38,36 +38,6 @@ void DrawSprite_AsepriteTag(Sprite *g) {
     DrawAsepriteTagPro(g->asepriteTag, g->rect, g->origin, g->rotationDeg, g->color);
 }
 
-static void Nop(Sprite *_) {}
-
-const SpriteBehavior BEHAVIORS[SPRITETYPE_TYPES] = {
-    [SPRITETYPE_NONE] = {
-        .type = SPRITETYPE_NONE,
-        .update = Nop,
-        .draw = Nop
-    },
-    [SPRITETYPE_RECTANGLE] = {
-        .type = SPRITETYPE_RECTANGLE,
-        .update = Nop,
-        .draw = DrawSprite_Rectangle
-    },
-    [SPRITETYPE_TEXTURE] = {
-        .type = SPRITETYPE_TEXTURE,
-        .update = Nop,
-        .draw = DrawSprite_Texture
-    },
-    [SPRITETYPE_TEXT] = {
-        .type = SPRITETYPE_TEXT,
-        .update = Nop,
-        .draw = DrawSprite_Text
-    },
-    [SPRITETYPE_ASEPRITETAG] = {
-        .type = SPRITETYPE_ASEPRITETAG,
-        .update = UpdateSprite_AsepriteTag,
-        .draw = DrawSprite_AsepriteTag
-    }
-};
-
 pool_ctor(Sprite, SpritePool, NewSpritePool)
 
 SpritePool *sprites;
@@ -76,7 +46,8 @@ SpritePool *sprites;
 
 static void InitEmptySprite(Sprite *sprite) {
     sprite->used = false;
-    sprite->behavior = BEHAVIORS[SPRITETYPE_NONE];
+    sprite->behavior.type = SPRITETYPE_NONE;
+    sprite->behavior.update = sprite->behavior.draw = NULL;
 }
 
 void InitSprites(unsigned n) {
@@ -141,7 +112,9 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
     Sprite *g = NewSprite();
     if (g) {
         g->used = true;
-        g->behavior = BEHAVIORS[SPRITETYPE_RECTANGLE];
+        g->behavior.type = SPRITETYPE_RECTANGLE;
+        g->behavior.update = NULL;
+        g->behavior.draw = DrawSprite_Rectangle;
         g->rect = rect;
         g->origin = origin;
         g->rotationDeg = rotationDeg;
