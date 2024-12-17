@@ -46,6 +46,7 @@ void SetSpriteTile(Sprite *g, tmx_tile *tile) {
     GetTileOrigin(&g->origin, tile, g->size);
 
     g->tile.frame = 0;
+    g->animTimer = 0;
 }
 
 void UpdateSprite_Tile(Sprite *g) {
@@ -200,6 +201,7 @@ Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
         g->behavior.type = SPRITETYPE_TILELAYER;
         g->behavior.update = UpdateSprite_TileLayer;
         g->behavior.draw = DrawSprite_TileLayer;
+        g->animTimer = 0;
         g->animSpeedMS = 1000;
         g->layer.layer = layer;
         g->layer.map = map;
