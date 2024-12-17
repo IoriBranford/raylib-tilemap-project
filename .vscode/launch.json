@@ -27,6 +27,16 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "(Windows) game",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": []
         }
     ]
 }
