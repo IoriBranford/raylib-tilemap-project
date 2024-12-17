@@ -6,11 +6,11 @@
 #include <raylib-aseprite.h>
 
 void UpdateSprite(Sprite *g) {
-    g->behavior.update(g);
+    if (g->behavior.update) g->behavior.update(g);
 }
 
 void DrawSprite(Sprite *g) {
-    g->behavior.draw(g);
+    if (g->behavior.draw) g->behavior.draw(g);
 }
 
 void DrawSprite_Rectangle(Sprite *g) {
