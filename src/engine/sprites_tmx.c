@@ -1,6 +1,7 @@
 #include "sprites.h"
 
 #include <assert.h>
+#include <math.h>
 
 Texture* GetTileImage(tmx_tile *tile) {
     Texture* image = NULL;
@@ -31,7 +32,7 @@ void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
     if (destSize.y) scale.y = destSize.y / tileset->tile_height;
 
     origin->x = scale.x * -tileset->x_offset;
-    origin->y = scale.y * (tileset->tile_height - tile->tileset->y_offset);
+    origin->y = scale.y * (tileset->tile_height - tileset->y_offset);
 }
 
 void SetSpriteTile(Sprite *g, tmx_tile *tile) {
@@ -113,7 +114,7 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
 }
 
 void UpdateSprite_TileLayer(Sprite *g) {
-
+    g->animTimer += GetFrameTime()*g->animSpeedMS;
 }
 
 void DrawSprite_TileLayer(Sprite *g) {
@@ -145,6 +146,24 @@ void DrawSprite_TileLayer(Sprite *g) {
 
         if (tileId) {
             tmx_tile *tile = mapTiles[tileId];
+
+            tmx_anim_frame *anim = tile->animation;
+            if (anim) {
+                float totalDuration = 0;
+                for (unsigned i = 0; i < tile->animation_len; ++i)
+                    totalDuration += anim[i].duration;
+
+                float animTime = fmodf(g->animTimer, totalDuration);
+
+                for (unsigned i = 0; i < tile->animation_len; ++i) {
+                    if (animTime < anim[i].duration) {
+                        tile = tile->tileset->tiles + anim[i].tile_id;
+                        break;
+                    }
+                    animTime -= anim[i].duration;
+                }
+            }
+
             rect.width = tile->width;
             rect.height = tile->height;
             GetTileSource(&source, tile);
