@@ -119,7 +119,10 @@ int CompareSprites(const void *ap, const void *bp) {
 
 void UpdateSprites() {
     pool_foreachused(sprites, UpdateSprite);
-    sort_pool_used(sprites, CompareSprites);
+}
+
+void SortSprites(int (*compare)(const void*,const void*)) {
+    sort_pool_used(sprites, compare);
 }
 
 void PruneSprites() {

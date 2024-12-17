@@ -75,6 +75,7 @@ void CloseSprites();
 
 void PruneSprites();
 void UpdateSprites();
+void SortSprites(int (*compare)(const void*,const void*));
 void DrawSprites();
 
 size_t NumSpritesAvailable();
