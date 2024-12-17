@@ -31,7 +31,7 @@ const Phase EndingPhase = {
 
 static int framesCounter = 0;          // Useful to count frames
 #define FRAMES_PER_SPRITE 10
-#define MAX_SPRITES 30
+#define MAX_SPRITES 100
 
 static int spriteIndex = 0;
 static Sprite *sprites[MAX_SPRITES];
@@ -48,13 +48,15 @@ void CloseGame()
     UnloadTMX(map);
 }
 
-void InitLayersObjects(tmx_layer *head) {
+void InitLayers(tmx_layer *head, tmx_map *map) {
     for (tmx_layer *layer = head; layer; layer = layer->next) {
         if (layer->type == L_GROUP) {
-            InitLayersObjects(layer->content.group_head);
+            InitLayers(layer->content.group_head, map);
         } else if (layer->type == L_OBJGR) {
             for (tmx_object *o = layer->content.objgr->head; o; o = o->next)
                 NewTMXObjectSprite(o, map->tiles, WHITE);
+        } else if (layer->type == L_LAYER) {
+            NewTileLayerSprite(layer, map);
         }
     }
 }
@@ -120,7 +122,7 @@ void UpdateTitle()
     {
         memset(sprites, 0, sizeof(sprites));
         InitSprites(MAX_SPRITES);
-        InitLayersObjects(map->ly_head);
+        InitLayers(map->ly_head, map);
         SetCurrentPhase(GameplayPhase);
     }
 }
