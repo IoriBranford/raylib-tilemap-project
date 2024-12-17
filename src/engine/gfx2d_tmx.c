@@ -54,63 +54,63 @@ void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
     if (destSize.y) origin->y *= destSize.y / tileset->tile_height;
 }
 
-void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip) {
+void SetSpriteTile(Sprite *spr, tmx_tile *tile, Vector2 flip) {
     Texture *image = GetTileImage(tile);
     if (image == NULL)
         return;
 
-    g->tile.tile = tile;
-    g->tile.texture = image;
-    GetTileSource(&g->tile.source, tile, flip);
-    GetTileOrigin(&g->origin, tile, g->size);
+    spr->tile.tile = tile;
+    spr->tile.texture = image;
+    GetTileSource(&spr->tile.source, tile, flip);
+    GetTileOrigin(&spr->origin, tile, spr->size);
 
-    g->tile.frame = 0;
-    g->animTimer = 0;
+    spr->tile.frame = 0;
+    spr->animTimer = 0;
 }
 
-void UpdateSprite_Tile(Sprite *g) {
-    tmx_tile *tile = g->tile.tile;
+void UpdateSprite_Tile(Sprite *spr) {
+    tmx_tile *tile = spr->tile.tile;
     tmx_anim_frame *anim = tile->animation;
     unsigned n = tile->animation_len;
     if (anim && n) {
         tmx_tile *tiles = tile->tileset->tiles;
-        tmx_anim_frame *frame = anim + g->tile.frame;
+        tmx_anim_frame *frame = anim + spr->tile.frame;
 
-        g->animTimer += GetFrameTime()*g->animSpeedMS;
+        spr->animTimer += GetFrameTime()*spr->animSpeedMS;
 
-        while (g->animTimer >= frame->duration) {
-            g->animTimer -= frame->duration;
-            ++g->tile.frame;
-            g->tile.frame %= n;
-            frame = anim + g->tile.frame;
-            Vector2 flip = {g->tile.source.width, g->tile.source.height};
-            GetTileSource(&g->tile.source, tiles + frame->tile_id, flip);
+        while (spr->animTimer >= frame->duration) {
+            spr->animTimer -= frame->duration;
+            ++spr->tile.frame;
+            spr->tile.frame %= n;
+            frame = anim + spr->tile.frame;
+            Vector2 flip = {spr->tile.source.width, spr->tile.source.height};
+            GetTileSource(&spr->tile.source, tiles + frame->tile_id, flip);
         }
     }
 }
 
-void DrawSprite_Tile(Sprite *g) {
-    assert(g->behavior.type == SPRITETYPE_TILE);
-    DrawTexturePro(*g->tile.texture, g->tile.source, g->rect, g->origin, g->rotationDeg, g->color);
+void DrawSprite_Tile(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_TILE);
+    DrawTexturePro(*spr->tile.texture, spr->tile.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color) {
-    Sprite *g = NewSprite();
-    if (g) {
-        g->used = true;
-        g->rect = rect;
-        g->rotationDeg = rotationDeg;
-        g->color = color;
-        g->behavior.type = SPRITETYPE_TILE;
-        g->behavior.update = UpdateSprite_Tile;
-        g->behavior.draw = DrawSprite_Tile;
-        g->animSpeedMS = 1000;
+    Sprite *spr = NewSprite();
+    if (spr) {
+        spr->used = true;
+        spr->rect = rect;
+        spr->rotationDeg = rotationDeg;
+        spr->color = color;
+        spr->behavior.type = SPRITETYPE_TILE;
+        spr->behavior.update = UpdateSprite_Tile;
+        spr->behavior.draw = DrawSprite_Tile;
+        spr->animSpeedMS = 1000;
         Vector2 flip = {rect.width, rect.height};
         rect.width = abs(rect.width);
         rect.height = abs(rect.height);
-        SetSpriteTile(g, tile, flip);
+        SetSpriteTile(spr, tile, flip);
     }
-    return g;
+    return spr;
 }
 
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
@@ -176,14 +176,14 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
     return NULL;
 }
 
-void UpdateSprite_TileLayer(Sprite *g) {
-    g->animTimer += GetFrameTime()*g->animSpeedMS;
+void UpdateSprite_TileLayer(Sprite *spr) {
+    spr->animTimer += GetFrameTime()*spr->animSpeedMS;
 }
 
-void DrawSprite_TileLayer(Sprite *g) {
-    assert(g->behavior.type == SPRITETYPE_TILELAYER);
-    tmx_map *map = g->layer.map;
-    tmx_layer *layer = g->layer.layer;
+void DrawSprite_TileLayer(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_TILELAYER);
+    tmx_map *map = spr->layer.map;
+    tmx_layer *layer = spr->layer.layer;
 
     assert(layer->type == L_LAYER);
 
@@ -197,7 +197,7 @@ void DrawSprite_TileLayer(Sprite *g) {
     unsigned n = cols * rows;
 
     Rectangle source;
-    Vector2 position = g->position;
+    Vector2 position = spr->position;
     Rectangle rect = { position.x, position.y + rowh, colw, rowh };
     Vector2 origin = { 0, 0 }, size = { 0, 0 };
     Color color = ColorFromTMX(layer->tintcolor);
@@ -216,7 +216,7 @@ void DrawSprite_TileLayer(Sprite *g) {
                 for (unsigned i = 0; i < tile->animation_len; ++i)
                     totalDuration += anim[i].duration;
 
-                float animTime = fmodf(g->animTimer, totalDuration);
+                float animTime = fmodf(spr->animTimer, totalDuration);
 
                 for (unsigned i = 0; i < tile->animation_len; ++i) {
                     if (animTime < anim[i].duration) {
@@ -253,20 +253,20 @@ void DrawSprite_TileLayer(Sprite *g) {
 }
 
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
-    Sprite *g = NewSprite();
-    if (g) {
+    Sprite *spr = NewSprite();
+    if (spr) {
         Rectangle rect = {0};
-        g->used = true;
-        g->rect = rect;
-        g->rotationDeg = 0;
-        g->color = ColorFromTMX(layer->tintcolor);
-        g->behavior.type = SPRITETYPE_TILELAYER;
-        g->behavior.update = UpdateSprite_TileLayer;
-        g->behavior.draw = DrawSprite_TileLayer;
-        g->animTimer = 0;
-        g->animSpeedMS = 1000;
-        g->layer.layer = layer;
-        g->layer.map = map;
+        spr->used = true;
+        spr->rect = rect;
+        spr->rotationDeg = 0;
+        spr->color = ColorFromTMX(layer->tintcolor);
+        spr->behavior.type = SPRITETYPE_TILELAYER;
+        spr->behavior.update = UpdateSprite_TileLayer;
+        spr->behavior.draw = DrawSprite_TileLayer;
+        spr->animTimer = 0;
+        spr->animSpeedMS = 1000;
+        spr->layer.layer = layer;
+        spr->layer.map = map;
     }
-    return g;
+    return spr;
 }

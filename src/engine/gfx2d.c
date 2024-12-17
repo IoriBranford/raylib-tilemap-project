@@ -5,39 +5,39 @@
 #define RAYLIB_ASEPRITE_IMPLEMENTATION
 #include <raylib-aseprite.h>
 
-void UpdateSprite(Sprite *g) {
-    if (g->behavior.update) g->behavior.update(g);
+void UpdateSprite(Sprite *spr) {
+    if (spr->behavior.update) spr->behavior.update(spr);
 }
 
-void DrawSprite(Sprite *g) {
-    if (g->behavior.draw) g->behavior.draw(g);
+void DrawSprite(Sprite *spr) {
+    if (spr->behavior.draw) spr->behavior.draw(spr);
 }
 
-void DrawSprite_Rectangle(Sprite *g) {
-    assert(g->behavior.type == SPRITETYPE_RECTANGLE);
-    DrawRectanglePro(g->rect, g->origin, g->rotationDeg, g->color);
+void DrawSprite_Rectangle(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_RECTANGLE);
+    DrawRectanglePro(spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
-void DrawSprite_Texture(Sprite *g) {
-    assert(g->behavior.type == SPRITETYPE_TEXTURE);
-    DrawTexturePro(*g->texture.texture, g->texture.source, g->rect, g->origin, g->rotationDeg, g->color);
+void DrawSprite_Texture(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_TEXTURE);
+    DrawTexturePro(*spr->texture.texture, spr->texture.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
 static void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
 
-void DrawSprite_Text(Sprite *g) {
-    assert(g->behavior.type == SPRITETYPE_TEXT);
-    DrawTextBoxed(g->text.font, g->text.text, g->rect, g->text.fontSize, g->text.spacing, g->text.wrap, g->color);
+void DrawSprite_Text(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_TEXT);
+    DrawTextBoxed(spr->text.font, spr->text.text, spr->rect, spr->text.fontSize, spr->text.spacing, spr->text.wrap, spr->color);
 }
 
-void UpdateSprite_AsepriteTag(Sprite *g) {
-    assert(g->behavior.type == SPRITETYPE_ASEPRITETAG);
-    UpdateAsepriteTag(&g->asepriteTag);
+void UpdateSprite_AsepriteTag(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_ASEPRITETAG);
+    UpdateAsepriteTag(&spr->asepriteTag);
 }
 
-void DrawSprite_AsepriteTag(Sprite *g) {
-    assert(g->behavior.type == SPRITETYPE_ASEPRITETAG);
-    DrawAsepriteTagPro(g->asepriteTag, g->rect, g->origin, g->rotationDeg, g->color);
+void DrawSprite_AsepriteTag(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_ASEPRITETAG);
+    DrawAsepriteTagPro(spr->asepriteTag, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
 pool_ctor(Sprite, SpritePool, NewSpritePool)
@@ -46,10 +46,10 @@ SpritePool *sprites;
 
 #define IsUsed(g) (g->used)
 
-static void InitEmptySprite(Sprite *sprite) {
-    sprite->used = false;
-    sprite->behavior.type = SPRITETYPE_NONE;
-    sprite->behavior.update = sprite->behavior.draw = NULL;
+static void InitEmptySprite(Sprite *spr) {
+    spr->used = false;
+    spr->behavior.type = SPRITETYPE_NONE;
+    spr->behavior.update = spr->behavior.draw = NULL;
 }
 
 void InitSprites(unsigned n) {
@@ -111,38 +111,38 @@ Sprite* NewSprite() {
 }
 
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
-    Sprite *g = NewSprite();
-    if (g) {
-        g->used = true;
-        g->behavior.type = SPRITETYPE_RECTANGLE;
-        g->behavior.update = NULL;
-        g->behavior.draw = DrawSprite_Rectangle;
-        g->rect = rect;
-        g->origin = origin;
-        g->rotationDeg = rotationDeg;
-        g->color = color;
+    Sprite *spr = NewSprite();
+    if (spr) {
+        spr->used = true;
+        spr->behavior.type = SPRITETYPE_RECTANGLE;
+        spr->behavior.update = NULL;
+        spr->behavior.draw = DrawSprite_Rectangle;
+        spr->rect = rect;
+        spr->origin = origin;
+        spr->rotationDeg = rotationDeg;
+        spr->color = color;
     }
-    return g;
+    return spr;
 }
 
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
-    Sprite *g = NewSprite();
-    if (g) {
-        g->used = true;
-        g->rect = rect;
-        g->origin = (Vector2){0};
-        g->rotationDeg = 0;
-        g->color = color;
-        g->behavior.type = SPRITETYPE_TEXT;
-        g->behavior.update = NULL;
-        g->behavior.draw = DrawSprite_Text;
-        g->text = *text;
+    Sprite *spr = NewSprite();
+    if (spr) {
+        spr->used = true;
+        spr->rect = rect;
+        spr->origin = (Vector2){0};
+        spr->rotationDeg = 0;
+        spr->color = color;
+        spr->behavior.type = SPRITETYPE_TEXT;
+        spr->behavior.update = NULL;
+        spr->behavior.draw = DrawSprite_Text;
+        spr->text = *text;
     }
-    return g;
+    return spr;
 }
 
-void ReleaseSprite(Sprite* sprite) {
-    sprite->used = false;
+void ReleaseSprite(Sprite* spr) {
+    spr->used = false;
 }
 
 static void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
