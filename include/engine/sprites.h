@@ -16,6 +16,7 @@ typedef enum SpriteType {
     SPRITETYPE_TEXTURE,
     SPRITETYPE_TEXT,
     SPRITETYPE_TILE,
+    SPRITETYPE_TILELAYER,
     SPRITETYPE_ASEPRITETAG,
     SPRITETYPE_TYPES
 } SpriteType;
@@ -60,6 +61,11 @@ struct Sprite {
             unsigned frame;
         } tile;
 
+        struct {
+            tmx_layer *layer;
+            tmx_map *map;
+        } layer;
+
         AsepriteTag asepriteTag;
     };
 };
@@ -75,6 +81,7 @@ size_t NumSpritesAvailable();
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
+Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
 void SetSpriteTile(Sprite *g, tmx_tile *tile);
 
 void ReleaseSprite(Sprite* sprite);

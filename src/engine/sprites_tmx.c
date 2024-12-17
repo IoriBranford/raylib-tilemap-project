@@ -111,3 +111,75 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
 
     return NULL;
 }
+
+void UpdateSprite_TileLayer(Sprite *g) {
+
+}
+
+void DrawSprite_TileLayer(Sprite *g) {
+    assert(g->behavior.type == SPRITETYPE_TILELAYER);
+    tmx_map *map = g->layer.map;
+    tmx_layer *layer = g->layer.layer;
+
+    assert(layer->type == L_LAYER);
+
+    uint32_t *gids = layer->content.gids;
+    tmx_tile **mapTiles = map->tiles;
+    
+    unsigned cols = map->width;
+    unsigned rows = map->height;
+    unsigned colw = map->tile_width;
+    unsigned rowh = map->tile_height;
+    unsigned n = cols * rows;
+
+    Rectangle source;
+    Vector2 position = g->position;
+    Rectangle rect = { position.x, position.y + rowh, colw, rowh };
+    Vector2 origin = { 0, 0 }, size = { 0, 0 };
+    Color color = ColorFromTMX(layer->tintcolor);
+
+    unsigned col = 0, row = 0;
+    for (unsigned i = 0; i < n; ++i) {
+        uint32_t gid = *gids++;
+        uint32_t tileId = gid & TMX_FLIP_BITS_REMOVAL;
+
+        if (tileId) {
+            tmx_tile *tile = mapTiles[tileId];
+            rect.width = tile->width;
+            rect.height = tile->height;
+            GetTileSource(&source, tile);
+            GetTileOrigin(&origin, tile, size);
+
+            Texture *texture = GetTileImage(tile);
+            DrawTexturePro(*texture, source, rect, origin, 0, color);
+        }
+
+        ++col;
+        if (col >= cols) {
+            col = 0;
+            ++row;
+            rect.x = position.x;
+            rect.y += rowh;
+        } else {
+            rect.x += colw;
+        }
+    }
+}
+
+Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
+    Sprite *g = NewSprite();
+    if (g) {
+        Rectangle rect = {0};
+        g->used = true;
+        g->rect = rect;
+        g->rotationDeg = 0;
+        g->color = ColorFromTMX(layer->tintcolor);
+        g->behavior.type = SPRITETYPE_TILELAYER;
+        g->behavior.update = UpdateSprite_TileLayer;
+        g->behavior.draw = DrawSprite_TileLayer;
+        g->animSpeedMS = 1000;
+        g->layer.layer = layer;
+        g->layer.map = map;
+    }
+    return g;
+}
