@@ -26,6 +26,14 @@ typedef struct SpriteBehavior {
     SpriteFunction update, draw;
 } SpriteBehavior;
 
+typedef struct SpriteText {
+    Font *font;
+    const char *text;
+    float fontSize;
+    float spacing;
+    bool wrap;
+} SpriteText;
+
 struct Sprite {
     union {
         struct {
@@ -47,12 +55,7 @@ struct Sprite {
             Rectangle source;
         } texture;
 
-        struct {
-            Font *font;
-            const char *text;
-            float fontSize;
-            float spacing;
-        } text;
+        SpriteText text;
 
         struct {
             Texture2D *texture;
