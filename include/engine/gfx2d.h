@@ -27,7 +27,7 @@ typedef struct SpriteBehavior {
 } SpriteBehavior;
 
 typedef struct SpriteText {
-    Font *font;
+    Font font;
     const char *text;
     float fontSize;
     float spacing;
@@ -83,6 +83,7 @@ void DrawSprites();
 
 size_t NumSpritesAvailable();
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
+Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
