@@ -93,9 +93,13 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
     if (o->obj_type == OT_TILE) {
         int gid = o->content.gid;
         int i = gid & TMX_FLIP_BITS_REMOVAL;
+        if (!i)
+            return NULL;
         float flipx = (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1;
         float flipy = (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1;
         tmx_tile *tile = maptiles[i];
+        if (!tile)
+            return NULL;
         Rectangle rect = {
             .x = o->x, .y = o->y,
             .width = flipx * o->width, .height = flipy * o->height
