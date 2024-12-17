@@ -23,11 +23,11 @@ void DrawSprite_Texture(Sprite *spr) {
     DrawTexturePro(*spr->texture.texture, spr->texture.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
-static void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
+static void DrawTextBoxed(SpriteText *spriteText, Rectangle rec, Color tint);
 
 void DrawSprite_Text(Sprite *spr) {
     assert(spr->behavior.type == SPRITETYPE_TEXT);
-    DrawTextBoxed(spr->text.font, spr->text.text, spr->rect, spr->text.fontSize, spr->text.spacing, spr->text.wrap, spr->color);
+    DrawTextBoxed(&spr->text, spr->rect, spr->color);
 }
 
 void UpdateSprite_AsepriteTag(Sprite *spr) {
@@ -145,8 +145,13 @@ void ReleaseSprite(Sprite* spr) {
     spr->used = false;
 }
 
-static void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
-{
+static void DrawTextBoxed(SpriteText *spriteText, Rectangle rec, Color tint) {
+    Font font = spriteText->font;
+    const char *text = spriteText->text; 
+    float fontSize = spriteText->fontSize;
+    float spacing = spriteText->spacing;
+    bool wordWrap = spriteText->wrap;
+
     int length = TextLength(text);  // Total length in bytes of the text, scanned by codepoints in loop
 
     float textOffsetY = 0;          // Offset between lines (on line break '\n')
