@@ -2,16 +2,7 @@
 
 #include <assert.h>
 
-void SetTileSpriteSource(Sprite *g, tmx_tile *tile) {
-    g->tile.source.x  = tile->ul_x;
-    g->tile.source.y  = tile->ul_y;
-    g->tile.source.width  = tile->tileset->tile_width;
-    g->tile.source.height = tile->tileset->tile_height;
-}
-
-void SetSpriteTile(Sprite *g, tmx_tile *tile) {
-    g->tile.tile = tile;
-
+Texture* GetTileImage(tmx_tile *tile) {
     Texture* image = NULL;
     tmx_tileset *tileset = tile->tileset;
 
@@ -22,22 +13,36 @@ void SetSpriteTile(Sprite *g, tmx_tile *tile) {
     else if (tile->tileset->image->resource_image) {
         image = (Texture*)tileset->image->resource_image;
     }
-    g->tile.texture = image;
+    return image;
+}
 
+void GetTileSource(Rectangle *source, tmx_tile *tile) {
+    source->x  = tile->ul_x;
+    source->y  = tile->ul_y;
+    source->width  = tile->tileset->tile_width;
+    source->height = tile->tileset->tile_height;
+}
+
+void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
+    tmx_tileset *tileset = tile->tileset;
+
+    Vector2 scale = {1, 1};
+    if (destSize.x) scale.x = destSize.x / tileset->tile_width;
+    if (destSize.y) scale.y = destSize.y / tileset->tile_height;
+
+    origin->x = scale.x * -tileset->x_offset;
+    origin->y = scale.y * (tileset->tile_height - tile->tileset->y_offset);
+}
+
+void SetSpriteTile(Sprite *g, tmx_tile *tile) {
+    Texture *image = GetTileImage(tile);
     if (image == NULL)
         return;
 
-    SetTileSpriteSource(g, tile);
-    
-    if (g->rect.width == 0.0f)
-        g->rect.width = g->tile.source.width;
-    if (g->rect.height == 0.0f)
-        g->rect.height = g->tile.source.height;
-
-    g->origin.x = -(float)tileset->x_offset
-        * g->rect.width / g->tile.source.width;
-    g->origin.y = (g->tile.source.height - tileset->y_offset)
-        * g->rect.height / g->tile.source.height;
+    g->tile.tile = tile;
+    g->tile.texture = image;
+    GetTileSource(&g->tile.source, tile);
+    GetTileOrigin(&g->origin, tile, g->size);
 
     g->tile.frame = 0;
 }
@@ -50,14 +55,14 @@ void UpdateSprite_Tile(Sprite *g) {
         tmx_tile *tiles = tile->tileset->tiles;
         tmx_anim_frame *frame = anim + g->tile.frame;
 
-        g->tile.timer += GetFrameTime()*g->animSpeedMS;
+        g->animTimer += GetFrameTime()*g->animSpeedMS;
 
-        while (g->tile.timer >= frame->duration) {
-            g->tile.timer -= frame->duration;
+        while (g->animTimer >= frame->duration) {
+            g->animTimer -= frame->duration;
             ++g->tile.frame;
             g->tile.frame %= n;
             frame = anim + g->tile.frame;
-            SetTileSpriteSource(g, tiles + frame->tile_id);
+            GetTileSource(&g->tile.source, tiles + frame->tile_id);
         }
     }
 }

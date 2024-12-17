@@ -37,6 +37,7 @@ struct Sprite {
     Color color;
     bool used;
     unsigned animSpeedMS;
+    float animTimer;
 
     SpriteBehavior behavior;
     union {
@@ -57,8 +58,6 @@ struct Sprite {
             Rectangle source;
             tmx_tile *tile;
             unsigned frame;
-            float timer;
-            // TODO animation vars
         } tile;
 
         AsepriteTag asepriteTag;
