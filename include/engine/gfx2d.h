@@ -31,6 +31,7 @@ typedef struct SpriteText {
     const char *text;
     float fontSize;
     float spacing;
+    float halign;   // 0 = left, 1 = right
     bool wrap;
 } SpriteText;
 

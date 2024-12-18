@@ -151,6 +151,14 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
         Vector2 origin = { 0, 0 };
         return NewRectangleSprite(rect, origin, o->rotation, color);
     } else if (o->obj_type == OT_TEXT) {
+        static const float HALIGN[] = {
+            [HA_NONE] = 0,
+            [HA_LEFT] = 0,
+            [HA_CENTER] = 0.5f,
+            [HA_RIGHT] = 1,
+            [HA_JUSTIFY] = 0
+        };
+
         tmx_text *tmxText = o->content.text;
         if (!tmxText && tmpl) {
             tmxText = tmpl->object->content.text;
@@ -161,7 +169,8 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
             .font = GetFontDefault(),
             .fontSize = tmxText->pixelsize,
             .text = tmxText->text,
-            .wrap = tmxText->wrap != 0
+            .wrap = tmxText->wrap != 0,
+            .halign = HALIGN[tmxText->halign]
         };
         text.spacing = floorf(text.fontSize / text.font.baseSize);
 
