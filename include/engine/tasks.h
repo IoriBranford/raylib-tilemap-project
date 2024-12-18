@@ -1,0 +1,24 @@
+#ifndef AB0F4716_F889_4E95_8EBF_0036D400024E
+#define AB0F4716_F889_4E95_8EBF_0036D400024E
+
+#include <stddef.h>
+#include <limits.h>
+
+typedef struct Task Task;
+typedef void (*TaskFunc)(void*);
+
+void InitTasks(unsigned n);
+void CloseTasks();
+
+#define TASK_MAX_PRIORITY INT_MAX
+
+Task* NewTask(TaskFunc func, void *data, unsigned priority);
+size_t NumTasksAvailable();
+
+void EndTask(Task *task);
+
+void RunTasks();
+void SortTasks();
+void PruneTasks();
+
+#endif /* AB0F4716_F889_4E95_8EBF_0036D400024E */

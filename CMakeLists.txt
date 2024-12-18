@@ -16,6 +16,7 @@ add_executable(game
     src/engine/engine.c
     src/engine/gfx2d.c
     src/engine/gfx2d_tmx.c
+    src/engine/tasks.c
     src/game/game.c
     src/game/main.c)
 #set(raylib_VERBOSE 1)
