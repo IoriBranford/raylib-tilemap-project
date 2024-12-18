@@ -16,6 +16,7 @@ typedef enum SpriteType {
     SPRITETYPE_TEXTURE,
     SPRITETYPE_TEXT,
     SPRITETYPE_TILE,
+    SPRITETYPE_SHAPE,
     SPRITETYPE_TILELAYER,
     SPRITETYPE_ASEPRITETAG,
     SPRITETYPE_TYPES
@@ -69,6 +70,12 @@ struct Sprite {
             tmx_layer *layer;
             tmx_map *map;
         } layer;
+
+        struct {
+            tmx_shape;
+            float thick;
+            bool closed;
+        } shape;
 
         AsepriteTag asepriteTag;
     };

@@ -113,6 +113,42 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
     return spr;
 }
 
+void DrawSprite_Shape(Sprite *spr) {
+    int n = spr->shape.points_len;
+    double **points = spr->shape.points;
+    float x0 = spr->position.x, y0 = spr->position.y;
+
+    for (int i = 1; i < n; i++) {
+		DrawLineEx((Vector2){x0 + points[i-1][0], y0 + points[i-1][1]},
+		           (Vector2){x0 + points[i][0],   y0 + points[i][1]},
+		           spr->shape.thick, spr->color);
+	}
+
+    if (spr->shape.closed) {
+        DrawLineEx((Vector2){(float)(x0 + points[0][0]),    (float)(y0 + points[0][1])},
+		           (Vector2){(float)(x0 + points[n-1][0]),  (float)(y0 + points[n-1][1])},
+		           spr->shape.thick, spr->color);
+    }
+}
+
+Sprite* NewShapeSprite(tmx_shape *shape, float thick, bool closed, Vector2 position, Color color) {
+    Sprite *spr = NewSprite();
+    if (spr) {
+        spr->used = true;
+        spr->position = position;
+        spr->rotationDeg = 0;
+        spr->color = color;
+        spr->behavior.type = SPRITETYPE_SHAPE;
+        spr->behavior.update = NULL;
+        spr->behavior.draw = DrawSprite_Shape;
+        spr->shape.points = shape->points;
+        spr->shape.points_len = shape->points_len;
+        spr->shape.thick = thick;
+        spr->shape.closed = closed;
+    }
+    return spr;
+}
+
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
     Rectangle rect = {
         .x = o->x, .y = o->y,
@@ -150,6 +186,10 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
     } else if (o->obj_type == OT_SQUARE) {
         Vector2 origin = { 0, 0 };
         return NewRectangleSprite(rect, origin, o->rotation, color);
+    } else if (o->obj_type == OT_POLYLINE) {
+        return NewShapeSprite(o->content.shape, 1, false, (Vector2){o->x, o->y}, color);
+    } else if (o->obj_type == OT_POLYGON) {
+        return NewShapeSprite(o->content.shape, 1, true, (Vector2){o->x, o->y}, color);
     } else if (o->obj_type == OT_TEXT) {
         static const float HALIGN[] = {
             [HA_NONE] = 0,
