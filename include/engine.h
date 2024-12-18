@@ -1,11 +1,11 @@
 #ifndef DE86D8AF_A774_40B0_A498_829E1AA1A3DA
 #define DE86D8AF_A774_40B0_A498_829E1AA1A3DA
 
-#include <func.h>
 #include <engine/gfx2d.h>
 
 typedef struct Phase {
-    Function update, draw;
+    void (*update)();
+    void (*draw)();
 } Phase;
 
 void SetCurrentPhase(Phase newPhase);
