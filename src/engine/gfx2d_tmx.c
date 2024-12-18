@@ -160,10 +160,10 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
         SpriteText text = {
             .font = GetFontDefault(),
             .fontSize = tmxText->pixelsize,
-            .spacing = 2,
             .text = tmxText->text,
             .wrap = tmxText->wrap != 0
         };
+        text.spacing = floorf(text.fontSize / text.font.baseSize);
 
         Color textColor = ColorFromTMX(tmxText->color);
         if (ColorIsEqual(textColor, BLANK))
