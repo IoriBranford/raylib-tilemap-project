@@ -18,6 +18,7 @@ add_executable(game
     src/engine/gfx2d_tmx.c
     src/engine/tasks.c
     src/game/game.c
+    src/game/confetti.c
     src/game/main.c)
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib-tmx raylib_aseprite)
