@@ -49,6 +49,7 @@ struct Sprite {
     bool used;
     unsigned animSpeedMS;
     float animTimer;
+    void *exdata;
 
     SpriteBehavior behavior;
     union {
