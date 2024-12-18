@@ -12,6 +12,8 @@ void DrawGameplay();
 void UpdateEnding();
 void DrawEnding();
 
+void AddConfetti();
+
 const Phase LogoPhase = {
     .update = UpdateLogo,
     .draw = DrawLogo
@@ -30,11 +32,9 @@ const Phase EndingPhase = {
 };
 
 static int framesCounter = 0;          // Useful to count frames
-#define FRAMES_PER_SPRITE 10
-#define MAX_SPRITES 100
+#define FRAMES_PER_CONFETTI 1
+#define MAX_CONFETTI 1000
 
-static int spriteIndex = 0;
-static Sprite *sprites[MAX_SPRITES];
 static tmx_map *map;
 static Camera2D camera;
 
@@ -62,41 +62,12 @@ void InitLayers(tmx_layer *head, tmx_map *map) {
     }
 }
 
-Sprite* GenRandomRect() {
-    Rectangle rect;
-    rect.width = 8.f * GetRandomValue(1,4);
-    rect.height = 8.f * GetRandomValue(1,4);
-    
-    Vector2 origin = {rect.width/2, rect.height/2};
-    rect.x = GetRandomValue(origin.x, 480*2-origin.x);
-    rect.y = GetRandomValue(origin.y, 270*2-origin.y);
-
-    float rotation = GetRandomValue(0, 179);
-
-    Color color = {
-        GetRandomValue(0,255),
-        GetRandomValue(0,255),
-        GetRandomValue(0,255),
-        255
-    };
-
-    return NewRectangleSprite(rect, origin, rotation, color);
-}
-
-void UpdateRandomRects() {
-    if (!NumSpritesAvailable()) {
-        ReleaseSprite(sprites[spriteIndex]);
-    }
-
-    PruneSprites();
-    UpdateSprites();
-
+void Task_SpawnConfetti(void *p) {
     if (framesCounter == 0) {
-        sprites[spriteIndex++] = GenRandomRect();
-        spriteIndex %= MAX_SPRITES;
+        AddConfetti();
     }
     ++framesCounter;
-    framesCounter %= FRAMES_PER_SPRITE;
+    framesCounter %= FRAMES_PER_CONFETTI;
 }
 
 void UpdateLogo()
@@ -108,21 +79,31 @@ void UpdateLogo()
     // Wait for 2 seconds (120 frames) before jumping to TITLE screen
     if (framesCounter > 120)
     {
-        memset(sprites, 0, sizeof(sprites));
-        InitSprites(MAX_SPRITES);
+        InitSprites(MAX_CONFETTI);
+        InitTasks(MAX_CONFETTI);
         SetCurrentPhase(TitlePhase);
     }
 }
 
 void UpdateTitle()
 {
-    UpdateRandomRects();
+    UpdateSprites();
+    RunTasks();
+
+    if (framesCounter == 0) {
+        AddConfetti();
+    }
+    ++framesCounter;
+    framesCounter %= FRAMES_PER_CONFETTI;
+    
+    PruneSprites();
+    PruneTasks();
 
     // Press enter to change to GAMEPLAY screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
-        memset(sprites, 0, sizeof(sprites));
-        InitSprites(MAX_SPRITES);
+        CloseTasks();
+        InitSprites(MAX_CONFETTI);
         InitLayers(map->ly_head, map);
         camera.offset.x = GetScreenWidth()/2;
         camera.offset.y = GetScreenHeight()/2;
@@ -140,7 +121,6 @@ void UpdateGameplay()
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER))
     {
-        memset(sprites, 0, sizeof(sprites));
         CloseSprites();
         SetCurrentPhase(EndingPhase);
         return;
@@ -160,8 +140,8 @@ void UpdateEnding()
     // Press enter to return to TITLE screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
-        memset(sprites, 0, sizeof(sprites));
-        InitSprites(MAX_SPRITES);
+        InitSprites(MAX_CONFETTI);
+        InitTasks(MAX_CONFETTI);
         SetCurrentPhase(TitlePhase);
     }
 }
@@ -176,7 +156,7 @@ void DrawLogo()
 void DrawTitle()
 {
     // TODO: Draw TITLE screen here!
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GREEN);
+    ClearBackground(BLACK);
     DrawSprites();
     DrawText("TITLE SCREEN", 0, 0, 40, DARKGREEN);
     DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 0, 40, 20, DARKGREEN);
