@@ -65,6 +65,10 @@ void CloseSprites() {
     sprites = NULL;
 }
 
+size_t NumSpritesActive() {
+    return sprites->used;
+}
+
 size_t NumSpritesAvailable() {
     return count_free_pool_objs(sprites);
 }

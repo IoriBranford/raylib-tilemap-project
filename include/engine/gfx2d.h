@@ -89,7 +89,9 @@ void UpdateSprites();
 void SortSprites(int (*compare)(const void*,const void*));
 void DrawSprites();
 
+size_t NumSpritesActive();
 size_t NumSpritesAvailable();
+
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
