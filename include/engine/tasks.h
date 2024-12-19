@@ -10,7 +10,7 @@ typedef void (*TaskFunc)(Task*);
 struct Task {
     TaskFunc func;
     void *data;
-    unsigned priority;   // higher = earlier, 0 = ended
+    int priority;   // lower = earlier
 };
 
 void InitTasks(unsigned n);
@@ -18,7 +18,7 @@ void CloseTasks();
 
 #define TASK_MAX_PRIORITY INT_MAX
 
-Task* NewTask(TaskFunc func, void *data, unsigned priority);
+Task* NewTask(TaskFunc func, void *data, int priority);
 size_t NumTasksAvailable();
 
 void EndTask(Task *task);

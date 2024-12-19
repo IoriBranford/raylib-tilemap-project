@@ -6,7 +6,7 @@ pool_ctor(Task, TaskPool, NewTaskPool)
 
 static TaskPool *tasks;
 
-#define IsUsed(task) (task->priority)
+#define IsUsed(task) (task->func)
 
 void InitEmptyTask(Task *task) {
     *task = (Task){
@@ -17,11 +17,12 @@ void InitEmptyTask(Task *task) {
 }
 
 void RunTask(Task *task) {
-    task->func(task);
+    if (task->func)
+        task->func(task);
 }
 
 void EndTask(Task *task) {
-    task->priority = 0;
+    task->func = NULL;
 }
 
 void InitTasks(unsigned n) {
@@ -41,12 +42,9 @@ size_t NumTasksAvailable() {
     return count_free_pool_objs(tasks);
 }
 
-Task* NewTask(TaskFunc func, void *data, unsigned priority) {
+Task* NewTask(TaskFunc func, void *data, int priority) {
     Task *task = take_from_pool(tasks);
     if (task) {
-        if (!priority)
-            priority = 1;
-
         (*task) = (Task) {
             .func = func,
             .data = data,
@@ -56,13 +54,17 @@ Task* NewTask(TaskFunc func, void *data, unsigned priority) {
     return task;
 }
 
+int CompareTaskPriorities(int a, int b) {
+    return a - b;
+}
+
 int CompareTasks(const void *pa, const void *pb) {
     const Task *a = pa, *b = pb;
-    if (a->priority > b->priority)
-        return -1;
-    if (a->priority < b->priority)
+    if (!IsUsed(a) && IsUsed(b))
         return 1;
-    return 0;
+    if (IsUsed(a) && !IsUsed(b))
+        return -1;
+    return CompareTaskPriorities(a->priority, b->priority);
 }
 
 void PruneTasks() {
