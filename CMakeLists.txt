@@ -15,6 +15,7 @@ include_directories(include)
 add_executable(game
     src/engine/engine.c
     src/engine/gfx2d.c
+    src/engine/gfx2d_text.c
     src/engine/gfx2d_tmx.c
     src/engine/tasks.c
     src/game/game.c
