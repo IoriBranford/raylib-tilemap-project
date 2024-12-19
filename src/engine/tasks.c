@@ -78,3 +78,9 @@ void SortTasks() {
 void RunTasks() {
     pool_foreachused(tasks, RunTask);
 }
+
+void UpdateTasks() {
+    pool_foreachused(tasks, RunTask);
+    sort_pool_used(tasks, CompareTasks);
+    trim_pool_end(tasks, IsUsed);
+}
