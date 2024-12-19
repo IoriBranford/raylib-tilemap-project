@@ -19,6 +19,7 @@ void CloseTasks();
 #define TASK_MAX_PRIORITY INT_MAX
 
 Task* NewTask(TaskFunc func, void *data, int priority);
+size_t NumTasksActive();
 size_t NumTasksAvailable();
 
 void EndTask(Task *task);

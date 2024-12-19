@@ -38,6 +38,10 @@ void CloseTasks() {
     tasks = NULL;
 }
 
+size_t NumTasksActive() {
+    return tasks->used;
+}
+
 size_t NumTasksAvailable() {
     return count_free_pool_objs(tasks);
 }
