@@ -107,7 +107,7 @@ void UpdateTitle()
         InitLayers(map->ly_head, map);
         camera.offset.x = GetScreenWidth()/2;
         camera.offset.y = GetScreenHeight()/2;
-        camera.target.x = camera.target.y = 0;
+        camera.target = camera.offset;
         camera.rotation = 0;
         camera.zoom = 1;
         SetCurrentPhase(GameplayPhase);
