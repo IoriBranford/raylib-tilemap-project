@@ -2,6 +2,7 @@
 #include <engine.h>
 #include <raylib.h>
 #include <string.h>
+#include <stdio.h>
 
 void UpdateLogo();
 void DrawLogo();
@@ -159,6 +160,11 @@ void DrawTitle()
     DrawSprites();
     DrawText("TITLE SCREEN", 0, 0, 40, DARKGREEN);
     DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 0, 40, 20, DARKGREEN);
+    char s[256];
+    sprintf(s, "sprites %4d", NumSpritesActive());
+    DrawText(s, 0, 80, 20, DARKGREEN);
+    sprintf(s, "tasks %4d", NumTasksActive());
+    DrawText(s, 0, 100, 20, DARKGREEN);
 }
 
 void DrawGameplay()
