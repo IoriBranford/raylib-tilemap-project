@@ -5,9 +5,9 @@
 void Task_Confetti(void *p) {
     Sprite *spr = p;
 
-    spr->animTimer += 1;
+    spr->animTimer += GetFrameTime();
 
-    float sinAngleRad = sinf(spr->animTimer * PI * 4 / 60);
+    float sinAngleRad = sinf(spr->animTimer * PI * 4);
     spr->size.x = (sinAngleRad + 1) * 8 / 2;
     spr->origin.x = spr->size.x/2;
     spr->position.y += 2;
