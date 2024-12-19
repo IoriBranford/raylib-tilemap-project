@@ -198,6 +198,12 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
             [HA_RIGHT] = 1,
             [HA_JUSTIFY] = 0
         };
+        static const float VALIGN[] = {
+            [VA_NONE] = 0,
+            [VA_TOP] = 0,
+            [VA_CENTER] = 0.5f,
+            [VA_BOTTOM] = 1,
+        };
 
         tmx_text *tmxText = o->content.text;
         if (!tmxText && tmpl) {
@@ -210,7 +216,8 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
             .fontSize = tmxText->pixelsize,
             .text = tmxText->text,
             .wrap = tmxText->wrap != 0,
-            .halign = HALIGN[tmxText->halign]
+            .halign = HALIGN[tmxText->halign],
+            .valign = VALIGN[tmxText->valign]
         };
         text.spacing = floorf(text.fontSize / text.font.baseSize);
 

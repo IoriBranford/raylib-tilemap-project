@@ -33,6 +33,7 @@ typedef struct SpriteText {
     float fontSize;
     float spacing;
     float halign;   // 0 = left, 1 = right
+    float valign;   // 0 = top, 1 = bottom
     bool wrap;
 } SpriteText;
 
