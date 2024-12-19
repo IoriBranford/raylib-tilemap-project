@@ -2,8 +2,8 @@
 #include <raylib.h>
 #include <math.h>
 
-void Task_Confetti(void *p) {
-    Sprite *spr = p;
+void Task_Confetti(Task *t) {
+    Sprite *spr = t->data;
 
     spr->animTimer += GetFrameTime();
 
@@ -22,7 +22,6 @@ void Task_Confetti(void *p) {
     spr->color = color;
 
     if (spr->position.y >= GetScreenHeight() + spr->size.y) {
-        Task *t = spr->exdata;
         EndTask(t);
         ReleaseSprite(spr);
     }
@@ -46,6 +45,5 @@ void AddConfetti() {
 
     Sprite *sprite = NewRectangleSprite(rect, origin, rotation, color);
     Task *task = NewTask(Task_Confetti, sprite, 2);
-    sprite->exdata = task;
     sprite->animTimer = 0;
 }

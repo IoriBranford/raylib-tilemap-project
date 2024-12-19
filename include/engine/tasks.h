@@ -5,7 +5,13 @@
 #include <limits.h>
 
 typedef struct Task Task;
-typedef void (*TaskFunc)(void*);
+typedef void (*TaskFunc)(Task*);
+
+struct Task {
+    TaskFunc func;
+    void *data;
+    unsigned priority;   // higher = earlier, 0 = ended
+};
 
 void InitTasks(unsigned n);
 void CloseTasks();

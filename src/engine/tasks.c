@@ -1,12 +1,6 @@
 #include <engine/tasks.h>
 #include <util.h>
 
-typedef struct Task {
-    TaskFunc func;
-    void *data;
-    unsigned priority;   // higher = earlier, 0 = ended
-} Task;
-
 pool_typedef(Task, TaskPool)
 pool_ctor(Task, TaskPool, NewTaskPool)
 
@@ -23,7 +17,7 @@ void InitEmptyTask(Task *task) {
 }
 
 void RunTask(Task *task) {
-    task->func(task->data);
+    task->func(task);
 }
 
 void EndTask(Task *task) {
@@ -55,7 +49,7 @@ Task* NewTask(TaskFunc func, void *data, unsigned priority) {
 
         (*task) = (Task) {
             .func = func,
-            .data = data ? data : task,
+            .data = data,
             .priority = priority,
         };
     }
