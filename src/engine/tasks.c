@@ -58,17 +58,9 @@ Task* NewTask(TaskFunc func, void *data, int priority) {
     return task;
 }
 
-int CompareTaskPriorities(int a, int b) {
-    return a - b;
-}
-
 int CompareTasks(const void *pa, const void *pb) {
     const Task *a = pa, *b = pb;
-    if (!IsUsed(a) && IsUsed(b))
-        return 1;
-    if (IsUsed(a) && !IsUsed(b))
-        return -1;
-    return CompareTaskPriorities(a->priority, b->priority);
+    return a->priority - b->priority;
 }
 
 void PruneTasks() {
@@ -85,6 +77,6 @@ void RunTasks() {
 
 void UpdateTasks() {
     pool_foreachused(tasks, RunTask);
+    prune_pool(tasks, IsUsed);
     sort_pool_used(tasks, CompareTasks);
-    trim_pool_end(tasks, IsUsed);
 }
