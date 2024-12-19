@@ -44,10 +44,10 @@ pool_ctor(Sprite, SpritePool, NewSpritePool)
 
 SpritePool *sprites;
 
-#define IsUsed(g) (g->used)
+#define IsActive(g) (g->active)
 
 static void InitEmptySprite(Sprite *spr) {
-    spr->used = false;
+    spr->active = false;
     spr->behavior.type = SPRITETYPE_NONE;
     spr->behavior.update = spr->behavior.draw = NULL;
 }
@@ -66,10 +66,10 @@ void CloseSprites() {
 }
 
 size_t NumSpritesActive() {
-    return sprites->used;
+    return sprites->nActive;
 }
 
-size_t NumSpritesAvailable() {
+size_t NumSpritesFree() {
     return count_free_pool_objs(sprites);
 }
 
@@ -95,19 +95,19 @@ int CompareSprites(const void *ap, const void *bp) {
 }
 
 void UpdateSprites() {
-    pool_foreachused(sprites, UpdateSprite);
+    pool_foreachactive(sprites, UpdateSprite);
 }
 
 void SortSprites(int (*compare)(const void*,const void*)) {
-    sort_pool_used(sprites, compare);
+    sort_pool_active(sprites, compare);
 }
 
 void PruneSprites() {
-    prune_pool(sprites, IsUsed);
+    prune_pool(sprites, IsActive);
 }
 
 void DrawSprites() {
-    pool_foreachused(sprites, DrawSprite);
+    pool_foreachactive(sprites, DrawSprite);
 }
 
 Sprite* NewSprite() {
@@ -117,7 +117,7 @@ Sprite* NewSprite() {
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
     Sprite *spr = NewSprite();
     if (spr) {
-        spr->used = true;
+        spr->active = true;
         spr->behavior.type = SPRITETYPE_RECTANGLE;
         spr->behavior.update = NULL;
         spr->behavior.draw = DrawSprite_Rectangle;
@@ -132,7 +132,7 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
     Sprite *spr = NewSprite();
     if (spr) {
-        spr->used = true;
+        spr->active = true;
         spr->rect = rect;
         spr->origin = (Vector2){0};
         spr->rotationDeg = 0;
@@ -146,7 +146,7 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
 }
 
 void ReleaseSprite(Sprite* spr) {
-    spr->used = false;
+    spr->active = false;
 }
 
 static void DrawTextBoxed(SpriteText *spriteText, Rectangle rec, Color tint) {

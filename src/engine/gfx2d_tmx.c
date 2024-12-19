@@ -97,7 +97,7 @@ void DrawSprite_Tile(Sprite *spr) {
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color) {
     Sprite *spr = NewSprite();
     if (spr) {
-        spr->used = true;
+        spr->active = true;
         spr->rect = rect;
         spr->rotationDeg = rotationDeg;
         spr->color = color;
@@ -134,7 +134,7 @@ void DrawSprite_Shape(Sprite *spr) {
 Sprite* NewShapeSprite(tmx_shape *shape, float thick, bool closed, Vector2 position, Color color) {
     Sprite *spr = NewSprite();
     if (spr) {
-        spr->used = true;
+        spr->active = true;
         spr->position = position;
         spr->rotationDeg = 0;
         spr->color = color;
@@ -305,7 +305,7 @@ Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
     Sprite *spr = NewSprite();
     if (spr) {
         Rectangle rect = {0};
-        spr->used = true;
+        spr->active = true;
         spr->rect = rect;
         spr->rotationDeg = 0;
         spr->color = ColorFromTMX(layer->tintcolor);

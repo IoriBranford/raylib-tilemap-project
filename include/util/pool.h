@@ -7,30 +7,30 @@
 #define pool_alloc malloc
 #define pool_free free
 
-#define pool_struct(T, PT) struct PT { T* objects; T** pointers; size_t used; size_t size; }
+#define pool_struct(T, PT) struct PT { T** active; size_t nActive; T* objects; size_t nObjects; }
 #define pool_typedef(T, PT) typedef pool_struct(T, PT) PT;
 
 #define pool_foreachall(pool, func) \
-{ for (size_t n = pool->size, i = 0; n; --n, ++i) { func(pool->pointers[i]); } }
+{ for (size_t n = pool->nObjects, i = 0; n; --n, ++i) { func(pool->active[i]); } }
 
-#define pool_foreachused(pool, func) \
-{ for (size_t n = pool->used, i = 0; n; --n, ++i) { func(pool->pointers[i]); } }
+#define pool_foreachactive(pool, func) \
+{ for (size_t n = pool->nActive, i = 0; n; --n, ++i) { func(pool->active[i]); } }
 
 #define pool_revforeachall(pool, func) \
-{ for (size_t n = pool->size; n; --n) { func(pool->pointers[n-1]); } }
+{ for (size_t n = pool->nObjects; n; --n) { func(pool->active[n-1]); } }
 
-#define pool_revforeachused(pool, func) \
-{ for (size_t n = pool->used; n; --n) { func(pool->pointers[n-1]); } }
+#define pool_revforeachactive(pool, func) \
+{ for (size_t n = pool->nActive; n; --n) { func(pool->active[n-1]); } }
 
 #define init_pool(T, pool, size) { \
     pool->objects = pool_alloc(size*sizeof(T)); \
-    pool->pointers = pool_alloc(size*sizeof(T*)); \
-    for (size_t i = 0; i < size; ++i) pool->pointers[i] = &pool->objects[i]; \
-    pool->used = 0; \
-    pool->size = size; \
+    pool->active = pool_alloc(size*sizeof(T*)); \
+    for (size_t i = 0; i < size; ++i) pool->active[i] = &pool->objects[i]; \
+    pool->nActive = 0; \
+    pool->nObjects = size; \
 }
 
-#define count_free_pool_objs(pool) (pool->size - pool->used)
+#define count_free_pool_objs(pool) (pool->nObjects - pool->nActive)
 
 #define pool_ctor(T, PT, ctor) \
 PT* ctor(size_t size) { \
@@ -40,27 +40,27 @@ PT* ctor(size_t size) { \
 }
 
 #define free_pool(pool) { \
-    pool_free(pool->pointers); \
+    pool_free(pool->active); \
     pool_free(pool->objects); \
     pool_free(pool); \
 }
 
-#define take_from_pool(pool) (pool->used >= pool->size ? NULL : pool->pointers[pool->used++])
+#define take_from_pool(pool) (pool->nActive >= pool->nObjects ? NULL : pool->active[pool->nActive++])
 
-#define prune_pool(pool, objused) { \
-    size_t i = pool->used; \
+#define prune_pool(pool, objactive) { \
+    size_t i = pool->nActive; \
     if (i) do { \
-        if (objused(pool->pointers[--i])) continue; \
-        --pool->used; \
-        void *o = pool->pointers[i]; \
-        pool->pointers[i] = pool->pointers[pool->used]; \
-        pool->pointers[pool->used] = o; \
+        if (objactive(pool->active[--i])) continue; \
+        --pool->nActive; \
+        void *o = pool->active[i]; \
+        pool->active[i] = pool->active[pool->nActive]; \
+        pool->active[pool->nActive] = o; \
     } while (i); \
 }
 
-#define trim_pool_end(pool, objused) { \
-    size_t i = pool->used; if (i) while (!objused(pool->pointers[--i])) --pool->used; }
+#define trim_pool_end(pool, objactive) { \
+    size_t i = pool->nActive; if (i) while (!objactive(pool->active[--i])) --pool->nActive; }
 
-#define sort_pool_used(pool, compare) qsort(pool->pointers, pool->used, sizeof(void*), compare)
+#define sort_pool_active(pool, compare) qsort(pool->active, pool->nActive, sizeof(void*), compare)
 
 #endif /* A5613A39_7304_4AFC_91F5_5476D15F4288 */

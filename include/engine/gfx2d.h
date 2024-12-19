@@ -46,7 +46,7 @@ struct Sprite {
     Vector2 origin;
     float rotationDeg;
     Color color;
-    bool used;
+    bool active;
     unsigned animSpeedMS;
     float animTimer;
 
@@ -90,7 +90,7 @@ void SortSprites(int (*compare)(const void*,const void*));
 void DrawSprites();
 
 size_t NumSpritesActive();
-size_t NumSpritesAvailable();
+size_t NumSpritesFree();
 
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);

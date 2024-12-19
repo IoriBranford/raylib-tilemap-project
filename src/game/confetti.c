@@ -28,7 +28,7 @@ void Task_Confetti(Task *t) {
 }
 
 void AddConfetti() {
-    if (!NumSpritesAvailable() || !NumTasksAvailable())
+    if (!NumSpritesFree() || !NumTasksFree())
         return;
 
     Rectangle rect;

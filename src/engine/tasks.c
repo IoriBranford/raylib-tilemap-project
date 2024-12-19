@@ -6,7 +6,7 @@ pool_ctor(Task, TaskPool, NewTaskPool)
 
 static TaskPool *tasks;
 
-#define IsUsed(task) (task->func)
+#define IsActive(task) (task->func)
 
 void InitEmptyTask(Task *task) {
     *task = (Task){
@@ -39,10 +39,10 @@ void CloseTasks() {
 }
 
 size_t NumTasksActive() {
-    return tasks->used;
+    return tasks->nActive;
 }
 
-size_t NumTasksAvailable() {
+size_t NumTasksFree() {
     return count_free_pool_objs(tasks);
 }
 
@@ -64,19 +64,19 @@ int CompareTasks(const void *pa, const void *pb) {
 }
 
 void PruneTasks() {
-    prune_pool(tasks, IsUsed);
+    prune_pool(tasks, IsActive);
 }
 
 void SortTasks() {
-    sort_pool_used(tasks, CompareTasks);
+    sort_pool_active(tasks, CompareTasks);
 }
 
 void RunTasks() {
-    pool_foreachused(tasks, RunTask);
+    pool_foreachactive(tasks, RunTask);
 }
 
 void UpdateTasks() {
-    pool_foreachused(tasks, RunTask);
-    prune_pool(tasks, IsUsed);
-    sort_pool_used(tasks, CompareTasks);
+    pool_foreachactive(tasks, RunTask);
+    prune_pool(tasks, IsActive);
+    sort_pool_active(tasks, CompareTasks);
 }
