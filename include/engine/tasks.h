@@ -23,8 +23,6 @@ size_t NumTasksAvailable();
 
 void EndTask(Task *task);
 
-void RunTasks();
-void SortTasks();
-void PruneTasks();
+void UpdateTasks();
 
 #endif /* AB0F4716_F889_4E95_8EBF_0036D400024E */

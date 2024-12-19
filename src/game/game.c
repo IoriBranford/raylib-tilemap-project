@@ -88,7 +88,7 @@ void UpdateLogo()
 void UpdateTitle()
 {
     UpdateSprites();
-    RunTasks();
+    UpdateTasks();
 
     if (framesCounter == 0) {
         AddConfetti();
@@ -97,7 +97,6 @@ void UpdateTitle()
     framesCounter %= FRAMES_PER_CONFETTI;
     
     PruneSprites();
-    PruneTasks();
 
     // Press enter to change to GAMEPLAY screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
