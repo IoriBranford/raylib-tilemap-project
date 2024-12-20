@@ -169,12 +169,13 @@ void DrawTextBoxed(SpriteText *spriteText, Rectangle rec, Color tint) {
     }
 
     float scaleFactor = fontSize / (float)font.baseSize;     // Character rectangle scaling factor
-    float lineHeight = fontSize * 1.5f;
+    float lineSpacing = scaleFactor * 2; // TODO get textLineSpacing from raylib when possible
+    float lineHeight = fontSize + lineSpacing;
     float totalHeight = lineHeight * lineCount;
 
     Vector2 linePos = (Vector2) {
         rec.x,
-        rec.y + (rec.height - totalHeight + fontSize/2) * valign
+        rec.y + (rec.height - totalHeight + lineSpacing) * valign
     };
 
     lineStart = spriteText->text;
@@ -197,7 +198,7 @@ void DrawTextBoxed(SpriteText *spriteText, Rectangle rec, Color tint) {
         linePos.x = rec.x + (rec.width - lineWidth) * halign;
         
         // // DEBUG line area
-        // DrawRectangleLines(linePos.x, linePos.y - (valign*fontSize/2), lineWidth, lineHeight, GREEN);
+        // DrawRectangleLines(linePos.x, linePos.y - (valign*lineSpacing), lineWidth, lineHeight, GREEN);
 
         DrawTextRangeEx(font, trimmedStart, trimmedEnd - trimmedStart, linePos, fontSize, spacing, tint);
 
