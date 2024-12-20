@@ -1,5 +1,7 @@
 #include "gfx2d.h"
 
+#include <math.h>
+
 bool IsWordChar(int c) {
     return c != ' ' && c != '\t' && c != '\n';
 }
@@ -157,13 +159,14 @@ void DrawTextBoxed(SpriteText *spriteText, Rectangle rec, Color tint) {
     float spacing = spriteText->spacing;
     float halign = spriteText->halign;
     float valign = spriteText->valign;
+    float wrapWidth = spriteText->wrap ? rec.width : INFINITY;
 
     int lineCount = 0;
     const char *textEnd = spriteText->text + TextLength(spriteText->text);
 
     const char *lineStart = spriteText->text;
     while (lineStart < textEnd) {
-        const char *lineEnd = WrappedLineEnd(font, lineStart, fontSize, spacing, rec.width);
+        const char *lineEnd = WrappedLineEnd(font, lineStart, fontSize, spacing, wrapWidth);
         ++lineCount;
         lineStart = lineEnd;
     }
@@ -184,7 +187,7 @@ void DrawTextBoxed(SpriteText *spriteText, Rectangle rec, Color tint) {
     // DrawRectangleLinesEx(rec, 2, DARKGREEN);
 
     while (lineStart < textEnd) {
-        const char *lineEnd = WrappedLineEnd(font, lineStart, fontSize, spacing, rec.width);
+        const char *lineEnd = WrappedLineEnd(font, lineStart, fontSize, spacing, wrapWidth);
 
         const char *trimmedStart = lineStart;
         const char *trimmedEnd = lineEnd;
