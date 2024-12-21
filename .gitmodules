@@ -10,3 +10,9 @@
 [submodule "lib/raylib-aseprite"]
 	path = lib/raylib-aseprite
 	url = https://github.com/RobLoach/raylib-aseprite.git
+[submodule "lib/luajit"]
+	path = lib/luajit
+	url = https://github.com/LuaJIT/LuaJIT.git
+[submodule "lib/luajit-cmake"]
+	path = lib/luajit-cmake
+	url = https://github.com/zhaozg/luajit-cmake.git
