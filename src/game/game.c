@@ -41,6 +41,8 @@ static Camera2D camera;
 
 void InitGame()
 {
+    tmx_font_load_func = LoadTMXFont;
+    tmx_font_free_func = UnloadTMXFont;
     map = LoadTMX("resources/desert.tmx");
     SetCurrentPhase(LogoPhase);
 }

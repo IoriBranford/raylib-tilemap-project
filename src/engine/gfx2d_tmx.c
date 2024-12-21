@@ -212,7 +212,7 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
         assert(tmxText);
 
         SpriteText text = {
-            .font = GetFontDefault(),
+            .font = *(Font*)tmxText->resource_font,
             .fontSize = tmxText->pixelsize,
             .text = tmxText->text,
             .wrap = tmxText->wrap != 0,
