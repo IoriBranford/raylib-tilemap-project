@@ -23,6 +23,8 @@ void UpdatePhysics() {
 
 b2BodyId NewBody(Vector2 position, float rotationRad) {
     b2BodyDef def = b2DefaultBodyDef();
+    def.type = b2_dynamicBody;
+    def.enableSleep = false;
     def.position = (b2Vec2){ position.x, position.y };
     b2CosSin rotation = b2ComputeCosSin(rotationRad);
     def.rotation = (b2Rot){ rotation.cosine, rotation.sine };
