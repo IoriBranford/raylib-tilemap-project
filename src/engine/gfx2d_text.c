@@ -24,11 +24,8 @@ float MeasureTextRangeWidth(Font font, const char *text, ptrdiff_t size, float f
     if (((font.texture.id == 0)) || !size ||
         (text == NULL) || (text[0] == '\0')) return 0; // Security check
 
-    int tempByteCounter = 0;        // Used to count longer text line num chars
     int byteCounter = 0;
-
     float textWidth = 0.0f;
-    float tempTextWidth = 0.0f;     // Used to count longer text line width
 
     float textHeight = fontSize;
     float scaleFactor = fontSize/(float)font.baseSize;
@@ -44,27 +41,20 @@ float MeasureTextRangeWidth(Font font, const char *text, ptrdiff_t size, float f
         letter = GetCodepointNext(&text[i], &codepointByteCount);
         index = GetGlyphIndex(font, letter);
 
-        i += codepointByteCount;
-
         if (letter != '\n')
         {
             if (font.glyphs[index].advanceX > 0) textWidth += font.glyphs[index].advanceX;
             else textWidth += (font.recs[index].width + font.glyphs[index].offsetX);
+
+            i += codepointByteCount;
         }
         else
         {
-            if (tempTextWidth < textWidth) tempTextWidth = textWidth;
-            byteCounter = 0;
-            textWidth = 0;
             i = size;
         }
-
-        if (tempByteCounter < byteCounter) tempByteCounter = byteCounter;
     }
 
-    if (tempTextWidth < textWidth) tempTextWidth = textWidth;
-
-    return tempTextWidth*scaleFactor + (float)((tempByteCounter - 1)*spacing);
+    return textWidth*scaleFactor + (float)((byteCounter - 1)*spacing);
 }
 
 const char* WrappedLineEnd(Font font, const char *lineStart, float fontSize, float spacing, float wrapWidth) {
