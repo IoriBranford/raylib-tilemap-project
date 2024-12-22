@@ -32,9 +32,9 @@ b2BodyId NewBody(Vector2 position, float rotationRad) {
     return b2CreateBody(worldId, &def);
 }
 
-b2ShapeId AddBodyCircle(b2BodyId body, Vector2 center, float radius, Vector2 offset) {
+b2ShapeId AddBodyCircle(b2BodyId body, Vector2 center, float radius) {
     b2Circle circle = {
-        .center = (b2Vec2){ offset.x, offset.y },
+        .center = (b2Vec2){ center.x, center.y },
         .radius = radius
     };
     b2ShapeDef def = b2DefaultShapeDef();

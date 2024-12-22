@@ -9,7 +9,7 @@ void ClosePhysics();
 void UpdatePhysics();
 
 b2BodyId NewBody(Vector2 position, float rotationRad);
-b2ShapeId AddBodyCircle(b2BodyId body, Vector2 center, float radius, Vector2 offset);
+b2ShapeId AddBodyCircle(b2BodyId body, Vector2 center, float radius);
 b2ShapeId AddBodyRectangle(b2BodyId body, Vector2 halfSize, Vector2 offset, float rotationRad);
 
 void UpdateSpriteFromBody(b2BodyId body, Sprite *sprite);
