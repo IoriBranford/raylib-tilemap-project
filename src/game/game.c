@@ -115,6 +115,7 @@ void UpdateGameplay()
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER))
     {
+        InitPhysics(64);
         InitSprites(MAX_CONFETTI);
         InitTasks(MAX_CONFETTI);
         SetCurrentPhase(EndingPhase);
@@ -123,6 +124,7 @@ void UpdateGameplay()
 
 void UpdateEnding()
 {
+    UpdatePhysics();
     UpdateSprites();
     UpdateTasks();
 
@@ -137,6 +139,7 @@ void UpdateEnding()
     // Press enter to return to TITLE screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
+        ClosePhysics();
         CloseSprites();
         CloseTasks();
         SetCurrentPhase(TitlePhase);
