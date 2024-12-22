@@ -20,3 +20,5 @@ set(RAYLIB_TMX_DEPS raylib tmx raylib-tmx-h)
 target_link_libraries(raylib-tmx PUBLIC ${RAYLIB_TMX_DEPS})
 
 add_subdirectory(raylib-aseprite)
+
+add_subdirectory(box2d)
