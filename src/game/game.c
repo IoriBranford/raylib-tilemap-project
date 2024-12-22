@@ -82,29 +82,15 @@ void UpdateLogo()
     // Wait for 2 seconds (120 frames) before jumping to TITLE screen
     if (framesCounter > 120)
     {
-        InitSprites(MAX_CONFETTI);
-        InitTasks(MAX_CONFETTI);
         SetCurrentPhase(TitlePhase);
     }
 }
 
 void UpdateTitle()
 {
-    UpdateSprites();
-    UpdateTasks();
-
-    if (framesCounter == 0) {
-        AddConfetti();
-    }
-    ++framesCounter;
-    framesCounter %= FRAMES_PER_CONFETTI;
-    
-    PruneSprites();
-
     // Press enter to change to GAMEPLAY screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
-        CloseTasks();
         InitSprites(MAX_CONFETTI);
         InitLayers(map->ly_head, map);
         camera.offset.x = GetScreenWidth()/2;
@@ -120,30 +106,39 @@ void UpdateGameplay()
 {
     UpdateSprites();
 
-    // Press enter to change to ENDING screen
-    if (IsKeyPressed(KEY_ENTER))
-    {
-        CloseSprites();
-        SetCurrentPhase(EndingPhase);
-        return;
-    }
-
     if (IsMouseButtonDown(0)) {
         Vector2 move = GetMouseDelta();
         camera.target.x -= move.x;
         camera.target.y -= move.y;
     }
+
+    // Press enter to change to ENDING screen
+    if (IsKeyPressed(KEY_ENTER))
+    {
+        InitSprites(MAX_CONFETTI);
+        InitTasks(MAX_CONFETTI);
+        SetCurrentPhase(EndingPhase);
+    }
 }
 
 void UpdateEnding()
 {
-    // TODO: Update ENDING screen variables here!
+    UpdateSprites();
+    UpdateTasks();
+
+    if (framesCounter == 0) {
+        AddConfetti();
+    }
+    ++framesCounter;
+    framesCounter %= FRAMES_PER_CONFETTI;
+    
+    PruneSprites();
 
     // Press enter to return to TITLE screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
-        InitSprites(MAX_CONFETTI);
-        InitTasks(MAX_CONFETTI);
+        CloseSprites();
+        CloseTasks();
         SetCurrentPhase(TitlePhase);
     }
 }
@@ -158,15 +153,9 @@ void DrawLogo()
 void DrawTitle()
 {
     // TODO: Draw TITLE screen here!
-    ClearBackground(BLACK);
-    DrawSprites();
+    ClearBackground(GREEN);
     DrawText("TITLE SCREEN", 0, 0, 40, DARKGREEN);
     DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 0, 40, 20, DARKGREEN);
-    char s[256];
-    sprintf(s, "sprites %4d", NumSpritesActive());
-    DrawText(s, 0, 80, 20, DARKGREEN);
-    sprintf(s, "tasks %4d", NumTasksActive());
-    DrawText(s, 0, 100, 20, DARKGREEN);
 }
 
 void DrawGameplay()
@@ -182,8 +171,13 @@ void DrawGameplay()
 
 void DrawEnding()
 {
-    // TODO: Draw ENDING screen here!
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLUE);
+    ClearBackground(BLACK);
+    DrawSprites();
     DrawText("ENDING SCREEN", 0, 0, 40, DARKBLUE);
     DrawText("PRESS ENTER or TAP to RETURN to TITLE SCREEN", 0, 40, 20, DARKBLUE);
+    char s[256];
+    sprintf(s, "sprites %4d", NumSpritesActive());
+    DrawText(s, 0, 80, 20, DARKGREEN);
+    sprintf(s, "tasks %4d", NumTasksActive());
+    DrawText(s, 0, 100, 20, DARKGREEN);
 }
