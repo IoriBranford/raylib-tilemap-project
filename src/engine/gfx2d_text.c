@@ -58,29 +58,40 @@ float MeasureTextRangeWidth(Font font, const char *text, ptrdiff_t size, float f
 }
 
 const char* WrappedLineEnd(Font font, const char *lineStart, float fontSize, float spacing, float wrapWidth) {
-    const char *p = lineStart;
     float lineWidth = 0;
     
+    const char *p = lineStart;
     int cSize = 0;
-    int c = 0;
+    int c = GetCodepoint(p, &cSize);
 
-    do {
-        const char *wordBoundary = NextWordBoundary(p);
-
-        float wordWidth = MeasureTextRangeWidth(font, p, wordBoundary - p, fontSize, spacing);
-        if (lineWidth + wordWidth > wrapWidth)
+    while (c) {
+        if (c == '\n') {
+            if (p == lineStart)
+                p += cSize;
             break;
+        }
+
+        const char *wordBoundary = NextWordBoundary(p);
+        float wordWidth = MeasureTextRangeWidth(font, p, wordBoundary - p, fontSize, spacing);
+        if (lineWidth + wordWidth > wrapWidth) {
+            if (p == lineStart) {
+                float charWidth = MeasureTextRangeWidth(font, p, 1, fontSize, spacing);
+                do {
+                    lineWidth += charWidth;
+                    p += cSize;
+                    c = GetCodepoint(p, &cSize);
+                    charWidth = MeasureTextRangeWidth(font, p, 1, fontSize, spacing) + spacing;
+                } while (c && lineWidth <= wrapWidth);
+            }
+            break;
+        }
         
         lineWidth += wordWidth;
         p = wordBoundary;
 
         c = GetCodepoint(p, &cSize);
-    } while (c && c != '\n');
-
-    if (p == lineStart) {
-        GetCodepoint(p, &cSize);
-        p += cSize;
     }
+
     return p;
 }
 
