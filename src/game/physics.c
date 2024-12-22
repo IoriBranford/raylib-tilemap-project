@@ -1,9 +1,6 @@
-#include <box2d/box2d.h>
-#include <engine.h>
+#include <game/physics.h>
 
 static b2WorldId worldId;
-
-void ClosePhysics();
 
 void InitPhysics(float lengthUnitsPerMeter) {
     if (B2_IS_NON_NULL(worldId))
