@@ -12,11 +12,11 @@ static inline b2Vec2 b2VEC2(float x, float y) {
     return (b2Vec2){x, y};
 }
 
-static inline b2Vec2 Vec2rl2b2(Vector2 v) {
+static inline b2Vec2 rl2b2_Vec2(Vector2 v) {
     return (b2Vec2){v.x, v.y};
 }
 
-static inline Vector2 Vec2b2torl(b2Vec2 v) {
+static inline Vector2 b2torl_Vec2(b2Vec2 v) {
     return (Vector2){v.x, v.y};
 }
 
