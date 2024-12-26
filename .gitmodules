@@ -16,3 +16,6 @@
 [submodule "lib/luajit-cmake"]
 	path = lib/luajit-cmake
 	url = https://github.com/zhaozg/luajit-cmake.git
+[submodule "lib/box2d"]
+	path = lib/box2d
+	url = https://github.com/erincatto/box2d.git

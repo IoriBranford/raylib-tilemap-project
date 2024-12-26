@@ -23,3 +23,5 @@ add_subdirectory(raylib-aseprite)
 
 set(LUAJIT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/luajit)
 add_subdirectory(luajit-cmake)
+
+add_subdirectory(box2d)
