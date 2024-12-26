@@ -21,7 +21,7 @@ target_link_libraries(raylib-tmx PUBLIC ${RAYLIB_TMX_DEPS})
 
 add_subdirectory(raylib-aseprite)
 
-set(LUAJIT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/luajit)
+set(LUA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua)
 add_subdirectory(luajit-cmake)
 
 add_subdirectory(box2d)
