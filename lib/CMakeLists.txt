@@ -1,3 +1,4 @@
+include(FetchContent)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(BUILD_SHARED_LIBS OFF)
 
@@ -12,12 +13,32 @@ else()
     endif()
 endif()
 
+set(ZLIB_BUILD_EXAMPLES OFF)
+FetchContent_Declare(
+    ZLIB
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/zlib"
+    OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(ZLIB)
+add_library(ZLIB::ZLIB ALIAS zlibstatic)
+
+set(LIBXML2_WITH_ICONV OFF)
+set(LIBXML2_WITH_PROGRAMS OFF)
+set(LIBXML2_WITH_PYTHON OFF)
+set(LIBXML2_WITH_TESTS OFF)
+FetchContent_Declare(
+    LibXml2
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libxml2"
+    OVERRIDE_FIND_PACKAGE
+)
+
+set(INSTALL_TMX OFF)
 add_subdirectory(tmx)
 
+set(RAYLIB_TMX_BUILD_EXAMPLE OFF)
 add_subdirectory(raylib-tmx/include)
 add_library(raylib-tmx STATIC raylib-tmx/src/raylib-tmx.c)
-set(RAYLIB_TMX_DEPS raylib tmx raylib-tmx-h)
-target_link_libraries(raylib-tmx PUBLIC ${RAYLIB_TMX_DEPS})
+target_link_libraries(raylib-tmx PUBLIC raylib tmx raylib-tmx-h)
 
 add_subdirectory(raylib-aseprite)
 
