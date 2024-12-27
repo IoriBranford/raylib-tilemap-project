@@ -13,3 +13,10 @@
 [submodule "lib/box2d"]
 	path = lib/box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "lib/zlib"]
+	path = lib/zlib
+	url = https://github.com/madler/zlib.git
+	ignore = dirty # zconf.h gets deleted when building with cmake
+[submodule "lib/libxml2"]
+	path = lib/libxml2
+	url = https://gitlab.gnome.org/GNOME/libxml2.git
