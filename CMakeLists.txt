@@ -11,20 +11,21 @@ add_subdirectory(lib)
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "-fms-extensions")
 endif()
-include_directories(include)
+include_directories(include lib/lua)
 add_executable(game
     src/engine/engine.c
     src/engine/assets.c
     src/engine/gfx2d.c
     src/engine/gfx2d_text.c
     src/engine/gfx2d_tmx.c
+    src/engine/lua.c
     src/engine/tasks.c
     src/game/game.c
     src/game/confetti.c
     src/game/physics.c
     src/game/main.c)
 #set(raylib_VERBOSE 1)
-target_link_libraries(game raylib-tmx raylib_aseprite box2d)
+target_link_libraries(game raylib-tmx raylib_aseprite box2d lua::lib)
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
