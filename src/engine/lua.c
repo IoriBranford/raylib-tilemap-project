@@ -109,6 +109,11 @@ Task* NewLuaTask(const char *luaModule, int priority) {
         intptr_t ref = luaL_ref(lua, LUA_REGISTRYINDEX); // lua: class
 
         Task *task = NewTask(Task_LuaClass, (void*)ref, priority);
+        lua_rawgeti(lua, LUA_REGISTRYINDEX, ref); // lua: class, self
+        lua_pushstring(lua, "__task");// lua: class, self, "__task"
+        lua_pushlightuserdata(lua, task); // lua: class, self, "__task", task
+        lua_settable(lua, -3);  // lua: class, self
+        lua_pop(lua, 1); // lua: class
         
         lua_pushstring(lua, "start");// lua: class, "start"
         lua_gettable(lua, -2);  // lua: class, start
