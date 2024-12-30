@@ -38,6 +38,9 @@ foreach(module engine/gfx2d)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     add_custom_command(COMMAND ${SWIGCMD}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        DEPENDS
+            ${CMAKE_SOURCE_DIR}/include/${module}.h
+            ${CMAKE_SOURCE_DIR}/include/${module}.i
         OUTPUT ${CMAKE_SOURCE_DIR}/src/${module}_wrap.c)
     target_sources(game PRIVATE
         src/${module}_wrap.c)
