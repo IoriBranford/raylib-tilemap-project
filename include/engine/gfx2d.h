@@ -8,7 +8,7 @@
 typedef struct Sprite Sprite;
 typedef void (*SpriteFunction)(Sprite*);
 
-pool_typedef(Sprite, SpritePool)
+pool_typedef(Sprite, SpritePool);
 
 typedef enum SpriteType {
     SPRITETYPE_NONE,
@@ -52,27 +52,27 @@ struct Sprite {
     float animTimer;
 
     SpriteBehavior behavior;
-    union {
-        struct {
+    union SpriteContent {
+        struct SpriteTexture {
             Texture2D *texture;
             Rectangle source;
         } texture;
 
         SpriteText text;
 
-        struct {
+        struct SpriteTile {
             Texture2D *texture;
             Rectangle source;
             tmx_tile *tile;
             unsigned frame;
         } tile;
 
-        struct {
+        struct SpriteLayer {
             tmx_layer *layer;
             tmx_map *map;
         } layer;
 
-        struct {
+        struct SpriteShape {
             tmx_shape;
             float thick;
             bool closed;
