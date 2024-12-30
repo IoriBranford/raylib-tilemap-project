@@ -24,6 +24,25 @@ add_executable(game
     src/game/confetti.c
     src/game/physics.c
     src/game/main.c)
+foreach(module engine/gfx2d)
+    set(SWIGCMD swig -lua
+        -Iinclude
+        -Ilib/box2d/src
+        -Ilib/raylib/src
+        -Ilib/raylib-tmx/include
+        -Ilib/raylib-aseprite/include
+        -Ilib/tmx/src
+        -o src/${module}_wrap.c
+        include/${module}.i)
+    execute_process(COMMAND ${SWIGCMD}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    add_custom_command(COMMAND ${SWIGCMD}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT ${CMAKE_SOURCE_DIR}/src/${module}_wrap.c)
+    target_sources(game PRIVATE
+        src/${module}_wrap.c)
+endforeach()
+
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib-tmx raylib_aseprite box2d lua::lib)
 
