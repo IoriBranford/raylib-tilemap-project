@@ -39,10 +39,11 @@ typedef struct SpriteText {
 
 struct Sprite {
     union {
+        Rectangle;
+        Rectangle rect;
         struct {
             Vector2 position, size;
         };
-        Rectangle rect;
     };
     Vector2 origin;
     float rotationDeg;
