@@ -221,7 +221,7 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
         };
         text.spacing = floorf(text.fontSize / text.font.baseSize);
 
-        Color textColor = ColorFromTMX(tmxText->color);
+        Color textColor = tmx2rl_Color(tmxText->color);
         if (ColorIsEqual(textColor, BLANK))
             textColor = BLACK;
         color = ColorTint(textColor, color);
@@ -256,7 +256,7 @@ void DrawSprite_TileLayer(Sprite *spr) {
     Vector2 position = spr->position;
     Rectangle rect = { position.x, position.y + rowh, colw, rowh };
     Vector2 origin = { 0, 0 }, size = { 0, 0 };
-    Color color = ColorFromTMX(layer->tintcolor);
+    Color color = tmx2rl_Color(layer->tintcolor);
 
     unsigned col = 0, row = 0;
     for (unsigned i = 0; i < n; ++i) {
@@ -315,7 +315,7 @@ Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
         spr->active = true;
         spr->rect = rect;
         spr->rotationDeg = 0;
-        spr->color = ColorFromTMX(layer->tintcolor);
+        spr->color = tmx2rl_Color(layer->tintcolor);
         spr->behavior.type = SPRITETYPE_TILELAYER;
         spr->behavior.update = UpdateSprite_TileLayer;
         spr->behavior.draw = DrawSprite_TileLayer;
