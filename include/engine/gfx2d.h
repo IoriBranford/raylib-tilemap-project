@@ -1,7 +1,7 @@
 #ifndef E222BE36_5310_48C7_9586_70543D02A1F0
 #define E222BE36_5310_48C7_9586_70543D02A1F0
 
-#include <raylib-tmx.h>
+#include <tmx.h>
 #include <raylib-aseprite.h>
 #include <util.h>
 
