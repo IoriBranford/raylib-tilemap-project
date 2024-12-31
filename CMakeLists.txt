@@ -27,7 +27,7 @@ add_executable(game
 foreach(module engine/gfx2d)
     set(SWIGCMD swig -lua
         -Iinclude
-        -Ilib/box2d/src
+        -Ilib/box2d/include
         -Ilib/raylib/src
         -Ilib/raylib-tmx/include
         -Ilib/raylib-aseprite/include
