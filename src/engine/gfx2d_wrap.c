@@ -142,6 +142,26 @@
 # define SWIG_NULLPTR NULL
 #endif 
 
+
+/* C99 and C++11 should provide snprintf, but define SWIG_NO_SNPRINTF
+ * if you're missing it.
+ */
+#if ((defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || \
+     (defined __cplusplus && __cplusplus >= 201103L) || \
+     defined SWIG_HAVE_SNPRINTF) && \
+    !defined SWIG_NO_SNPRINTF
+# define SWIG_snprintf(O,S,F,A) snprintf(O,S,F,A)
+# define SWIG_snprintf2(O,S,F,A,B) snprintf(O,S,F,A,B)
+#else
+/* Fallback versions ignore the buffer size, but most of our uses either have a
+ * fixed maximum possible size or dynamically allocate a buffer that's large
+ * enough.
+ */
+# define SWIG_snprintf(O,S,F,A) sprintf(O,F,A)
+# define SWIG_snprintf2(O,S,F,A,B) sprintf(O,F,A,B)
+#endif
+
+
 /* -----------------------------------------------------------------------------
  * swigrun.swg
  *
@@ -325,23 +345,6 @@ SWIGINTERNINLINE int SWIG_CheckState(int r) {
 #  define SWIG_CheckState(r) (SWIG_IsOK(r) ? 1 : 0)
 #endif
 
-/* C99 and C++11 should provide snprintf, but define SWIG_NO_SNPRINTF
- * if you're missing it.
- */
-#if ((defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || \
-     (defined __cplusplus && __cplusplus >= 201103L) || \
-     defined SWIG_HAVE_SNPRINTF) && \
-    !defined SWIG_NO_SNPRINTF
-# define SWIG_snprintf(O,S,F,A) snprintf(O,S,F,A)
-# define SWIG_snprintf2(O,S,F,A,B) snprintf(O,S,F,A,B)
-#else
-/* Fallback versions ignore the buffer size, but most of our uses either have a
- * fixed maximum possible size or dynamically allocate a buffer that's large
- * enough.
- */
-# define SWIG_snprintf(O,S,F,A) sprintf(O,F,A)
-# define SWIG_snprintf2(O,S,F,A,B) sprintf(O,F,A,B)
-#endif
 
 #include <string.h>
 
@@ -2725,23 +2728,11 @@ SWIG_Lua_dostring(lua_State *L, const char *str) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_Color swig_types[0]
-#define SWIGTYPE_p_Rectangle swig_types[1]
-#define SWIGTYPE_p_Sprite swig_types[2]
-#define SWIGTYPE_p_SpriteContent swig_types[3]
-#define SWIGTYPE_p_SpriteLayer swig_types[4]
-#define SWIGTYPE_p_SpriteShape swig_types[5]
-#define SWIGTYPE_p_SpriteTexture swig_types[6]
-#define SWIGTYPE_p_SpriteTile swig_types[7]
-#define SWIGTYPE_p_Texture2D swig_types[8]
-#define SWIGTYPE_p_Vector2 swig_types[9]
-#define SWIGTYPE_p_p_tmx_tile swig_types[10]
-#define SWIGTYPE_p_tmx_layer swig_types[11]
-#define SWIGTYPE_p_tmx_map swig_types[12]
-#define SWIGTYPE_p_tmx_object swig_types[13]
-#define SWIGTYPE_p_tmx_tile swig_types[14]
-static swig_type_info *swig_types[16];
-static swig_module_info swig_module = {swig_types, 15, 0, 0, 0, 0};
+#define SWIGTYPE_p_Sprite swig_types[0]
+#define SWIGTYPE_p_p_tmx_tile swig_types[1]
+#define SWIGTYPE_p_tmx_object swig_types[2]
+static swig_type_info *swig_types[4];
+static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2759,16 +2750,16 @@ SWIGINTERN void delete_Sprite(struct Sprite *self){
         ReleaseSprite(self);
     }
 
-Sprite* RectangleSprite(float x, float y, float width, float height) {
+Sprite* RectangleSprite(float x, float y, float width, float height, float originX, float originY, float rotationDeg, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
     return NewRectangleSprite(
         (Rectangle){x, y, width, height},
-        (Vector2){0},
-        0.0f,
-        WHITE
+        (Vector2){originX, originY},
+        rotationDeg,
+        (Color){red, green, blue, alpha}
     );
 }
-Sprite* TMXObjectSprite(tmx_object *o, tmx_tile **maptiles) {
-    return NewTMXObjectSprite(0, maptiles, WHITE);    
+Sprite* TMXObjectSprite(tmx_object *o, tmx_tile **maptiles, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+    return NewTMXObjectSprite(0, maptiles, (Color){red, green, blue, alpha});
 }
 
 #ifdef __cplusplus
@@ -2958,27 +2949,21 @@ static int _wrap_Sprite_height_get(lua_State* L) {
 }
 
 
-static int _wrap_Sprite_rect_set(lua_State* L) {
+static int _wrap_Sprite_originX_set(lua_State* L) {
   int SWIG_arg = 0;
   struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Rectangle arg2 ;
-  Rectangle *argp2 ;
+  float arg2 ;
   
-  SWIG_check_num_args("Sprite::rect",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::rect",1,"struct Sprite *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("Sprite::rect",2,"Rectangle");
+  SWIG_check_num_args("Sprite::originX",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::originX",1,"struct Sprite *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Sprite::originX",2,"float");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_rect_set",1,SWIGTYPE_p_Sprite);
+    SWIG_fail_ptr("Sprite_originX_set",1,SWIGTYPE_p_Sprite);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_Rectangle,0))){
-    SWIG_fail_ptr("Sprite_rect_set",2,SWIGTYPE_p_Rectangle);
-  }
-  arg2 = *argp2;
-  
-  if (arg1) (arg1)->rect = arg2;
+  arg2 = (float)lua_tonumber(L, 2);
+  if (arg1) (arg1)->originX = arg2;
   
   return SWIG_arg;
   
@@ -2988,25 +2973,20 @@ static int _wrap_Sprite_rect_set(lua_State* L) {
 }
 
 
-static int _wrap_Sprite_rect_get(lua_State* L) {
+static int _wrap_Sprite_originX_get(lua_State* L) {
   int SWIG_arg = 0;
   struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Rectangle result;
+  float result;
   
-  SWIG_check_num_args("Sprite::rect",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::rect",1,"struct Sprite *");
+  SWIG_check_num_args("Sprite::originX",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::originX",1,"struct Sprite *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_rect_get",1,SWIGTYPE_p_Sprite);
+    SWIG_fail_ptr("Sprite_originX_get",1,SWIGTYPE_p_Sprite);
   }
   
-  result =  ((arg1)->rect);
-  {
-    Rectangle * resultptr;
-    resultptr = (Rectangle *) malloc(sizeof(Rectangle));
-    memmove(resultptr, &result, sizeof(Rectangle));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_Rectangle,1); SWIG_arg++;
-  }
+  result = (float) ((arg1)->originX);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
   fail: SWIGUNUSED;
@@ -3015,27 +2995,21 @@ static int _wrap_Sprite_rect_get(lua_State* L) {
 }
 
 
-static int _wrap_Sprite_position_set(lua_State* L) {
+static int _wrap_Sprite_originY_set(lua_State* L) {
   int SWIG_arg = 0;
   struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Vector2 arg2 ;
-  Vector2 *argp2 ;
+  float arg2 ;
   
-  SWIG_check_num_args("Sprite::position",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::position",1,"struct Sprite *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("Sprite::position",2,"Vector2");
+  SWIG_check_num_args("Sprite::originY",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::originY",1,"struct Sprite *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Sprite::originY",2,"float");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_position_set",1,SWIGTYPE_p_Sprite);
+    SWIG_fail_ptr("Sprite_originY_set",1,SWIGTYPE_p_Sprite);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_Vector2,0))){
-    SWIG_fail_ptr("Sprite_position_set",2,SWIGTYPE_p_Vector2);
-  }
-  arg2 = *argp2;
-  
-  if (arg1) (arg1)->position = arg2;
+  arg2 = (float)lua_tonumber(L, 2);
+  if (arg1) (arg1)->originY = arg2;
   
   return SWIG_arg;
   
@@ -3045,139 +3019,20 @@ static int _wrap_Sprite_position_set(lua_State* L) {
 }
 
 
-static int _wrap_Sprite_position_get(lua_State* L) {
+static int _wrap_Sprite_originY_get(lua_State* L) {
   int SWIG_arg = 0;
   struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Vector2 result;
+  float result;
   
-  SWIG_check_num_args("Sprite::position",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::position",1,"struct Sprite *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_position_get",1,SWIGTYPE_p_Sprite);
-  }
-  
-  result =  ((arg1)->position);
-  {
-    Vector2 * resultptr;
-    resultptr = (Vector2 *) malloc(sizeof(Vector2));
-    memmove(resultptr, &result, sizeof(Vector2));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_Vector2,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_Sprite_size_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Vector2 arg2 ;
-  Vector2 *argp2 ;
-  
-  SWIG_check_num_args("Sprite::size",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::size",1,"struct Sprite *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("Sprite::size",2,"Vector2");
+  SWIG_check_num_args("Sprite::originY",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::originY",1,"struct Sprite *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_size_set",1,SWIGTYPE_p_Sprite);
+    SWIG_fail_ptr("Sprite_originY_get",1,SWIGTYPE_p_Sprite);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_Vector2,0))){
-    SWIG_fail_ptr("Sprite_size_set",2,SWIGTYPE_p_Vector2);
-  }
-  arg2 = *argp2;
-  
-  if (arg1) (arg1)->size = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_Sprite_size_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Vector2 result;
-  
-  SWIG_check_num_args("Sprite::size",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::size",1,"struct Sprite *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_size_get",1,SWIGTYPE_p_Sprite);
-  }
-  
-  result =  ((arg1)->size);
-  {
-    Vector2 * resultptr;
-    resultptr = (Vector2 *) malloc(sizeof(Vector2));
-    memmove(resultptr, &result, sizeof(Vector2));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_Vector2,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_Sprite_origin_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Vector2 arg2 ;
-  Vector2 *argp2 ;
-  
-  SWIG_check_num_args("Sprite::origin",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::origin",1,"struct Sprite *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("Sprite::origin",2,"Vector2");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_origin_set",1,SWIGTYPE_p_Sprite);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_Vector2,0))){
-    SWIG_fail_ptr("Sprite_origin_set",2,SWIGTYPE_p_Vector2);
-  }
-  arg2 = *argp2;
-  
-  if (arg1) (arg1)->origin = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_Sprite_origin_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Vector2 result;
-  
-  SWIG_check_num_args("Sprite::origin",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::origin",1,"struct Sprite *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_origin_get",1,SWIGTYPE_p_Sprite);
-  }
-  
-  result =  ((arg1)->origin);
-  {
-    Vector2 * resultptr;
-    resultptr = (Vector2 *) malloc(sizeof(Vector2));
-    memmove(resultptr, &result, sizeof(Vector2));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_Vector2,1); SWIG_arg++;
-  }
+  result = (float) ((arg1)->originY);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
   fail: SWIGUNUSED;
@@ -3232,27 +3087,22 @@ static int _wrap_Sprite_rotationDeg_get(lua_State* L) {
 }
 
 
-static int _wrap_Sprite_color_set(lua_State* L) {
+static int _wrap_Sprite_red_set(lua_State* L) {
   int SWIG_arg = 0;
   struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Color arg2 ;
-  Color *argp2 ;
+  unsigned char arg2 ;
   
-  SWIG_check_num_args("Sprite::color",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::color",1,"struct Sprite *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("Sprite::color",2,"Color");
+  SWIG_check_num_args("Sprite::red",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::red",1,"struct Sprite *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Sprite::red",2,"unsigned char");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_color_set",1,SWIGTYPE_p_Sprite);
+    SWIG_fail_ptr("Sprite_red_set",1,SWIGTYPE_p_Sprite);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_Color,0))){
-    SWIG_fail_ptr("Sprite_color_set",2,SWIGTYPE_p_Color);
-  }
-  arg2 = *argp2;
-  
-  if (arg1) (arg1)->color = arg2;
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative");
+  arg2 = (unsigned char)lua_tonumber(L, 2);
+  if (arg1) (arg1)->red = arg2;
   
   return SWIG_arg;
   
@@ -3262,25 +3112,161 @@ static int _wrap_Sprite_color_set(lua_State* L) {
 }
 
 
-static int _wrap_Sprite_color_get(lua_State* L) {
+static int _wrap_Sprite_red_get(lua_State* L) {
   int SWIG_arg = 0;
   struct Sprite *arg1 = (struct Sprite *) 0 ;
-  Color result;
+  unsigned char result;
   
-  SWIG_check_num_args("Sprite::color",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::color",1,"struct Sprite *");
+  SWIG_check_num_args("Sprite::red",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::red",1,"struct Sprite *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
-    SWIG_fail_ptr("Sprite_color_get",1,SWIGTYPE_p_Sprite);
+    SWIG_fail_ptr("Sprite_red_get",1,SWIGTYPE_p_Sprite);
   }
   
-  result =  ((arg1)->color);
-  {
-    Color * resultptr;
-    resultptr = (Color *) malloc(sizeof(Color));
-    memmove(resultptr, &result, sizeof(Color));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_Color,1); SWIG_arg++;
+  result = (unsigned char) ((arg1)->red);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_green_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char arg2 ;
+  
+  SWIG_check_num_args("Sprite::green",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::green",1,"struct Sprite *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Sprite::green",2,"unsigned char");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_green_set",1,SWIGTYPE_p_Sprite);
   }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative");
+  arg2 = (unsigned char)lua_tonumber(L, 2);
+  if (arg1) (arg1)->green = arg2;
+  
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_green_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char result;
+  
+  SWIG_check_num_args("Sprite::green",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::green",1,"struct Sprite *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_green_get",1,SWIGTYPE_p_Sprite);
+  }
+  
+  result = (unsigned char) ((arg1)->green);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_blue_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char arg2 ;
+  
+  SWIG_check_num_args("Sprite::blue",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::blue",1,"struct Sprite *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Sprite::blue",2,"unsigned char");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_blue_set",1,SWIGTYPE_p_Sprite);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative");
+  arg2 = (unsigned char)lua_tonumber(L, 2);
+  if (arg1) (arg1)->blue = arg2;
+  
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_blue_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char result;
+  
+  SWIG_check_num_args("Sprite::blue",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::blue",1,"struct Sprite *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_blue_get",1,SWIGTYPE_p_Sprite);
+  }
+  
+  result = (unsigned char) ((arg1)->blue);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_alpha_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char arg2 ;
+  
+  SWIG_check_num_args("Sprite::alpha",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::alpha",1,"struct Sprite *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Sprite::alpha",2,"unsigned char");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_alpha_set",1,SWIGTYPE_p_Sprite);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative");
+  arg2 = (unsigned char)lua_tonumber(L, 2);
+  if (arg1) (arg1)->alpha = arg2;
+  
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_alpha_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char result;
+  
+  SWIG_check_num_args("Sprite::alpha",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::alpha",1,"struct Sprite *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_alpha_get",1,SWIGTYPE_p_Sprite);
+  }
+  
+  result = (unsigned char) ((arg1)->alpha);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
   fail: SWIGUNUSED;
@@ -3367,12 +3353,13 @@ static swig_lua_attribute swig_Sprite_attributes[] = {
     { "y", _wrap_Sprite_y_get, _wrap_Sprite_y_set },
     { "width", _wrap_Sprite_width_get, _wrap_Sprite_width_set },
     { "height", _wrap_Sprite_height_get, _wrap_Sprite_height_set },
-    { "rect", _wrap_Sprite_rect_get, _wrap_Sprite_rect_set },
-    { "position", _wrap_Sprite_position_get, _wrap_Sprite_position_set },
-    { "size", _wrap_Sprite_size_get, _wrap_Sprite_size_set },
-    { "origin", _wrap_Sprite_origin_get, _wrap_Sprite_origin_set },
+    { "originX", _wrap_Sprite_originX_get, _wrap_Sprite_originX_set },
+    { "originY", _wrap_Sprite_originY_get, _wrap_Sprite_originY_set },
     { "rotationDeg", _wrap_Sprite_rotationDeg_get, _wrap_Sprite_rotationDeg_set },
-    { "color", _wrap_Sprite_color_get, _wrap_Sprite_color_set },
+    { "red", _wrap_Sprite_red_get, _wrap_Sprite_red_set },
+    { "green", _wrap_Sprite_green_get, _wrap_Sprite_green_set },
+    { "blue", _wrap_Sprite_blue_get, _wrap_Sprite_blue_set },
+    { "alpha", _wrap_Sprite_alpha_get, _wrap_Sprite_alpha_set },
     { "animSpeedMS", _wrap_Sprite_animSpeedMS_get, _wrap_Sprite_animSpeedMS_set },
     { "animTimer", _wrap_Sprite_animTimer_get, SWIG_Lua_set_immutable },
     {0,0,0}
@@ -3408,898 +3395,6 @@ static swig_lua_namespace swig_Sprite_Sf_SwigStatic = {
 static swig_lua_class *swig_Sprite_bases[] = {0};
 static const char *swig_Sprite_base_names[] = {0};
 static swig_lua_class _wrap_class_Sprite = { "Sprite", "Sprite", &SWIGTYPE_p_Sprite,0, swig_delete_Sprite, swig_Sprite_methods, swig_Sprite_attributes, &swig_Sprite_Sf_SwigStatic, swig_Sprite_meta, swig_Sprite_bases, swig_Sprite_base_names };
-
-static int _wrap_SpriteTexture_texture_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTexture *arg1 = (struct SpriteTexture *) 0 ;
-  Texture2D *arg2 = (Texture2D *) 0 ;
-  
-  SWIG_check_num_args("SpriteTexture::texture",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTexture::texture",1,"struct SpriteTexture *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteTexture::texture",2,"Texture2D *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTexture,0))){
-    SWIG_fail_ptr("SpriteTexture_texture_set",1,SWIGTYPE_p_SpriteTexture);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_Texture2D,SWIG_POINTER_DISOWN))){
-    SWIG_fail_ptr("SpriteTexture_texture_set",2,SWIGTYPE_p_Texture2D);
-  }
-  
-  if (arg1) (arg1)->texture = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTexture_texture_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTexture *arg1 = (struct SpriteTexture *) 0 ;
-  Texture2D *result = 0 ;
-  
-  SWIG_check_num_args("SpriteTexture::texture",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTexture::texture",1,"struct SpriteTexture *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTexture,0))){
-    SWIG_fail_ptr("SpriteTexture_texture_get",1,SWIGTYPE_p_SpriteTexture);
-  }
-  
-  result = (Texture2D *) ((arg1)->texture);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Texture2D,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTexture_source_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTexture *arg1 = (struct SpriteTexture *) 0 ;
-  Rectangle arg2 ;
-  Rectangle *argp2 ;
-  
-  SWIG_check_num_args("SpriteTexture::source",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTexture::source",1,"struct SpriteTexture *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("SpriteTexture::source",2,"Rectangle");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTexture,0))){
-    SWIG_fail_ptr("SpriteTexture_source_set",1,SWIGTYPE_p_SpriteTexture);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_Rectangle,0))){
-    SWIG_fail_ptr("SpriteTexture_source_set",2,SWIGTYPE_p_Rectangle);
-  }
-  arg2 = *argp2;
-  
-  if (arg1) (arg1)->source = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTexture_source_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTexture *arg1 = (struct SpriteTexture *) 0 ;
-  Rectangle result;
-  
-  SWIG_check_num_args("SpriteTexture::source",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTexture::source",1,"struct SpriteTexture *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTexture,0))){
-    SWIG_fail_ptr("SpriteTexture_source_get",1,SWIGTYPE_p_SpriteTexture);
-  }
-  
-  result =  ((arg1)->source);
-  {
-    Rectangle * resultptr;
-    resultptr = (Rectangle *) malloc(sizeof(Rectangle));
-    memmove(resultptr, &result, sizeof(Rectangle));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_Rectangle,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static swig_lua_attribute swig_SpriteTexture_attributes[] = {
-    { "texture", _wrap_SpriteTexture_texture_get, _wrap_SpriteTexture_texture_set },
-    { "source", _wrap_SpriteTexture_source_get, _wrap_SpriteTexture_source_set },
-    {0,0,0}
-};
-static swig_lua_method swig_SpriteTexture_methods[]= {
-    {0,0}
-};
-static swig_lua_method swig_SpriteTexture_meta[] = {
-    {0,0}
-};
-
-static swig_lua_attribute swig_SpriteTexture_Sf_SwigStatic_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_const_info swig_SpriteTexture_Sf_SwigStatic_constants[]= {
-    {0,0,0,0,0,0}
-};
-static swig_lua_method swig_SpriteTexture_Sf_SwigStatic_methods[]= {
-    {0,0}
-};
-static swig_lua_class* swig_SpriteTexture_Sf_SwigStatic_classes[]= {
-    0
-};
-
-static swig_lua_namespace swig_SpriteTexture_Sf_SwigStatic = {
-    "SpriteTexture",
-    swig_SpriteTexture_Sf_SwigStatic_methods,
-    swig_SpriteTexture_Sf_SwigStatic_attributes,
-    swig_SpriteTexture_Sf_SwigStatic_constants,
-    swig_SpriteTexture_Sf_SwigStatic_classes,
-    0
-};
-static swig_lua_class *swig_SpriteTexture_bases[] = {0};
-static const char *swig_SpriteTexture_base_names[] = {0};
-static swig_lua_class _wrap_class_SpriteTexture = { "SpriteTexture", "SpriteTexture", &SWIGTYPE_p_SpriteTexture,0,0, swig_SpriteTexture_methods, swig_SpriteTexture_attributes, &swig_SpriteTexture_Sf_SwigStatic, swig_SpriteTexture_meta, swig_SpriteTexture_bases, swig_SpriteTexture_base_names };
-
-static int _wrap_SpriteTile_texture_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  Texture2D *arg2 = (Texture2D *) 0 ;
-  
-  SWIG_check_num_args("SpriteTile::texture",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::texture",1,"struct SpriteTile *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteTile::texture",2,"Texture2D *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_texture_set",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_Texture2D,SWIG_POINTER_DISOWN))){
-    SWIG_fail_ptr("SpriteTile_texture_set",2,SWIGTYPE_p_Texture2D);
-  }
-  
-  if (arg1) (arg1)->texture = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTile_texture_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  Texture2D *result = 0 ;
-  
-  SWIG_check_num_args("SpriteTile::texture",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::texture",1,"struct SpriteTile *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_texture_get",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  result = (Texture2D *) ((arg1)->texture);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Texture2D,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTile_source_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  Rectangle arg2 ;
-  Rectangle *argp2 ;
-  
-  SWIG_check_num_args("SpriteTile::source",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::source",1,"struct SpriteTile *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("SpriteTile::source",2,"Rectangle");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_source_set",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_Rectangle,0))){
-    SWIG_fail_ptr("SpriteTile_source_set",2,SWIGTYPE_p_Rectangle);
-  }
-  arg2 = *argp2;
-  
-  if (arg1) (arg1)->source = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTile_source_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  Rectangle result;
-  
-  SWIG_check_num_args("SpriteTile::source",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::source",1,"struct SpriteTile *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_source_get",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  result =  ((arg1)->source);
-  {
-    Rectangle * resultptr;
-    resultptr = (Rectangle *) malloc(sizeof(Rectangle));
-    memmove(resultptr, &result, sizeof(Rectangle));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_Rectangle,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTile_tile_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  tmx_tile *arg2 = (tmx_tile *) 0 ;
-  
-  SWIG_check_num_args("SpriteTile::tile",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::tile",1,"struct SpriteTile *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteTile::tile",2,"tmx_tile *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_tile_set",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_tmx_tile,SWIG_POINTER_DISOWN))){
-    SWIG_fail_ptr("SpriteTile_tile_set",2,SWIGTYPE_p_tmx_tile);
-  }
-  
-  if (arg1) (arg1)->tile = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTile_tile_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  tmx_tile *result = 0 ;
-  
-  SWIG_check_num_args("SpriteTile::tile",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::tile",1,"struct SpriteTile *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_tile_get",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  result = (tmx_tile *) ((arg1)->tile);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_tmx_tile,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTile_frame_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  unsigned int arg2 ;
-  
-  SWIG_check_num_args("SpriteTile::frame",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::frame",1,"struct SpriteTile *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("SpriteTile::frame",2,"unsigned int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_frame_set",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative");
-  arg2 = (unsigned int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->frame = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteTile_frame_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteTile *arg1 = (struct SpriteTile *) 0 ;
-  unsigned int result;
-  
-  SWIG_check_num_args("SpriteTile::frame",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteTile::frame",1,"struct SpriteTile *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteTile_frame_get",1,SWIGTYPE_p_SpriteTile);
-  }
-  
-  result = (unsigned int) ((arg1)->frame);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static swig_lua_attribute swig_SpriteTile_attributes[] = {
-    { "texture", _wrap_SpriteTile_texture_get, _wrap_SpriteTile_texture_set },
-    { "source", _wrap_SpriteTile_source_get, _wrap_SpriteTile_source_set },
-    { "tile", _wrap_SpriteTile_tile_get, _wrap_SpriteTile_tile_set },
-    { "frame", _wrap_SpriteTile_frame_get, _wrap_SpriteTile_frame_set },
-    {0,0,0}
-};
-static swig_lua_method swig_SpriteTile_methods[]= {
-    {0,0}
-};
-static swig_lua_method swig_SpriteTile_meta[] = {
-    {0,0}
-};
-
-static swig_lua_attribute swig_SpriteTile_Sf_SwigStatic_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_const_info swig_SpriteTile_Sf_SwigStatic_constants[]= {
-    {0,0,0,0,0,0}
-};
-static swig_lua_method swig_SpriteTile_Sf_SwigStatic_methods[]= {
-    {0,0}
-};
-static swig_lua_class* swig_SpriteTile_Sf_SwigStatic_classes[]= {
-    0
-};
-
-static swig_lua_namespace swig_SpriteTile_Sf_SwigStatic = {
-    "SpriteTile",
-    swig_SpriteTile_Sf_SwigStatic_methods,
-    swig_SpriteTile_Sf_SwigStatic_attributes,
-    swig_SpriteTile_Sf_SwigStatic_constants,
-    swig_SpriteTile_Sf_SwigStatic_classes,
-    0
-};
-static swig_lua_class *swig_SpriteTile_bases[] = {0};
-static const char *swig_SpriteTile_base_names[] = {0};
-static swig_lua_class _wrap_class_SpriteTile = { "SpriteTile", "SpriteTile", &SWIGTYPE_p_SpriteTile,0,0, swig_SpriteTile_methods, swig_SpriteTile_attributes, &swig_SpriteTile_Sf_SwigStatic, swig_SpriteTile_meta, swig_SpriteTile_bases, swig_SpriteTile_base_names };
-
-static int _wrap_SpriteLayer_layer_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteLayer *arg1 = (struct SpriteLayer *) 0 ;
-  tmx_layer *arg2 = (tmx_layer *) 0 ;
-  
-  SWIG_check_num_args("SpriteLayer::layer",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteLayer::layer",1,"struct SpriteLayer *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteLayer::layer",2,"tmx_layer *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteLayer,0))){
-    SWIG_fail_ptr("SpriteLayer_layer_set",1,SWIGTYPE_p_SpriteLayer);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_tmx_layer,SWIG_POINTER_DISOWN))){
-    SWIG_fail_ptr("SpriteLayer_layer_set",2,SWIGTYPE_p_tmx_layer);
-  }
-  
-  if (arg1) (arg1)->layer = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteLayer_layer_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteLayer *arg1 = (struct SpriteLayer *) 0 ;
-  tmx_layer *result = 0 ;
-  
-  SWIG_check_num_args("SpriteLayer::layer",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteLayer::layer",1,"struct SpriteLayer *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteLayer,0))){
-    SWIG_fail_ptr("SpriteLayer_layer_get",1,SWIGTYPE_p_SpriteLayer);
-  }
-  
-  result = (tmx_layer *) ((arg1)->layer);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_tmx_layer,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteLayer_map_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteLayer *arg1 = (struct SpriteLayer *) 0 ;
-  tmx_map *arg2 = (tmx_map *) 0 ;
-  
-  SWIG_check_num_args("SpriteLayer::map",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteLayer::map",1,"struct SpriteLayer *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteLayer::map",2,"tmx_map *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteLayer,0))){
-    SWIG_fail_ptr("SpriteLayer_map_set",1,SWIGTYPE_p_SpriteLayer);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_tmx_map,SWIG_POINTER_DISOWN))){
-    SWIG_fail_ptr("SpriteLayer_map_set",2,SWIGTYPE_p_tmx_map);
-  }
-  
-  if (arg1) (arg1)->map = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteLayer_map_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteLayer *arg1 = (struct SpriteLayer *) 0 ;
-  tmx_map *result = 0 ;
-  
-  SWIG_check_num_args("SpriteLayer::map",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteLayer::map",1,"struct SpriteLayer *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteLayer,0))){
-    SWIG_fail_ptr("SpriteLayer_map_get",1,SWIGTYPE_p_SpriteLayer);
-  }
-  
-  result = (tmx_map *) ((arg1)->map);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_tmx_map,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static swig_lua_attribute swig_SpriteLayer_attributes[] = {
-    { "layer", _wrap_SpriteLayer_layer_get, _wrap_SpriteLayer_layer_set },
-    { "map", _wrap_SpriteLayer_map_get, _wrap_SpriteLayer_map_set },
-    {0,0,0}
-};
-static swig_lua_method swig_SpriteLayer_methods[]= {
-    {0,0}
-};
-static swig_lua_method swig_SpriteLayer_meta[] = {
-    {0,0}
-};
-
-static swig_lua_attribute swig_SpriteLayer_Sf_SwigStatic_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_const_info swig_SpriteLayer_Sf_SwigStatic_constants[]= {
-    {0,0,0,0,0,0}
-};
-static swig_lua_method swig_SpriteLayer_Sf_SwigStatic_methods[]= {
-    {0,0}
-};
-static swig_lua_class* swig_SpriteLayer_Sf_SwigStatic_classes[]= {
-    0
-};
-
-static swig_lua_namespace swig_SpriteLayer_Sf_SwigStatic = {
-    "SpriteLayer",
-    swig_SpriteLayer_Sf_SwigStatic_methods,
-    swig_SpriteLayer_Sf_SwigStatic_attributes,
-    swig_SpriteLayer_Sf_SwigStatic_constants,
-    swig_SpriteLayer_Sf_SwigStatic_classes,
-    0
-};
-static swig_lua_class *swig_SpriteLayer_bases[] = {0};
-static const char *swig_SpriteLayer_base_names[] = {0};
-static swig_lua_class _wrap_class_SpriteLayer = { "SpriteLayer", "SpriteLayer", &SWIGTYPE_p_SpriteLayer,0,0, swig_SpriteLayer_methods, swig_SpriteLayer_attributes, &swig_SpriteLayer_Sf_SwigStatic, swig_SpriteLayer_meta, swig_SpriteLayer_bases, swig_SpriteLayer_base_names };
-
-static int _wrap_SpriteShape_thick_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteShape *arg1 = (struct SpriteShape *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("SpriteShape::thick",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteShape::thick",1,"struct SpriteShape *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("SpriteShape::thick",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteShape,0))){
-    SWIG_fail_ptr("SpriteShape_thick_set",1,SWIGTYPE_p_SpriteShape);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->thick = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteShape_thick_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteShape *arg1 = (struct SpriteShape *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("SpriteShape::thick",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteShape::thick",1,"struct SpriteShape *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteShape,0))){
-    SWIG_fail_ptr("SpriteShape_thick_get",1,SWIGTYPE_p_SpriteShape);
-  }
-  
-  result = (float) ((arg1)->thick);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteShape_closed_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteShape *arg1 = (struct SpriteShape *) 0 ;
-  bool arg2 ;
-  
-  SWIG_check_num_args("SpriteShape::closed",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteShape::closed",1,"struct SpriteShape *");
-  if(!lua_isboolean(L,2)) SWIG_fail_arg("SpriteShape::closed",2,"bool");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteShape,0))){
-    SWIG_fail_ptr("SpriteShape_closed_set",1,SWIGTYPE_p_SpriteShape);
-  }
-  
-  arg2 = (lua_toboolean(L, 2)!=0);
-  if (arg1) (arg1)->closed = arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteShape_closed_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct SpriteShape *arg1 = (struct SpriteShape *) 0 ;
-  bool result;
-  
-  SWIG_check_num_args("SpriteShape::closed",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteShape::closed",1,"struct SpriteShape *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteShape,0))){
-    SWIG_fail_ptr("SpriteShape_closed_get",1,SWIGTYPE_p_SpriteShape);
-  }
-  
-  result = (bool) ((arg1)->closed);
-  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static swig_lua_attribute swig_SpriteShape_attributes[] = {
-    { "thick", _wrap_SpriteShape_thick_get, _wrap_SpriteShape_thick_set },
-    { "closed", _wrap_SpriteShape_closed_get, _wrap_SpriteShape_closed_set },
-    {0,0,0}
-};
-static swig_lua_method swig_SpriteShape_methods[]= {
-    {0,0}
-};
-static swig_lua_method swig_SpriteShape_meta[] = {
-    {0,0}
-};
-
-static swig_lua_attribute swig_SpriteShape_Sf_SwigStatic_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_const_info swig_SpriteShape_Sf_SwigStatic_constants[]= {
-    {0,0,0,0,0,0}
-};
-static swig_lua_method swig_SpriteShape_Sf_SwigStatic_methods[]= {
-    {0,0}
-};
-static swig_lua_class* swig_SpriteShape_Sf_SwigStatic_classes[]= {
-    0
-};
-
-static swig_lua_namespace swig_SpriteShape_Sf_SwigStatic = {
-    "SpriteShape",
-    swig_SpriteShape_Sf_SwigStatic_methods,
-    swig_SpriteShape_Sf_SwigStatic_attributes,
-    swig_SpriteShape_Sf_SwigStatic_constants,
-    swig_SpriteShape_Sf_SwigStatic_classes,
-    0
-};
-static swig_lua_class *swig_SpriteShape_bases[] = {0};
-static const char *swig_SpriteShape_base_names[] = {0};
-static swig_lua_class _wrap_class_SpriteShape = { "SpriteShape", "SpriteShape", &SWIGTYPE_p_SpriteShape,0,0, swig_SpriteShape_methods, swig_SpriteShape_attributes, &swig_SpriteShape_Sf_SwigStatic, swig_SpriteShape_meta, swig_SpriteShape_bases, swig_SpriteShape_base_names };
-
-static int _wrap_SpriteContent_texture_set(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteTexture *arg2 = (struct SpriteTexture *) 0 ;
-  
-  SWIG_check_num_args("SpriteContent::texture",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::texture",1,"union SpriteContent *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteContent::texture",2,"struct SpriteTexture *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_texture_set",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_SpriteTexture,0))){
-    SWIG_fail_ptr("SpriteContent_texture_set",2,SWIGTYPE_p_SpriteTexture);
-  }
-  
-  if (arg1) (arg1)->texture = *arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteContent_texture_get(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteTexture *result = 0 ;
-  
-  SWIG_check_num_args("SpriteContent::texture",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::texture",1,"union SpriteContent *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_texture_get",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  result = (struct SpriteTexture *)& ((arg1)->texture);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SpriteTexture,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteContent_tile_set(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteTile *arg2 = (struct SpriteTile *) 0 ;
-  
-  SWIG_check_num_args("SpriteContent::tile",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::tile",1,"union SpriteContent *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteContent::tile",2,"struct SpriteTile *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_tile_set",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_SpriteTile,0))){
-    SWIG_fail_ptr("SpriteContent_tile_set",2,SWIGTYPE_p_SpriteTile);
-  }
-  
-  if (arg1) (arg1)->tile = *arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteContent_tile_get(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteTile *result = 0 ;
-  
-  SWIG_check_num_args("SpriteContent::tile",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::tile",1,"union SpriteContent *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_tile_get",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  result = (struct SpriteTile *)& ((arg1)->tile);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SpriteTile,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteContent_layer_set(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteLayer *arg2 = (struct SpriteLayer *) 0 ;
-  
-  SWIG_check_num_args("SpriteContent::layer",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::layer",1,"union SpriteContent *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteContent::layer",2,"struct SpriteLayer *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_layer_set",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_SpriteLayer,0))){
-    SWIG_fail_ptr("SpriteContent_layer_set",2,SWIGTYPE_p_SpriteLayer);
-  }
-  
-  if (arg1) (arg1)->layer = *arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteContent_layer_get(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteLayer *result = 0 ;
-  
-  SWIG_check_num_args("SpriteContent::layer",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::layer",1,"union SpriteContent *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_layer_get",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  result = (struct SpriteLayer *)& ((arg1)->layer);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SpriteLayer,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteContent_shape_set(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteShape *arg2 = (struct SpriteShape *) 0 ;
-  
-  SWIG_check_num_args("SpriteContent::shape",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::shape",1,"union SpriteContent *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SpriteContent::shape",2,"struct SpriteShape *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_shape_set",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_SpriteShape,0))){
-    SWIG_fail_ptr("SpriteContent_shape_set",2,SWIGTYPE_p_SpriteShape);
-  }
-  
-  if (arg1) (arg1)->shape = *arg2;
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_SpriteContent_shape_get(lua_State* L) {
-  int SWIG_arg = 0;
-  union SpriteContent *arg1 = (union SpriteContent *) 0 ;
-  struct SpriteShape *result = 0 ;
-  
-  SWIG_check_num_args("SpriteContent::shape",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SpriteContent::shape",1,"union SpriteContent *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SpriteContent,0))){
-    SWIG_fail_ptr("SpriteContent_shape_get",1,SWIGTYPE_p_SpriteContent);
-  }
-  
-  result = (struct SpriteShape *)& ((arg1)->shape);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SpriteShape,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static swig_lua_attribute swig_SpriteContent_attributes[] = {
-    { "texture", _wrap_SpriteContent_texture_get, _wrap_SpriteContent_texture_set },
-    { "tile", _wrap_SpriteContent_tile_get, _wrap_SpriteContent_tile_set },
-    { "layer", _wrap_SpriteContent_layer_get, _wrap_SpriteContent_layer_set },
-    { "shape", _wrap_SpriteContent_shape_get, _wrap_SpriteContent_shape_set },
-    {0,0,0}
-};
-static swig_lua_method swig_SpriteContent_methods[]= {
-    {0,0}
-};
-static swig_lua_method swig_SpriteContent_meta[] = {
-    {0,0}
-};
-
-static swig_lua_attribute swig_SpriteContent_Sf_SwigStatic_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_const_info swig_SpriteContent_Sf_SwigStatic_constants[]= {
-    {0,0,0,0,0,0}
-};
-static swig_lua_method swig_SpriteContent_Sf_SwigStatic_methods[]= {
-    {0,0}
-};
-static swig_lua_class* swig_SpriteContent_Sf_SwigStatic_classes[]= {
-    0
-};
-
-static swig_lua_namespace swig_SpriteContent_Sf_SwigStatic = {
-    "SpriteContent",
-    swig_SpriteContent_Sf_SwigStatic_methods,
-    swig_SpriteContent_Sf_SwigStatic_attributes,
-    swig_SpriteContent_Sf_SwigStatic_constants,
-    swig_SpriteContent_Sf_SwigStatic_classes,
-    0
-};
-static swig_lua_class *swig_SpriteContent_bases[] = {0};
-static const char *swig_SpriteContent_base_names[] = {0};
-static swig_lua_class _wrap_class_SpriteContent = { "SpriteContent", "SpriteContent", &SWIGTYPE_p_SpriteContent,0,0, swig_SpriteContent_methods, swig_SpriteContent_attributes, &swig_SpriteContent_Sf_SwigStatic, swig_SpriteContent_meta, swig_SpriteContent_bases, swig_SpriteContent_base_names };
 
 static int _wrap_NumSpritesActive(lua_State* L) {
   int SWIG_arg = 0;
@@ -4354,22 +3449,69 @@ static int _wrap_ReleaseSprite(lua_State* L) {
 
 static int _wrap_RectangleSprite(lua_State* L) {
   int SWIG_arg = 0;
-  float arg1 ;
-  float arg2 ;
-  float arg3 ;
-  float arg4 ;
+  float arg1 = (float) 0 ;
+  float arg2 = (float) 0 ;
+  float arg3 = (float) 1 ;
+  float arg4 = (float) 1 ;
+  float arg5 = (float) 0 ;
+  float arg6 = (float) 0 ;
+  float arg7 = (float) 0 ;
+  unsigned char arg8 = (unsigned char) 255 ;
+  unsigned char arg9 = (unsigned char) 255 ;
+  unsigned char arg10 = (unsigned char) 255 ;
+  unsigned char arg11 = (unsigned char) 255 ;
   Sprite *result = 0 ;
   
-  SWIG_check_num_args("RectangleSprite",4,4)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("RectangleSprite",1,"float");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("RectangleSprite",2,"float");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("RectangleSprite",3,"float");
-  if(!lua_isnumber(L,4)) SWIG_fail_arg("RectangleSprite",4,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  arg2 = (float)lua_tonumber(L, 2);
-  arg3 = (float)lua_tonumber(L, 3);
-  arg4 = (float)lua_tonumber(L, 4);
-  result = (Sprite *)RectangleSprite(arg1,arg2,arg3,arg4);
+  SWIG_check_num_args("RectangleSprite",0,11)
+  if(lua_gettop(L)>=1 && !lua_isnumber(L,1)) SWIG_fail_arg("RectangleSprite",1,"float");
+  if(lua_gettop(L)>=2 && !lua_isnumber(L,2)) SWIG_fail_arg("RectangleSprite",2,"float");
+  if(lua_gettop(L)>=3 && !lua_isnumber(L,3)) SWIG_fail_arg("RectangleSprite",3,"float");
+  if(lua_gettop(L)>=4 && !lua_isnumber(L,4)) SWIG_fail_arg("RectangleSprite",4,"float");
+  if(lua_gettop(L)>=5 && !lua_isnumber(L,5)) SWIG_fail_arg("RectangleSprite",5,"float");
+  if(lua_gettop(L)>=6 && !lua_isnumber(L,6)) SWIG_fail_arg("RectangleSprite",6,"float");
+  if(lua_gettop(L)>=7 && !lua_isnumber(L,7)) SWIG_fail_arg("RectangleSprite",7,"float");
+  if(lua_gettop(L)>=8 && !lua_isnumber(L,8)) SWIG_fail_arg("RectangleSprite",8,"unsigned char");
+  if(lua_gettop(L)>=9 && !lua_isnumber(L,9)) SWIG_fail_arg("RectangleSprite",9,"unsigned char");
+  if(lua_gettop(L)>=10 && !lua_isnumber(L,10)) SWIG_fail_arg("RectangleSprite",10,"unsigned char");
+  if(lua_gettop(L)>=11 && !lua_isnumber(L,11)) SWIG_fail_arg("RectangleSprite",11,"unsigned char");
+  if(lua_gettop(L)>=1){
+    arg1 = (float)lua_tonumber(L, 1);
+  }
+  if(lua_gettop(L)>=2){
+    arg2 = (float)lua_tonumber(L, 2);
+  }
+  if(lua_gettop(L)>=3){
+    arg3 = (float)lua_tonumber(L, 3);
+  }
+  if(lua_gettop(L)>=4){
+    arg4 = (float)lua_tonumber(L, 4);
+  }
+  if(lua_gettop(L)>=5){
+    arg5 = (float)lua_tonumber(L, 5);
+  }
+  if(lua_gettop(L)>=6){
+    arg6 = (float)lua_tonumber(L, 6);
+  }
+  if(lua_gettop(L)>=7){
+    arg7 = (float)lua_tonumber(L, 7);
+  }
+  if(lua_gettop(L)>=8){
+    SWIG_contract_assert((lua_tonumber(L,8)>=0),"number must not be negative");
+    arg8 = (unsigned char)lua_tonumber(L, 8);
+  }
+  if(lua_gettop(L)>=9){
+    SWIG_contract_assert((lua_tonumber(L,9)>=0),"number must not be negative");
+    arg9 = (unsigned char)lua_tonumber(L, 9);
+  }
+  if(lua_gettop(L)>=10){
+    SWIG_contract_assert((lua_tonumber(L,10)>=0),"number must not be negative");
+    arg10 = (unsigned char)lua_tonumber(L, 10);
+  }
+  if(lua_gettop(L)>=11){
+    SWIG_contract_assert((lua_tonumber(L,11)>=0),"number must not be negative");
+    arg11 = (unsigned char)lua_tonumber(L, 11);
+  }
+  result = (Sprite *)RectangleSprite(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_Sprite,1); SWIG_arg++; 
   return SWIG_arg;
   
@@ -4383,11 +3525,19 @@ static int _wrap_TMXObjectSprite(lua_State* L) {
   int SWIG_arg = 0;
   tmx_object *arg1 = (tmx_object *) 0 ;
   tmx_tile **arg2 = (tmx_tile **) 0 ;
+  unsigned char arg3 = (unsigned char) 255 ;
+  unsigned char arg4 = (unsigned char) 255 ;
+  unsigned char arg5 = (unsigned char) 255 ;
+  unsigned char arg6 = (unsigned char) 255 ;
   Sprite *result = 0 ;
   
-  SWIG_check_num_args("TMXObjectSprite",2,2)
+  SWIG_check_num_args("TMXObjectSprite",2,6)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("TMXObjectSprite",1,"tmx_object *");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("TMXObjectSprite",2,"tmx_tile **");
+  if(lua_gettop(L)>=3 && !lua_isnumber(L,3)) SWIG_fail_arg("TMXObjectSprite",3,"unsigned char");
+  if(lua_gettop(L)>=4 && !lua_isnumber(L,4)) SWIG_fail_arg("TMXObjectSprite",4,"unsigned char");
+  if(lua_gettop(L)>=5 && !lua_isnumber(L,5)) SWIG_fail_arg("TMXObjectSprite",5,"unsigned char");
+  if(lua_gettop(L)>=6 && !lua_isnumber(L,6)) SWIG_fail_arg("TMXObjectSprite",6,"unsigned char");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_tmx_object,0))){
     SWIG_fail_ptr("TMXObjectSprite",1,SWIGTYPE_p_tmx_object);
@@ -4398,7 +3548,23 @@ static int _wrap_TMXObjectSprite(lua_State* L) {
     SWIG_fail_ptr("TMXObjectSprite",2,SWIGTYPE_p_p_tmx_tile);
   }
   
-  result = (Sprite *)TMXObjectSprite(arg1,arg2);
+  if(lua_gettop(L)>=3){
+    SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative");
+    arg3 = (unsigned char)lua_tonumber(L, 3);
+  }
+  if(lua_gettop(L)>=4){
+    SWIG_contract_assert((lua_tonumber(L,4)>=0),"number must not be negative");
+    arg4 = (unsigned char)lua_tonumber(L, 4);
+  }
+  if(lua_gettop(L)>=5){
+    SWIG_contract_assert((lua_tonumber(L,5)>=0),"number must not be negative");
+    arg5 = (unsigned char)lua_tonumber(L, 5);
+  }
+  if(lua_gettop(L)>=6){
+    SWIG_contract_assert((lua_tonumber(L,6)>=0),"number must not be negative");
+    arg6 = (unsigned char)lua_tonumber(L, 6);
+  }
+  result = (Sprite *)TMXObjectSprite(arg1,arg2,arg3,arg4,arg5,arg6);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_Sprite,1); SWIG_arg++; 
   return SWIG_arg;
   
@@ -4424,11 +3590,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
 };
 static swig_lua_class* swig_SwigModule_classes[]= {
 &_wrap_class_Sprite,
-&_wrap_class_SpriteTexture,
-&_wrap_class_SpriteTile,
-&_wrap_class_SpriteLayer,
-&_wrap_class_SpriteShape,
-&_wrap_class_SpriteContent,
     0
 };
 static swig_lua_namespace* swig_SwigModule_namespaces[] = {
@@ -4449,72 +3610,24 @@ static swig_lua_namespace swig_SwigModule = {
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_Color = {"_p_Color", "Color *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_Rectangle = {"_p_Rectangle", "Rectangle *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Sprite = {"_p_Sprite", "struct Sprite *|Sprite *", 0, 0, (void*)&_wrap_class_Sprite, 0};
-static swig_type_info _swigt__p_SpriteContent = {"_p_SpriteContent", "union SpriteContent *|SpriteContent *", 0, 0, (void*)&_wrap_class_SpriteContent, 0};
-static swig_type_info _swigt__p_SpriteLayer = {"_p_SpriteLayer", "struct SpriteLayer *|SpriteLayer *", 0, 0, (void*)&_wrap_class_SpriteLayer, 0};
-static swig_type_info _swigt__p_SpriteShape = {"_p_SpriteShape", "struct SpriteShape *|SpriteShape *", 0, 0, (void*)&_wrap_class_SpriteShape, 0};
-static swig_type_info _swigt__p_SpriteTexture = {"_p_SpriteTexture", "struct SpriteTexture *|SpriteTexture *", 0, 0, (void*)&_wrap_class_SpriteTexture, 0};
-static swig_type_info _swigt__p_SpriteTile = {"_p_SpriteTile", "struct SpriteTile *|SpriteTile *", 0, 0, (void*)&_wrap_class_SpriteTile, 0};
-static swig_type_info _swigt__p_Texture2D = {"_p_Texture2D", "Texture2D *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_Vector2 = {"_p_Vector2", "Vector2 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_tmx_tile = {"_p_p_tmx_tile", "tmx_tile **", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_tmx_layer = {"_p_tmx_layer", "tmx_layer *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_tmx_map = {"_p_tmx_map", "tmx_map *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_tmx_object = {"_p_tmx_object", "tmx_object *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_tmx_tile = {"_p_tmx_tile", "tmx_tile *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_Color,
-  &_swigt__p_Rectangle,
   &_swigt__p_Sprite,
-  &_swigt__p_SpriteContent,
-  &_swigt__p_SpriteLayer,
-  &_swigt__p_SpriteShape,
-  &_swigt__p_SpriteTexture,
-  &_swigt__p_SpriteTile,
-  &_swigt__p_Texture2D,
-  &_swigt__p_Vector2,
   &_swigt__p_p_tmx_tile,
-  &_swigt__p_tmx_layer,
-  &_swigt__p_tmx_map,
   &_swigt__p_tmx_object,
-  &_swigt__p_tmx_tile,
 };
 
-static swig_cast_info _swigc__p_Color[] = {  {&_swigt__p_Color, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_Rectangle[] = {  {&_swigt__p_Rectangle, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Sprite[] = {  {&_swigt__p_Sprite, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_SpriteContent[] = {  {&_swigt__p_SpriteContent, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_SpriteLayer[] = {  {&_swigt__p_SpriteLayer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_SpriteShape[] = {  {&_swigt__p_SpriteShape, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_SpriteTexture[] = {  {&_swigt__p_SpriteTexture, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_SpriteTile[] = {  {&_swigt__p_SpriteTile, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_Texture2D[] = {  {&_swigt__p_Texture2D, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_Vector2[] = {  {&_swigt__p_Vector2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_tmx_tile[] = {  {&_swigt__p_p_tmx_tile, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_tmx_layer[] = {  {&_swigt__p_tmx_layer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_tmx_map[] = {  {&_swigt__p_tmx_map, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_tmx_object[] = {  {&_swigt__p_tmx_object, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_tmx_tile[] = {  {&_swigt__p_tmx_tile, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_Color,
-  _swigc__p_Rectangle,
   _swigc__p_Sprite,
-  _swigc__p_SpriteContent,
-  _swigc__p_SpriteLayer,
-  _swigc__p_SpriteShape,
-  _swigc__p_SpriteTexture,
-  _swigc__p_SpriteTile,
-  _swigc__p_Texture2D,
-  _swigc__p_Vector2,
   _swigc__p_p_tmx_tile,
-  _swigc__p_tmx_layer,
-  _swigc__p_tmx_map,
   _swigc__p_tmx_object,
-  _swigc__p_tmx_tile,
 };
 
 
