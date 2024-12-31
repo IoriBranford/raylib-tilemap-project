@@ -35,10 +35,6 @@ FetchContent_Declare(
 set(INSTALL_TMX OFF)
 add_subdirectory(tmx)
 
-set(RAYLIB_TMX_BUILD_EXAMPLE OFF)
-add_subdirectory(raylib-tmx/include)
-add_library(raylib-tmx STATIC raylib-tmx/src/raylib-tmx.c)
-target_link_libraries(raylib-tmx PUBLIC raylib tmx raylib-tmx-h)
 
 add_subdirectory(raylib-aseprite)
 

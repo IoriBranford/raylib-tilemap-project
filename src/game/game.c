@@ -41,15 +41,13 @@ static Camera2D camera;
 
 void InitGame()
 {
-    tmx_font_load_func = LoadTMXFont;
-    tmx_font_free_func = UnloadTMXFont;
-    map = LoadTMX("resources/desert.tmx");
+    map = LoadMap("resources/desert.tmx");
     SetCurrentPhase(LogoPhase);
 }
 
 void CloseGame()
 {
-    UnloadTMX(map);
+    UnloadMap(map);
 }
 
 void InitLayers(tmx_layer *head, tmx_map *map) {
@@ -164,7 +162,7 @@ void DrawTitle()
 void DrawGameplay()
 {
     // TODO: Draw GAMEPLAY screen here!
-    ClearBackground(ColorFromTMX(map->backgroundcolor));
+    ClearBackground(tmx2rl_Color(map->backgroundcolor));
     BeginMode2D(camera);
     DrawSprites();
     EndMode2D();

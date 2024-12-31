@@ -50,7 +50,7 @@ foreach(module engine/gfx2d)
 endforeach()
 
 #set(raylib_VERBOSE 1)
-target_link_libraries(game raylib-tmx raylib_aseprite box2d lua::lib)
+target_link_libraries(game raylib tmx raylib_aseprite box2d lua::lib)
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
