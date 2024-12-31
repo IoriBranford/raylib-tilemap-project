@@ -47,9 +47,19 @@ struct Sprite {
             Vector2 position, size;
         };
     };
-    Vector2 origin;
+    union {
+        struct {
+            float originX, originY;
+        };
+        Vector2 origin;
+    };
     float rotationDeg;
-    Color color;
+    union {
+        struct {
+            unsigned char red, green, blue, alpha;
+        };
+        Color color;
+    };
     bool active;
     unsigned animSpeedMS;
     float animTimer;
