@@ -1,4 +1,4 @@
-#include <tmx.h>
+#include <raylib-tmx.h>
 #include <stdio.h>
 #include <raylib.h>
 
@@ -42,4 +42,10 @@ void UnloadTMXFont(void *ptr) {
         UnloadFont(*((Font *) ptr));
         MemFree(ptr);
     }
+}
+
+tmx_map* LoadTMXMap(const char *path) {
+    tmx_font_load_func = LoadTMXFont;
+    tmx_font_free_func = UnloadTMXFont;
+    return LoadTMX(path);
 }
