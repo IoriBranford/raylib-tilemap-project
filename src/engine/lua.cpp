@@ -1,5 +1,7 @@
 #include <engine/tasks.h>
+#include <raylib.h>
 #include <lua.h>
+#include <luacode.h>
 #include <lualib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -133,10 +135,31 @@ int RequireLuaModule(lua_State *l) {
     return 1;
 }
 
-Task* NewLuaTask(const char *luaModule, int priority) {
-    lua_pushcfunction(lua, RequireLuaModule, "RequireLuaModule");
-    lua_pushstring(lua, luaModule);
-    lua_call(lua, 1, 1);
+Task* NewLuaTask(const char *luaFile, int priority) {
+    lua_getglobal(lua, luaFile);
+    if (lua_isfunction(lua, -1)) {
+        lua_call(lua, 0, 1);
+    } else {
+        lua_pop(lua, 1);
+        if (!FileExists(luaFile)) {
+            printf("LUA: file not found %s", luaFile);
+            return NULL;
+        }
+
+        int sourceSize = GetFileLength(luaFile);
+        char *source = LoadFileText(luaFile);
+        size_t bytecodeSize = 0;
+        char* bytecode = luau_compile(source, sourceSize, NULL, &bytecodeSize);
+        int errored = luau_load(lua, luaFile, bytecode, bytecodeSize, 0);
+        if (errored) {
+            printf("LUA: load error %s", lua_tostring(lua, -1));
+        } else {
+            lua_setglobal(lua, luaFile);
+            lua_call(lua, 0, 1);
+        }
+        free(bytecode);
+        UnloadFileText(source);
+    }
 
     if (lua_isfunction(lua, -1)) { // lua: function
         return NewLuaFunctionTask(priority);
