@@ -1,15 +1,15 @@
 #include <engine/tasks.h>
 #include <lua.h>
 #include <lualib.h>
-#include <lauxlib.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
 static lua_State *lua;
 
 void EndLuaTask(Task *t) {
-    intptr_t ref = t->data;
-    luaL_unref(lua, LUA_REGISTRYINDEX, ref);
+    int ref = (int)t->data;
+    lua_unref(lua, ref);
     EndTask(t);
 }
 
@@ -18,16 +18,16 @@ int Lua_EndTask(lua_State *l) {
     lua_pushstring(l, "__task"); // lua: self, "__task"
     lua_gettable(l, -2); // lua: self, task
     assert(lua_islightuserdata(l, -1));
-    Task *t = lua_touserdata(l, -1);
+    Task *t = (Task*)lua_touserdata(l, -1);
     lua_pop(l, 2);
     assert(t);
     EndLuaTask(t);
     return 0;
 }
 
-void Task_LuaFunction(Task *t) {
-    intptr_t ref = t->data;
-    lua_rawgeti(lua, LUA_REGISTRYINDEX, ref);
+extern "C" void Task_LuaFunction(Task *t) {
+    int ref = (int)t->data;
+    lua_getref(lua, ref);
     assert(lua_istable(lua, -1)); // lua: self
 
     lua_pushstring(lua, "__call"); // lua: self, "__call"
@@ -37,7 +37,7 @@ void Task_LuaFunction(Task *t) {
     lua_pushvalue(lua, -2); // lua: self, function, self
     int result = lua_pcall(lua, 1, 0, 0); // lua: self
     if (result != LUA_OK) { // lua: self, error
-        printf(luaL_tolstring(lua, -1, NULL));
+        printf(lua_tostring(lua, -1));
         printf("\n");
         lua_pop(lua, 1); // lua: self
         EndLuaTask(t);
@@ -45,9 +45,9 @@ void Task_LuaFunction(Task *t) {
     lua_pop(lua, 1); // lua:
 }
 
-void Task_LuaClass(Task *t) {
-    intptr_t ref = t->data;
-    lua_rawgeti(lua, LUA_REGISTRYINDEX, ref);
+extern "C" void Task_LuaClass(Task *t) {
+    int ref = (int)t->data;
+    lua_getref(lua, ref);
     assert(lua_istable(lua, -1)); // lua: self
 
     lua_pushstring(lua, "update"); // lua: self, "update"
@@ -56,7 +56,7 @@ void Task_LuaClass(Task *t) {
         lua_pushvalue(lua, -2); // lua: self, update, self
         int result = lua_pcall(lua, 1, 0, 0); // lua: self
         if (result != LUA_OK) { // lua: self, error
-            printf(luaL_tolstring(lua, -1, NULL));
+            printf(lua_tostring(lua, -1));
             printf("\n");
             lua_pop(lua, 1); // lua: self
             EndLuaTask(t);
@@ -70,29 +70,27 @@ Task* NewLuaClassTask(int priority) {
     lua_pushvalue(lua, -2); // lua: class, self, class
     lua_setmetatable(lua, -2); // lua: class, self
 
-    intptr_t ref = luaL_ref(lua, LUA_REGISTRYINDEX); // lua: class
+    int ref = lua_ref(lua, -1);
 
     Task *task = NewTask(Task_LuaClass, (void*)ref, priority);
-    lua_rawgeti(lua, LUA_REGISTRYINDEX, ref); // lua: class, self
     lua_pushstring(lua, "__task");// lua: class, self, "__task"
     lua_pushlightuserdata(lua, task); // lua: class, self, "__task", task
     lua_settable(lua, -3);  // lua: class, self
-    lua_pop(lua, 1); // lua: class
     
-    lua_pushstring(lua, "start");// lua: class, "start"
-    lua_gettable(lua, -2);  // lua: class, start
+    lua_pushstring(lua, "start");// lua: class, self, "start"
+    lua_gettable(lua, -2);  // lua: class, self, start
     if (lua_isfunction(lua, -1)) {
-        lua_rawgeti(lua, LUA_REGISTRYINDEX, ref); // lua: class, start, self
-        int result = lua_pcall(lua, 1, 0, 0); // lua: class
-        if (result != LUA_OK) { // lua: class, error
-            printf(luaL_tolstring(lua, -1, NULL));
+        lua_pushvalue(lua, -2); // lua: class, self, start, self
+        int result = lua_pcall(lua, 1, 0, 0); // lua: class, self
+        if (result != LUA_OK) { // lua: class, self, error
+            printf(lua_tostring(lua, -1));
             printf("\n");
-            lua_pop(lua, 1); // lua: class
+            lua_pop(lua, 1); // lua: class, self
         }
     } else {
-        lua_pop(lua, 1); // lua: class
+        lua_pop(lua, 1); // lua: class, self
     }
-    lua_pop(lua, 1); // lua:
+    lua_pop(lua, 2); // lua:
     return task;
 }
 
@@ -103,15 +101,13 @@ Task* NewLuaFunctionTask(int priority) { // lua: function
     lua_pushvalue(lua, -3); // lua: function, self, "__call", function
     lua_settable(lua, -3);  // lua: function, self
 
-    intptr_t ref = luaL_ref(lua, LUA_REGISTRYINDEX); // lua: function
-    lua_pop(lua, 1); // lua:
+    int ref = lua_ref(lua, -1);
 
     Task *task = NewTask(Task_LuaFunction, (void*)ref, priority);
-    lua_rawgeti(lua, LUA_REGISTRYINDEX, ref); // lua: self
-    lua_pushstring(lua, "__task");// lua: self, "__task"
-    lua_pushlightuserdata(lua, task); // lua: self, "__task", task
-    lua_settable(lua, -3);  // lua: self
-    lua_pop(lua, 1); // lua:
+    lua_pushstring(lua, "__task");// lua: function, self, "__task"
+    lua_pushlightuserdata(lua, task); // lua: function, self, "__task", task
+    lua_settable(lua, -3);  // lua: function, self
+    lua_pop(lua, 2); // lua:
     return task;
 }
 
@@ -138,7 +134,9 @@ int RequireLuaModule(lua_State *l) {
 }
 
 Task* NewLuaTask(const char *luaModule, int priority) {
-    luaL_requiref(lua, luaModule, RequireLuaModule, 0);
+    lua_pushcfunction(lua, RequireLuaModule, "RequireLuaModule");
+    lua_pushstring(lua, luaModule);
+    lua_call(lua, 1, 1);
 
     if (lua_isfunction(lua, -1)) { // lua: function
         return NewLuaFunctionTask(priority);

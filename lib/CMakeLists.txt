@@ -41,4 +41,7 @@ add_subdirectory(raylib-aseprite)
 set(LUA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua)
 add_subdirectory(luajit-cmake)
 
+set(LUAU_BUILD_TESTS OFF)
+add_subdirectory(luau)
+
 add_subdirectory(box2d)

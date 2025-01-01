@@ -11,46 +11,46 @@ add_subdirectory(lib)
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "-fms-extensions")
 endif()
-include_directories(include lib/lua)
+include_directories(include)
 add_executable(game
     src/engine/engine.c
     src/engine/assets.c
     src/engine/gfx2d.c
     src/engine/gfx2d_text.c
     src/engine/gfx2d_tmx.c
-    src/engine/lua.c
+    src/engine/lua.cpp
     src/engine/tasks.c
     src/game/game.c
     src/game/confetti.c
     src/game/physics.c
     src/game/main.c)
 
-foreach(module engine/gfx2d)
-    if(COMMAND swig)
-        set(SWIGCMD swig -lua
-            -Iinclude
-            -Ilib/box2d/include
-            -Ilib/raylib/src
-            -Ilib/raylib-tmx/include
-            -Ilib/raylib-aseprite/include
-            -Ilib/tmx/src
-            -o src/${module}_wrap.c
-            include/${module}.i)
-        execute_process(COMMAND ${SWIGCMD}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-        add_custom_command(COMMAND ${SWIGCMD}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            DEPENDS
-                ${CMAKE_SOURCE_DIR}/include/${module}.h
-                ${CMAKE_SOURCE_DIR}/include/${module}.i
-            OUTPUT ${CMAKE_SOURCE_DIR}/src/${module}_wrap.c)
-    endif()
-    target_sources(game PRIVATE
-        src/${module}_wrap.c)
-endforeach()
+# foreach(module engine/gfx2d)
+#     if(COMMAND swig)
+#         set(SWIGCMD swig -lua
+#             -Iinclude
+#             -Ilib/box2d/include
+#             -Ilib/raylib/src
+#             -Ilib/raylib-tmx/include
+#             -Ilib/raylib-aseprite/include
+#             -Ilib/tmx/src
+#             -o src/${module}_wrap.c
+#             include/${module}.i)
+#         execute_process(COMMAND ${SWIGCMD}
+#             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+#         add_custom_command(COMMAND ${SWIGCMD}
+#             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#             DEPENDS
+#                 ${CMAKE_SOURCE_DIR}/include/${module}.h
+#                 ${CMAKE_SOURCE_DIR}/include/${module}.i
+#             OUTPUT ${CMAKE_SOURCE_DIR}/src/${module}_wrap.c)
+#     endif()
+#     target_sources(game PRIVATE
+#         src/${module}_wrap.c)
+# endforeach()
 
 #set(raylib_VERBOSE 1)
-target_link_libraries(game raylib tmx raylib_aseprite box2d lua::lib)
+target_link_libraries(game raylib tmx raylib_aseprite box2d Luau.Common Luau.Compiler Luau.VM)
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
