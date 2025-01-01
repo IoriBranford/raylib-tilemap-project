@@ -23,3 +23,6 @@
 [submodule "lib/libxml2"]
 	path = lib/libxml2
 	url = https://gitlab.gnome.org/GNOME/libxml2.git
+[submodule "lib/luau"]
+	path = lib/luau
+	url = https://github.com/luau-lang/luau.git
