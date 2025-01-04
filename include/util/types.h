@@ -3,22 +3,9 @@
 
 #include <raylib.h>
 #include <tmx.h>
-#include <box2d/box2d.h>
 
 static inline Vector2 VECTOR2(float x, float y) {
     return (Vector2){x, y};
-}
-
-static inline b2Vec2 b2VEC2(float x, float y) {
-    return (b2Vec2){x, y};
-}
-
-static inline b2Vec2 rl2b2_Vec2(Vector2 v) {
-    return (b2Vec2){v.x, v.y};
-}
-
-static inline Vector2 b2torl_Vec2(b2Vec2 v) {
-    return (Vector2){v.x, v.y};
 }
 
 static inline Color tmx2rl_Color(uint32_t color) {

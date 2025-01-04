@@ -1,58 +1,52 @@
 #include <game/physics.h>
 
-static b2WorldId worldId;
+static cpSpace *space;
 
-void InitPhysics(float lengthUnitsPerMeter) {
-    if (B2_IS_NON_NULL(worldId))
+void InitPhysics() {
+    if (space)
         ClosePhysics();
-    b2SetLengthUnitsPerMeter(lengthUnitsPerMeter);
-    b2WorldDef worldDef = b2DefaultWorldDef();
-    worldDef.gravity.y = 0;
-	worldId = b2CreateWorld(&worldDef);
+    space = cpSpaceNew();
 }
 
 void ClosePhysics() {
-    if (B2_IS_NON_NULL(worldId))
-        b2DestroyWorld(worldId);
-    worldId = (b2WorldId){0};
+    if (space)
+        cpSpaceDestroy(space);
+    space = NULL;
 }
 
 void UpdatePhysics() {
-    b2World_Step(worldId, 1, 4);
+    cpSpaceStep(space, 1);
 }
 
-b2BodyId NewBody(Vector2 position, float rotationRad) {
-    b2BodyDef def = b2DefaultBodyDef();
-    def.type = b2_dynamicBody;
-    def.enableSleep = false;
-    def.position = (b2Vec2){ position.x, position.y };
-    b2CosSin rotation = b2ComputeCosSin(rotationRad);
-    def.rotation = (b2Rot){ rotation.cosine, rotation.sine };
-    def.fixedRotation = true;
-    return b2CreateBody(worldId, &def);
+cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad) {
+    cpBody *body = cpBodyNew(1, INFINITY);
+    cpBodySetPosition(body, cpv(x, y));
+    cpBodySetAngle(body, rotationRad);
+    cpSpaceAddBody(space, body);
+    return body;
 }
 
-b2ShapeId AddBodyCircle(b2BodyId body, Vector2 center, float radius) {
-    b2Circle circle = {
-        .center = (b2Vec2){ center.x, center.y },
-        .radius = radius
+cpShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy) {
+    cpShape *circle = cpCircleShapeNew(body, radius, cpv(ox, oy));
+    cpSpaceAddShape(space, circle);
+    return circle;
+}
+
+cpShape* AddBodyRectangle(cpBody *body, cpFloat w, cpFloat h, cpFloat ox, cpFloat oy) {
+    cpVect verts[] = {
+        cpv(0, 0),
+        cpv(0, h),
+        cpv(w, h),
+        cpv(w, 0)
     };
-    b2ShapeDef def = b2DefaultShapeDef();
-    return b2CreateCircleShape(body, &def, &circle);
+    cpPolyShape *poly = cpPolyShapeNew(body, 4, verts, cpTransformIdentity, 0);
+    cpSpaceAddShape(space, poly);
+    return poly;
 }
 
-b2ShapeId AddBodyRectangle(b2BodyId body, Vector2 halfSize, Vector2 offset, float rotationRad) {
-    b2CosSin rotation = b2ComputeCosSin(rotationRad);
-    b2Polygon box = b2MakeOffsetBox(halfSize.x, halfSize.y,
-        (b2Vec2){offset.x, offset.y},
-        (b2Rot){ rotation.cosine, rotation.sine });
-    b2ShapeDef def = b2DefaultShapeDef();
-    return b2CreatePolygonShape(body, &def, &box);
-}
-
-void UpdateSpriteFromBody(b2BodyId body, Sprite *sprite) {
-    b2Vec2 position = b2Body_GetPosition(body);
-    b2Rot rot = b2Body_GetRotation(body);
+void UpdateSpriteFromBody(cpBody *body, Sprite *sprite) {
+    cpVect position = cpBodyGetPosition(body);
+    cpFloat angle = cpBodyGetAngle(body);
     sprite->position = (Vector2){ position.x, position.y };
-    sprite->rotationDeg = RAD2DEG * b2Atan2(rot.s, rot.c);
+    sprite->rotationDeg = RAD2DEG * angle;
 }

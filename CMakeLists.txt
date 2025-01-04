@@ -11,7 +11,7 @@ add_subdirectory(lib)
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "-fms-extensions")
 endif()
-include_directories(include)
+include_directories(include lib/chipmunk2d/include/chipmunk)
 add_executable(game
     src/engine/engine.c
     src/engine/assets.c
@@ -24,7 +24,7 @@ add_executable(game
     src/game/physics.c
     src/game/main.c)
 #set(raylib_VERBOSE 1)
-target_link_libraries(game raylib tmx raylib_aseprite box2d)
+target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static)
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
