@@ -32,14 +32,17 @@ target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static libluajit 
 find_package(SWIG)
 if(SWIG_FOUND)
     include(UseSWIG)
-    swig_add_library(game_wrap TYPE STATIC LANGUAGE lua SOURCES
-        include/engine/gfx2d.i)
+    swig_add_library(game_wrap TYPE STATIC LANGUAGE lua
+        OUTFILE_DIR ${CMAKE_SOURCE_DIR}/src/wrap
+        SOURCES
+            include/engine/gfx2d.i
+    )
     target_include_directories(game_wrap PRIVATE ${GAME_INCLUDES})
     get_target_property(GAME_LINK_LIBRARIES game LINK_LIBRARIES)
     target_link_libraries(game_wrap ${GAME_LINK_LIBRARIES})
     target_link_libraries(game game_wrap)
 else()
-    target_sources(game PRIVATE src/engine/gfx2d_wrap.c)
+    target_sources(game PRIVATE src/wrap/gfx2dLUA_wrap.c)
 endif()
 
 # Web Configurations
