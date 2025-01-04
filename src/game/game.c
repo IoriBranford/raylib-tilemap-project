@@ -43,6 +43,11 @@ void InitGame()
 {
     map = LoadMap("resources/desert.tmx");
     SetCurrentPhase(LogoPhase);
+    InitTasks(256);
+    InitLua();
+    RunLua("resources/syntaxerr.lua");
+    RunLua("resources/runtimeerr.lua");
+    RunLua("resources/hello.lua");
 }
 
 void CloseGame()
@@ -74,12 +79,15 @@ void Task_SpawnConfetti(void *p) {
 void UpdateLogo()
 {
     // TODO: Update LOGO screen variables here!
+    UpdateTasks();
 
     framesCounter++;    // Count frames
 
     // Wait for 2 seconds (120 frames) before jumping to TITLE screen
     if (framesCounter > 120)
     {
+        CloseLua();
+        CloseTasks();
         SetCurrentPhase(TitlePhase);
     }
 }
