@@ -2728,8 +2728,9 @@ SWIG_Lua_dostring(lua_State *L, const char *str) {
 #define SWIGTYPE_p_Sprite swig_types[0]
 #define SWIGTYPE_p_p_tmx_tile swig_types[1]
 #define SWIGTYPE_p_tmx_object swig_types[2]
-static swig_type_info *swig_types[4];
-static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
+#define SWIGTYPE_p_unsigned_char swig_types[3]
+static swig_type_info *swig_types[5];
+static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2741,13 +2742,176 @@ static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
 
 #define SWIG_LUACODE   luaopen_gfx2d_luacode
 
+#ifdef __cplusplus	/* generic alloc/dealloc fns*/
+#define SWIG_ALLOC_ARRAY(TYPE,LEN) 	new TYPE[LEN]
+#define SWIG_FREE_ARRAY(PTR)		delete[] PTR
+#else
+#define SWIG_ALLOC_ARRAY(TYPE,LEN) 	(TYPE *)malloc(LEN*sizeof(TYPE))
+#define SWIG_FREE_ARRAY(PTR)		free(PTR)
+#endif
+/* counting the size of arrays:*/
+SWIGINTERN int SWIG_itable_size(lua_State* L, int index)
+{
+	int n=0;
+	while(1){
+		lua_rawgeti(L,index,n+1);
+		if (lua_isnil(L,-1))break;
+		++n;
+		lua_pop(L,1);
+	}
+	lua_pop(L,1);
+	return n;
+}
+
+SWIGINTERN int SWIG_table_size(lua_State* L, int index)
+{
+	int n=0;
+	lua_pushnil(L);  /* first key*/
+	while (lua_next(L, index) != 0) {
+		++n;
+		lua_pop(L, 1);  /* removes `value'; keeps `key' for next iteration*/
+	}
+	return n;
+}
+
+/* super macro to declare array typemap helper fns */
+#define SWIG_DECLARE_TYPEMAP_ARR_FN(NAME,TYPE)\
+	SWIGINTERN int SWIG_read_##NAME##_num_array(lua_State* L,int index,TYPE *array,int size){\
+		int i;\
+		for (i = 0; i < size; i++) {\
+			lua_rawgeti(L,index,i+1);\
+			if (lua_isnumber(L,-1)){\
+				array[i] = (TYPE)lua_tonumber(L,-1);\
+			} else {\
+				lua_pop(L,1);\
+				return 0;\
+			}\
+			lua_pop(L,1);\
+		}\
+		return 1;\
+	}\
+	SWIGINTERN TYPE* SWIG_get_##NAME##_num_array_fixed(lua_State* L, int index, int size){\
+		TYPE *array;\
+		if (!lua_istable(L,index) || SWIG_itable_size(L,index) != size) {\
+			SWIG_Lua_pushferrstring(L,"expected a table of size %d",size);\
+			return 0;\
+		}\
+		array=SWIG_ALLOC_ARRAY(TYPE,size);\
+		if (!SWIG_read_##NAME##_num_array(L,index,array,size)){\
+			SWIG_Lua_pusherrstring(L,"table must contain numbers");\
+			SWIG_FREE_ARRAY(array);\
+			return 0;\
+		}\
+		return array;\
+	}\
+	SWIGINTERN TYPE* SWIG_get_##NAME##_num_array_var(lua_State* L, int index, int* size)\
+	{\
+		TYPE *array;\
+		if (!lua_istable(L,index)) {\
+			SWIG_Lua_pusherrstring(L,"expected a table");\
+			return 0;\
+		}\
+		*size=SWIG_itable_size(L,index);\
+		if (*size<1){\
+			SWIG_Lua_pusherrstring(L,"table appears to be empty");\
+			return 0;\
+		}\
+		array=SWIG_ALLOC_ARRAY(TYPE,*size);\
+		if (!SWIG_read_##NAME##_num_array(L,index,array,*size)){\
+			SWIG_Lua_pusherrstring(L,"table must contain numbers");\
+			SWIG_FREE_ARRAY(array);\
+			return 0;\
+		}\
+		return array;\
+	}\
+	SWIGINTERN void SWIG_write_##NAME##_num_array(lua_State* L,TYPE *array,int size){\
+		int i;\
+		lua_newtable(L);\
+		for (i = 0; i < size; i++){\
+			lua_pushnumber(L,(lua_Number)array[i]);\
+			lua_rawseti(L,-2,i+1);/* -1 is the number, -2 is the table*/ \
+		}\
+	}
+
+SWIG_DECLARE_TYPEMAP_ARR_FN(schar,signed char)
+SWIG_DECLARE_TYPEMAP_ARR_FN(uchar,unsigned char)
+SWIG_DECLARE_TYPEMAP_ARR_FN(int,int)
+SWIG_DECLARE_TYPEMAP_ARR_FN(uint,unsigned int)
+SWIG_DECLARE_TYPEMAP_ARR_FN(short,short)
+SWIG_DECLARE_TYPEMAP_ARR_FN(ushort,unsigned short)
+SWIG_DECLARE_TYPEMAP_ARR_FN(long,long)
+SWIG_DECLARE_TYPEMAP_ARR_FN(ulong,unsigned long)
+SWIG_DECLARE_TYPEMAP_ARR_FN(float,float)
+SWIG_DECLARE_TYPEMAP_ARR_FN(double,double)
+
+SWIGINTERN int SWIG_read_ptr_array(lua_State* L,int index,void **array,int size,swig_type_info *type){
+	int i;
+	for (i = 0; i < size; i++) {
+		lua_rawgeti(L,index,i+1);
+		if (!lua_isuserdata(L,-1) || SWIG_ConvertPtr(L,-1,&array[i],type,0)==-1){
+			lua_pop(L,1);
+			return 0;
+		}
+		lua_pop(L,1);
+	}
+	return 1;
+}
+SWIGINTERN void** SWIG_get_ptr_array_fixed(lua_State* L, int index, int size,swig_type_info *type){
+	void **array;
+	if (!lua_istable(L,index) || SWIG_itable_size(L,index) != size) {
+		SWIG_Lua_pushferrstring(L,"expected a table of size %d",size);
+		return 0;
+	}
+	array=SWIG_ALLOC_ARRAY(void*,size);
+	if (!SWIG_read_ptr_array(L,index,array,size,type)){
+		SWIG_Lua_pushferrstring(L,"table must contain pointers of type %s",type->name);
+		SWIG_FREE_ARRAY(array);
+		return 0;
+	}
+	return array;
+}
+SWIGINTERN void** SWIG_get_ptr_array_var(lua_State* L, int index, int* size,swig_type_info *type){
+	void **array;
+	if (!lua_istable(L,index)) {
+		SWIG_Lua_pusherrstring(L,"expected a table");
+		return 0;
+	}
+	*size=SWIG_itable_size(L,index);
+	if (*size<1){
+		SWIG_Lua_pusherrstring(L,"table appears to be empty");
+		return 0;
+	}
+	array=SWIG_ALLOC_ARRAY(void*,*size);
+	if (!SWIG_read_ptr_array(L,index,array,*size,type)){
+		SWIG_Lua_pushferrstring(L,"table must contain pointers of type %s",type->name);
+		SWIG_FREE_ARRAY(array);
+		return 0;
+	}
+	return array;
+}
+SWIGINTERN void SWIG_write_ptr_array(lua_State* L,void **array,int size,swig_type_info *type,int own){
+	int i;
+	lua_newtable(L);
+	for (i = 0; i < size; i++){
+		SWIG_NewPointerObj(L,array[i],type,own);
+		lua_rawseti(L,-2,i+1);/* -1 is the number, -2 is the table*/
+	}
+}
+
+
 #include <engine/gfx2d.h>
 
 SWIGINTERN void delete_Sprite(struct Sprite *self){
-        ReleaseSprite(self);
-    }
+            ReleaseSprite(self);
+        }
+SWIGINTERN void Sprite_Destroy(struct Sprite *self){
+            ReleaseSprite(self);
+        }
+SWIGINTERN void Sprite_SetColor(struct Sprite *self,unsigned char r,unsigned char g,unsigned char b,unsigned char a){
+            self->color = (Color){r, g, b, a};
+        }
 
-Sprite* RectangleSprite(float x, float y, float width, float height, float originX, float originY, float rotationDeg, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+Sprite* NewRectangle(float x, float y, float width, float height, float originX, float originY, float rotationDeg, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
     return NewRectangleSprite(
         (Rectangle){x, y, width, height},
         (Vector2){originX, originY},
@@ -2755,13 +2919,177 @@ Sprite* RectangleSprite(float x, float y, float width, float height, float origi
         (Color){red, green, blue, alpha}
     );
 }
-Sprite* TMXObjectSprite(tmx_object *o, tmx_tile **maptiles, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+Sprite* FromTMXObject(tmx_object *o, tmx_tile **maptiles, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
     return NewTMXObjectSprite(0, maptiles, (Color){red, green, blue, alpha});
 }
+
+void Sprite_GetColor(Sprite *self, unsigned char *r, unsigned char *g, unsigned char *b, unsigned char *a){
+    *r = self->red;
+    *g = self->green;
+    *b = self->blue;
+    *a = self->alpha;
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+static int _wrap_NumActive(lua_State* L) {
+  int SWIG_arg = 0;
+  size_t result;
+  
+  SWIG_check_num_args("NumSpritesActive",0,0)
+  result = NumSpritesActive();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_NumFree(lua_State* L) {
+  int SWIG_arg = 0;
+  size_t result;
+  
+  SWIG_check_num_args("NumSpritesFree",0,0)
+  result = NumSpritesFree();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_NewRectangle(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 = (float) 0 ;
+  float arg2 = (float) 0 ;
+  float arg3 = (float) 1 ;
+  float arg4 = (float) 1 ;
+  float arg5 = (float) 0 ;
+  float arg6 = (float) 0 ;
+  float arg7 = (float) 0 ;
+  unsigned char arg8 = (unsigned char) 255 ;
+  unsigned char arg9 = (unsigned char) 255 ;
+  unsigned char arg10 = (unsigned char) 255 ;
+  unsigned char arg11 = (unsigned char) 255 ;
+  Sprite *result = 0 ;
+  
+  SWIG_check_num_args("NewRectangle",0,11)
+  if(lua_gettop(L)>=1 && !lua_isnumber(L,1)) SWIG_fail_arg("NewRectangle",1,"float");
+  if(lua_gettop(L)>=2 && !lua_isnumber(L,2)) SWIG_fail_arg("NewRectangle",2,"float");
+  if(lua_gettop(L)>=3 && !lua_isnumber(L,3)) SWIG_fail_arg("NewRectangle",3,"float");
+  if(lua_gettop(L)>=4 && !lua_isnumber(L,4)) SWIG_fail_arg("NewRectangle",4,"float");
+  if(lua_gettop(L)>=5 && !lua_isnumber(L,5)) SWIG_fail_arg("NewRectangle",5,"float");
+  if(lua_gettop(L)>=6 && !lua_isnumber(L,6)) SWIG_fail_arg("NewRectangle",6,"float");
+  if(lua_gettop(L)>=7 && !lua_isnumber(L,7)) SWIG_fail_arg("NewRectangle",7,"float");
+  if(lua_gettop(L)>=8 && !lua_isnumber(L,8)) SWIG_fail_arg("NewRectangle",8,"unsigned char");
+  if(lua_gettop(L)>=9 && !lua_isnumber(L,9)) SWIG_fail_arg("NewRectangle",9,"unsigned char");
+  if(lua_gettop(L)>=10 && !lua_isnumber(L,10)) SWIG_fail_arg("NewRectangle",10,"unsigned char");
+  if(lua_gettop(L)>=11 && !lua_isnumber(L,11)) SWIG_fail_arg("NewRectangle",11,"unsigned char");
+  if(lua_gettop(L)>=1){
+    arg1 = (float)lua_tonumber(L, 1);
+  }
+  if(lua_gettop(L)>=2){
+    arg2 = (float)lua_tonumber(L, 2);
+  }
+  if(lua_gettop(L)>=3){
+    arg3 = (float)lua_tonumber(L, 3);
+  }
+  if(lua_gettop(L)>=4){
+    arg4 = (float)lua_tonumber(L, 4);
+  }
+  if(lua_gettop(L)>=5){
+    arg5 = (float)lua_tonumber(L, 5);
+  }
+  if(lua_gettop(L)>=6){
+    arg6 = (float)lua_tonumber(L, 6);
+  }
+  if(lua_gettop(L)>=7){
+    arg7 = (float)lua_tonumber(L, 7);
+  }
+  if(lua_gettop(L)>=8){
+    SWIG_contract_assert((lua_tonumber(L,8)>=0),"number must not be negative");
+    arg8 = (unsigned char)lua_tonumber(L, 8);
+  }
+  if(lua_gettop(L)>=9){
+    SWIG_contract_assert((lua_tonumber(L,9)>=0),"number must not be negative");
+    arg9 = (unsigned char)lua_tonumber(L, 9);
+  }
+  if(lua_gettop(L)>=10){
+    SWIG_contract_assert((lua_tonumber(L,10)>=0),"number must not be negative");
+    arg10 = (unsigned char)lua_tonumber(L, 10);
+  }
+  if(lua_gettop(L)>=11){
+    SWIG_contract_assert((lua_tonumber(L,11)>=0),"number must not be negative");
+    arg11 = (unsigned char)lua_tonumber(L, 11);
+  }
+  result = (Sprite *)NewRectangle(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Sprite,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_FromTMXObject(lua_State* L) {
+  int SWIG_arg = 0;
+  tmx_object *arg1 = (tmx_object *) 0 ;
+  tmx_tile **arg2 = (tmx_tile **) 0 ;
+  unsigned char arg3 = (unsigned char) 255 ;
+  unsigned char arg4 = (unsigned char) 255 ;
+  unsigned char arg5 = (unsigned char) 255 ;
+  unsigned char arg6 = (unsigned char) 255 ;
+  Sprite *result = 0 ;
+  
+  SWIG_check_num_args("FromTMXObject",2,6)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("FromTMXObject",1,"tmx_object *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("FromTMXObject",2,"tmx_tile **");
+  if(lua_gettop(L)>=3 && !lua_isnumber(L,3)) SWIG_fail_arg("FromTMXObject",3,"unsigned char");
+  if(lua_gettop(L)>=4 && !lua_isnumber(L,4)) SWIG_fail_arg("FromTMXObject",4,"unsigned char");
+  if(lua_gettop(L)>=5 && !lua_isnumber(L,5)) SWIG_fail_arg("FromTMXObject",5,"unsigned char");
+  if(lua_gettop(L)>=6 && !lua_isnumber(L,6)) SWIG_fail_arg("FromTMXObject",6,"unsigned char");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_tmx_object,0))){
+    SWIG_fail_ptr("FromTMXObject",1,SWIGTYPE_p_tmx_object);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_p_tmx_tile,0))){
+    SWIG_fail_ptr("FromTMXObject",2,SWIGTYPE_p_p_tmx_tile);
+  }
+  
+  if(lua_gettop(L)>=3){
+    SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative");
+    arg3 = (unsigned char)lua_tonumber(L, 3);
+  }
+  if(lua_gettop(L)>=4){
+    SWIG_contract_assert((lua_tonumber(L,4)>=0),"number must not be negative");
+    arg4 = (unsigned char)lua_tonumber(L, 4);
+  }
+  if(lua_gettop(L)>=5){
+    SWIG_contract_assert((lua_tonumber(L,5)>=0),"number must not be negative");
+    arg5 = (unsigned char)lua_tonumber(L, 5);
+  }
+  if(lua_gettop(L)>=6){
+    SWIG_contract_assert((lua_tonumber(L,6)>=0),"number must not be negative");
+    arg6 = (unsigned char)lua_tonumber(L, 6);
+  }
+  result = (Sprite *)FromTMXObject(arg1,arg2,arg3,arg4,arg5,arg6);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Sprite,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
 static int _wrap_Sprite_x_set(lua_State* L) {
   int SWIG_arg = 0;
   struct Sprite *arg1 = (struct Sprite *) 0 ;
@@ -3341,6 +3669,101 @@ static int _wrap_Sprite_animTimer_get(lua_State* L) {
 }
 
 
+static int _wrap_Sprite_Destroy(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  
+  SWIG_check_num_args("Sprite::Destroy",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::Destroy",1,"struct Sprite *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_Destroy",1,SWIGTYPE_p_Sprite);
+  }
+  
+  Sprite_Destroy(arg1);
+  
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_GetColor(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char *arg2 = (unsigned char *) 0 ;
+  unsigned char *arg3 = (unsigned char *) 0 ;
+  unsigned char *arg4 = (unsigned char *) 0 ;
+  unsigned char *arg5 = (unsigned char *) 0 ;
+  unsigned char temp2 ;
+  unsigned char temp3 ;
+  unsigned char temp4 ;
+  unsigned char temp5 ;
+  
+  arg2 = &temp2; 
+  arg3 = &temp3; 
+  arg4 = &temp4; 
+  arg5 = &temp5; 
+  SWIG_check_num_args("Sprite::GetColor",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::GetColor",1,"struct Sprite *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_GetColor",1,SWIGTYPE_p_Sprite);
+  }
+  
+  Sprite_GetColor(arg1,arg2,arg3,arg4,arg5);
+  
+  lua_pushnumber(L, (lua_Number) *arg2); SWIG_arg++;
+  lua_pushnumber(L, (lua_Number) *arg3); SWIG_arg++;
+  lua_pushnumber(L, (lua_Number) *arg4); SWIG_arg++;
+  lua_pushnumber(L, (lua_Number) *arg5); SWIG_arg++;
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
+static int _wrap_Sprite_SetColor(lua_State* L) {
+  int SWIG_arg = 0;
+  struct Sprite *arg1 = (struct Sprite *) 0 ;
+  unsigned char arg2 ;
+  unsigned char arg3 ;
+  unsigned char arg4 ;
+  unsigned char arg5 ;
+  
+  SWIG_check_num_args("Sprite::SetColor",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Sprite::SetColor",1,"struct Sprite *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Sprite::SetColor",2,"unsigned char");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("Sprite::SetColor",3,"unsigned char");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("Sprite::SetColor",4,"unsigned char");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("Sprite::SetColor",5,"unsigned char");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,0))){
+    SWIG_fail_ptr("Sprite_SetColor",1,SWIGTYPE_p_Sprite);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative");
+  arg2 = (unsigned char)lua_tonumber(L, 2);
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative");
+  arg3 = (unsigned char)lua_tonumber(L, 3);
+  SWIG_contract_assert((lua_tonumber(L,4)>=0),"number must not be negative");
+  arg4 = (unsigned char)lua_tonumber(L, 4);
+  SWIG_contract_assert((lua_tonumber(L,5)>=0),"number must not be negative");
+  arg5 = (unsigned char)lua_tonumber(L, 5);
+  Sprite_SetColor(arg1,arg2,arg3,arg4,arg5);
+  
+  return SWIG_arg;
+  
+  fail: SWIGUNUSED;
+  lua_error(L);
+  return 0;
+}
+
+
 static void swig_delete_Sprite(void *obj) {
 struct Sprite *arg1 = (struct Sprite *) obj;
 delete_Sprite(arg1);
@@ -3362,6 +3785,9 @@ static swig_lua_attribute swig_Sprite_attributes[] = {
     {0,0,0}
 };
 static swig_lua_method swig_Sprite_methods[]= {
+    { "Destroy", _wrap_Sprite_Destroy},
+    { "GetColor", _wrap_Sprite_GetColor},
+    { "SetColor", _wrap_Sprite_SetColor},
     {0,0}
 };
 static swig_lua_method swig_Sprite_meta[] = {
@@ -3393,184 +3819,6 @@ static swig_lua_class *swig_Sprite_bases[] = {0};
 static const char *swig_Sprite_base_names[] = {0};
 static swig_lua_class _wrap_class_Sprite = { "Sprite", "Sprite", &SWIGTYPE_p_Sprite,0, swig_delete_Sprite, swig_Sprite_methods, swig_Sprite_attributes, &swig_Sprite_Sf_SwigStatic, swig_Sprite_meta, swig_Sprite_bases, swig_Sprite_base_names };
 
-static int _wrap_NumSpritesActive(lua_State* L) {
-  int SWIG_arg = 0;
-  size_t result;
-  
-  SWIG_check_num_args("NumSpritesActive",0,0)
-  result = NumSpritesActive();
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_NumSpritesFree(lua_State* L) {
-  int SWIG_arg = 0;
-  size_t result;
-  
-  SWIG_check_num_args("NumSpritesFree",0,0)
-  result = NumSpritesFree();
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_ReleaseSprite(lua_State* L) {
-  int SWIG_arg = 0;
-  Sprite *arg1 = (Sprite *) 0 ;
-  
-  SWIG_check_num_args("ReleaseSprite",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ReleaseSprite",1,"Sprite *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Sprite,SWIG_POINTER_DISOWN))){
-    SWIG_fail_ptr("ReleaseSprite",1,SWIGTYPE_p_Sprite);
-  }
-  
-  ReleaseSprite(arg1);
-  
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_RectangleSprite(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 = (float) 0 ;
-  float arg2 = (float) 0 ;
-  float arg3 = (float) 1 ;
-  float arg4 = (float) 1 ;
-  float arg5 = (float) 0 ;
-  float arg6 = (float) 0 ;
-  float arg7 = (float) 0 ;
-  unsigned char arg8 = (unsigned char) 255 ;
-  unsigned char arg9 = (unsigned char) 255 ;
-  unsigned char arg10 = (unsigned char) 255 ;
-  unsigned char arg11 = (unsigned char) 255 ;
-  Sprite *result = 0 ;
-  
-  SWIG_check_num_args("RectangleSprite",0,11)
-  if(lua_gettop(L)>=1 && !lua_isnumber(L,1)) SWIG_fail_arg("RectangleSprite",1,"float");
-  if(lua_gettop(L)>=2 && !lua_isnumber(L,2)) SWIG_fail_arg("RectangleSprite",2,"float");
-  if(lua_gettop(L)>=3 && !lua_isnumber(L,3)) SWIG_fail_arg("RectangleSprite",3,"float");
-  if(lua_gettop(L)>=4 && !lua_isnumber(L,4)) SWIG_fail_arg("RectangleSprite",4,"float");
-  if(lua_gettop(L)>=5 && !lua_isnumber(L,5)) SWIG_fail_arg("RectangleSprite",5,"float");
-  if(lua_gettop(L)>=6 && !lua_isnumber(L,6)) SWIG_fail_arg("RectangleSprite",6,"float");
-  if(lua_gettop(L)>=7 && !lua_isnumber(L,7)) SWIG_fail_arg("RectangleSprite",7,"float");
-  if(lua_gettop(L)>=8 && !lua_isnumber(L,8)) SWIG_fail_arg("RectangleSprite",8,"unsigned char");
-  if(lua_gettop(L)>=9 && !lua_isnumber(L,9)) SWIG_fail_arg("RectangleSprite",9,"unsigned char");
-  if(lua_gettop(L)>=10 && !lua_isnumber(L,10)) SWIG_fail_arg("RectangleSprite",10,"unsigned char");
-  if(lua_gettop(L)>=11 && !lua_isnumber(L,11)) SWIG_fail_arg("RectangleSprite",11,"unsigned char");
-  if(lua_gettop(L)>=1){
-    arg1 = (float)lua_tonumber(L, 1);
-  }
-  if(lua_gettop(L)>=2){
-    arg2 = (float)lua_tonumber(L, 2);
-  }
-  if(lua_gettop(L)>=3){
-    arg3 = (float)lua_tonumber(L, 3);
-  }
-  if(lua_gettop(L)>=4){
-    arg4 = (float)lua_tonumber(L, 4);
-  }
-  if(lua_gettop(L)>=5){
-    arg5 = (float)lua_tonumber(L, 5);
-  }
-  if(lua_gettop(L)>=6){
-    arg6 = (float)lua_tonumber(L, 6);
-  }
-  if(lua_gettop(L)>=7){
-    arg7 = (float)lua_tonumber(L, 7);
-  }
-  if(lua_gettop(L)>=8){
-    SWIG_contract_assert((lua_tonumber(L,8)>=0),"number must not be negative");
-    arg8 = (unsigned char)lua_tonumber(L, 8);
-  }
-  if(lua_gettop(L)>=9){
-    SWIG_contract_assert((lua_tonumber(L,9)>=0),"number must not be negative");
-    arg9 = (unsigned char)lua_tonumber(L, 9);
-  }
-  if(lua_gettop(L)>=10){
-    SWIG_contract_assert((lua_tonumber(L,10)>=0),"number must not be negative");
-    arg10 = (unsigned char)lua_tonumber(L, 10);
-  }
-  if(lua_gettop(L)>=11){
-    SWIG_contract_assert((lua_tonumber(L,11)>=0),"number must not be negative");
-    arg11 = (unsigned char)lua_tonumber(L, 11);
-  }
-  result = (Sprite *)RectangleSprite(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Sprite,1); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
-static int _wrap_TMXObjectSprite(lua_State* L) {
-  int SWIG_arg = 0;
-  tmx_object *arg1 = (tmx_object *) 0 ;
-  tmx_tile **arg2 = (tmx_tile **) 0 ;
-  unsigned char arg3 = (unsigned char) 255 ;
-  unsigned char arg4 = (unsigned char) 255 ;
-  unsigned char arg5 = (unsigned char) 255 ;
-  unsigned char arg6 = (unsigned char) 255 ;
-  Sprite *result = 0 ;
-  
-  SWIG_check_num_args("TMXObjectSprite",2,6)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("TMXObjectSprite",1,"tmx_object *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("TMXObjectSprite",2,"tmx_tile **");
-  if(lua_gettop(L)>=3 && !lua_isnumber(L,3)) SWIG_fail_arg("TMXObjectSprite",3,"unsigned char");
-  if(lua_gettop(L)>=4 && !lua_isnumber(L,4)) SWIG_fail_arg("TMXObjectSprite",4,"unsigned char");
-  if(lua_gettop(L)>=5 && !lua_isnumber(L,5)) SWIG_fail_arg("TMXObjectSprite",5,"unsigned char");
-  if(lua_gettop(L)>=6 && !lua_isnumber(L,6)) SWIG_fail_arg("TMXObjectSprite",6,"unsigned char");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_tmx_object,0))){
-    SWIG_fail_ptr("TMXObjectSprite",1,SWIGTYPE_p_tmx_object);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_p_tmx_tile,0))){
-    SWIG_fail_ptr("TMXObjectSprite",2,SWIGTYPE_p_p_tmx_tile);
-  }
-  
-  if(lua_gettop(L)>=3){
-    SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative");
-    arg3 = (unsigned char)lua_tonumber(L, 3);
-  }
-  if(lua_gettop(L)>=4){
-    SWIG_contract_assert((lua_tonumber(L,4)>=0),"number must not be negative");
-    arg4 = (unsigned char)lua_tonumber(L, 4);
-  }
-  if(lua_gettop(L)>=5){
-    SWIG_contract_assert((lua_tonumber(L,5)>=0),"number must not be negative");
-    arg5 = (unsigned char)lua_tonumber(L, 5);
-  }
-  if(lua_gettop(L)>=6){
-    SWIG_contract_assert((lua_tonumber(L,6)>=0),"number must not be negative");
-    arg6 = (unsigned char)lua_tonumber(L, 6);
-  }
-  result = (Sprite *)TMXObjectSprite(arg1,arg2,arg3,arg4,arg5,arg6);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Sprite,1); SWIG_arg++; 
-  return SWIG_arg;
-  
-  fail: SWIGUNUSED;
-  lua_error(L);
-  return 0;
-}
-
-
 static swig_lua_attribute swig_SwigModule_attributes[] = {
     {0,0,0}
 };
@@ -3578,11 +3826,10 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {0,0,0,0,0,0}
 };
 static swig_lua_method swig_SwigModule_methods[]= {
-    { "NumSpritesActive", _wrap_NumSpritesActive},
-    { "NumSpritesFree", _wrap_NumSpritesFree},
-    { "ReleaseSprite", _wrap_ReleaseSprite},
-    { "RectangleSprite", _wrap_RectangleSprite},
-    { "TMXObjectSprite", _wrap_TMXObjectSprite},
+    { "NumActive", _wrap_NumActive},
+    { "NumFree", _wrap_NumFree},
+    { "NewRectangle", _wrap_NewRectangle},
+    { "FromTMXObject", _wrap_FromTMXObject},
     {0,0}
 };
 static swig_lua_class* swig_SwigModule_classes[]= {
@@ -3610,21 +3857,25 @@ static swig_lua_namespace swig_SwigModule = {
 static swig_type_info _swigt__p_Sprite = {"_p_Sprite", "struct Sprite *|Sprite *", 0, 0, (void*)&_wrap_class_Sprite, 0};
 static swig_type_info _swigt__p_p_tmx_tile = {"_p_p_tmx_tile", "tmx_tile **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_tmx_object = {"_p_tmx_object", "tmx_object *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_Sprite,
   &_swigt__p_p_tmx_tile,
   &_swigt__p_tmx_object,
+  &_swigt__p_unsigned_char,
 };
 
 static swig_cast_info _swigc__p_Sprite[] = {  {&_swigt__p_Sprite, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_tmx_tile[] = {  {&_swigt__p_p_tmx_tile, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_tmx_object[] = {  {&_swigt__p_tmx_object, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_Sprite,
   _swigc__p_p_tmx_tile,
   _swigc__p_tmx_object,
+  _swigc__p_unsigned_char,
 };
 
 

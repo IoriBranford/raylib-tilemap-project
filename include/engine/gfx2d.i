@@ -1,11 +1,18 @@
 %module gfx2d
+%include <typemaps.i>
+%nodefaultctor;
+
 %{
 #include <engine/gfx2d.h>
 %}
 
-%nodefaultctor;
-%nodefaultdtor;
-%delobject ReleaseSprite;
+%rename(NumActive) NumSpritesActive;
+%rename(NumFree) NumSpritesFree;
+size_t NumSpritesActive();
+size_t NumSpritesFree();
+
+Sprite* NewRectangle(float x = 0, float y = 0, float width = 1, float height = 1, float originX = 0, float originY = 0, float rotationDeg = 0, unsigned char red = 255, unsigned char green = 255, unsigned char blue = 255, unsigned char alpha = 255);
+Sprite* FromTMXObject(tmx_object *o, tmx_tile **maptiles, unsigned char red = 255, unsigned char green = 255, unsigned char blue = 255, unsigned char alpha = 255);
 
 struct Sprite {
     // union {
@@ -62,18 +69,30 @@ struct Sprite {
 
     //     // AsepriteTag asepriteTag;
     // };
+
+    %extend {
+        ~Sprite() {
+            ReleaseSprite($self);
+        }
+
+        void Destroy() {
+            ReleaseSprite($self);
+        }
+
+        void GetColor(unsigned char *OUTPUT, unsigned char *OUTPUT, unsigned char *OUTPUT, unsigned char *OUTPUT);
+
+        void SetColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+            $self->color = (Color){r, g, b, a};
+        }
+
+        // bool IsOnScreen() {
+        //     return IsSpriteOnScreen($self);
+        // }
+    }
 };
 
-size_t NumSpritesActive();
-size_t NumSpritesFree();
-
-void ReleaseSprite(Sprite* sprite);
-
-%newobject RectangleSprite;
-%newobject TMXObjectSprite;
-
 %{
-Sprite* RectangleSprite(float x, float y, float width, float height, float originX, float originY, float rotationDeg, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+Sprite* NewRectangle(float x, float y, float width, float height, float originX, float originY, float rotationDeg, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
     return NewRectangleSprite(
         (Rectangle){x, y, width, height},
         (Vector2){originX, originY},
@@ -81,16 +100,14 @@ Sprite* RectangleSprite(float x, float y, float width, float height, float origi
         (Color){red, green, blue, alpha}
     );
 }
-Sprite* TMXObjectSprite(tmx_object *o, tmx_tile **maptiles, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+Sprite* FromTMXObject(tmx_object *o, tmx_tile **maptiles, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
     return NewTMXObjectSprite(0, maptiles, (Color){red, green, blue, alpha});
 }
+
+void Sprite_GetColor(Sprite *self, unsigned char *r, unsigned char *g, unsigned char *b, unsigned char *a){
+    *r = self->red;
+    *g = self->green;
+    *b = self->blue;
+    *a = self->alpha;
+};
 %}
-
-Sprite* RectangleSprite(float x = 0, float y = 0, float width = 1, float height = 1, float originX = 0, float originY = 0, float rotationDeg = 0, unsigned char red = 255, unsigned char green = 255, unsigned char blue = 255, unsigned char alpha = 255);
-Sprite* TMXObjectSprite(tmx_object *o, tmx_tile **maptiles, unsigned char red = 255, unsigned char green = 255, unsigned char blue = 255, unsigned char alpha = 255);
-
-%extend Sprite {
-    ~Sprite() {
-        ReleaseSprite($self);
-    }
-}
