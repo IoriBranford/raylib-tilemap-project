@@ -37,13 +37,12 @@ if(SWIG_FOUND)
         SOURCES
             include/engine/gfx2d.i
     )
-    target_include_directories(game_wrap PRIVATE ${GAME_INCLUDES})
-    get_target_property(GAME_LINK_LIBRARIES game LINK_LIBRARIES)
-    target_link_libraries(game_wrap ${GAME_LINK_LIBRARIES})
-    target_link_libraries(game game_wrap)
 else()
-    target_sources(game PRIVATE src/wrap/gfx2dLUA_wrap.c)
+    add_library(game_wrap STATIC src/wrap/gfx2dLUA_wrap.c)
 endif()
+get_target_property(GAME_LINK_LIBRARIES game LINK_LIBRARIES)
+target_link_libraries(game_wrap ${GAME_LINK_LIBRARIES})
+target_link_libraries(game game_wrap)
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
