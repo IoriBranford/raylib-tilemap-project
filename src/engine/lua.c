@@ -25,7 +25,7 @@ void Task_ResumeLuaThread(Task *t) {
     lua_pop(lua, lua_gettop(lua));
 }
 
-int RunLua(const char *luaFile) {
+int GetLua(const char *luaFile) {
     if (lua_getglobal(lua, luaFile) != LUA_TFUNCTION) {
         lua_pop(lua, 1);
         int error = luaL_loadfile(lua, luaFile);
@@ -37,6 +37,27 @@ int RunLua(const char *luaFile) {
         lua_pushvalue(lua, -1);
         lua_setglobal(lua, luaFile);
     }
+    return LUA_OK;
+}
+
+Task* NewLuaTask(const char *luaFile, int priority) {
+    int error = GetLua(luaFile);
+    if (error)
+        return NULL;
+
+    lua_State *thread = lua_newthread(lua);
+    lua_pushvalue(lua, 1);
+    lua_xmove(lua, thread, 1);
+    int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
+    Task *task = NewTask(Task_ResumeLuaThread, ref, priority);
+    lua_pop(lua, lua_gettop(lua));
+    return task;
+}
+
+int RunLua(const char *luaFile) {
+    int error = GetLua(luaFile);
+    if (error)
+        return error;
 
     lua_State *thread = lua_newthread(lua);
     lua_pushvalue(lua, 1);
