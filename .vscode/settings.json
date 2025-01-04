@@ -4,7 +4,8 @@
         "*.lua": "lua",
         "*.ldtk": "json",
         "*.h": "c",
-        "*.c": "c"
+        "*.c": "c",
+        "*.cpp": "cpp"
     },
     "json.schemas": [
         {
