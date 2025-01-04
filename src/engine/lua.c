@@ -21,7 +21,9 @@ void Task_ResumeLuaThread(Task *t) {
         if (lua_isinteger(thread, 1))
             t->priority = lua_tointeger(thread, 1);
     } else {
-        fprintf(stderr, "LUA: %s\n", lua_tostring(lua, -1));
+        fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
+        luaL_unref(lua, LUA_REGISTRYINDEX, ref);
+        EndTask(t);
     }
     lua_pop(thread, lua_gettop(thread));
     lua_pop(lua, lua_gettop(lua));
