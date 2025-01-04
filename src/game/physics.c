@@ -26,13 +26,13 @@ cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad) {
     return body;
 }
 
-cpShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy) {
-    cpShape *circle = cpCircleShapeNew(body, radius, cpv(ox, oy));
+cpCircleShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy) {
+    cpCircleShape *circle = cpCircleShapeNew(body, radius, cpv(ox, oy));
     cpSpaceAddShape(space, circle);
     return circle;
 }
 
-cpShape* AddBodyRectangle(cpBody *body, cpFloat w, cpFloat h, cpFloat ox, cpFloat oy) {
+cpPolyShape* AddBodyRectangle(cpBody *body, cpFloat w, cpFloat h, cpFloat ox, cpFloat oy) {
     cpVect verts[] = {
         cpv(0, 0),
         cpv(0, h),

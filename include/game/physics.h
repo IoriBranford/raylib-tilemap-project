@@ -9,8 +9,8 @@ void ClosePhysics();
 void UpdatePhysics();
 
 cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad);
-cpShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy);
-cpShape* AddBodyRectangle(cpBody *body, cpFloat w, cpFloat h, cpFloat ox, cpFloat oy);
+cpCircleShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy);
+cpPolyShape* AddBodyRectangle(cpBody *body, cpFloat w, cpFloat h, cpFloat ox, cpFloat oy);
 
 void UpdateSpriteFromBody(cpBody *body, Sprite *sprite);
 
