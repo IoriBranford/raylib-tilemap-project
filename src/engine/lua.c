@@ -11,8 +11,9 @@ void Task_ResumeLuaThread(Task *t) {
     int ref = t->data;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, ref);
     lua_State *thread = lua_tothread(lua, -1);
+    int nArgs = lua_gettop(thread);
     int nResults = 0;
-    int result = lua_resume(thread, NULL, 0, &nResults);
+    int result = lua_resume(thread, NULL, nArgs, &nResults);
     if (result == LUA_OK) {
         luaL_unref(lua, LUA_REGISTRYINDEX, ref);
         EndTask(t);
@@ -25,52 +26,55 @@ void Task_ResumeLuaThread(Task *t) {
     lua_pop(lua, lua_gettop(lua));
 }
 
-int GetLua(const char *luaFile) {
-    if (lua_getglobal(lua, luaFile) != LUA_TFUNCTION) {
-        lua_pop(lua, 1);
-        int error = luaL_loadfile(lua, luaFile);
+int GetLua(lua_State *l, const char *luaFile) {
+    if (lua_getglobal(l, luaFile) != LUA_TFUNCTION) {
+        lua_pop(l, 1);
+        int error = luaL_loadfile(l, luaFile);
         if (error) {
-            fprintf(stderr, "LUA: %s\n", lua_tostring(lua, -1));
-            lua_pop(lua, 1);
+            fprintf(stderr, "LUA: %s\n", lua_tostring(l, -1));
+            lua_pop(l, 1);
             return error;
         }
-        lua_pushvalue(lua, -1);
-        lua_setglobal(lua, luaFile);
+        lua_pushvalue(l, -1);
+        lua_setglobal(l, luaFile);
     }
     return LUA_OK;
 }
 
 Task* NewLuaTask(const char *luaFile, int priority) {
-    int error = GetLua(luaFile);
-    if (error)
-        return NULL;
-
     lua_State *thread = lua_newthread(lua);
-    lua_pushvalue(lua, 1);
-    lua_xmove(lua, thread, 1);
+    int error = GetLua(thread, luaFile);
+    if (error) {
+        lua_pop(lua, lua_gettop(lua));
+        return NULL;
+    }
+
     int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
-    Task *task = NewTask(Task_ResumeLuaThread, ref, priority);
-    lua_pop(lua, lua_gettop(lua));
-    return task;
+    lua_xmove(lua, thread, lua_gettop(lua));
+    return NewTask(Task_ResumeLuaThread, ref, priority);
 }
 
 int RunLua(const char *luaFile) {
-    int error = GetLua(luaFile);
-    if (error)
-        return error;
-
     lua_State *thread = lua_newthread(lua);
-    lua_pushvalue(lua, 1);
-    lua_xmove(lua, thread, 1);
+    int error = GetLua(thread, luaFile);
+    if (error) {
+        lua_pop(lua, lua_gettop(lua));
+        return error;
+    }
+
+    int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
+    int nArgs = lua_gettop(lua);
+    lua_xmove(lua, thread, nArgs);
     int nResults = 0;
-    int result = lua_resume(thread, NULL, 0, &nResults);
+    int result = lua_resume(thread, NULL, nArgs, &nResults);
     if (result == LUA_OK) {
+        luaL_unref(lua, LUA_REGISTRYINDEX, ref);
     } else if (result == LUA_YIELD) {
         int priority = luaL_optinteger(thread, 1, 0);
-        int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
         NewTask(Task_ResumeLuaThread, ref, priority);
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
+        luaL_unref(lua, LUA_REGISTRYINDEX, ref);
     }
     lua_pop(thread, lua_gettop(thread));
     lua_pop(lua, lua_gettop(lua));
