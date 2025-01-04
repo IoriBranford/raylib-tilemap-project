@@ -7,9 +7,6 @@
 [submodule "lib/raylib-aseprite"]
 	path = lib/raylib-aseprite
 	url = https://github.com/RobLoach/raylib-aseprite.git
-[submodule "lib/box2d"]
-	path = lib/box2d
-	url = https://github.com/erincatto/box2d.git
 [submodule "lib/zlib"]
 	path = lib/zlib
 	url = https://github.com/madler/zlib.git

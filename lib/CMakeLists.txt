@@ -38,8 +38,6 @@ add_subdirectory(tmx)
 
 add_subdirectory(raylib-aseprite)
 
-add_subdirectory(box2d)
-
 set(BUILD_DEMOS OFF)
 set(BUILD_SHARED OFF)
 set(BUILD_STATIC ON)
