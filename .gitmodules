@@ -10,9 +10,6 @@
 [submodule "lib/luajit-cmake"]
 	path = lib/luajit-cmake
 	url = https://github.com/zhaozg/luajit-cmake.git
-[submodule "lib/lua"]
-	path = lib/lua
-	url = https://github.com/IoriBranford/lua.git
 [submodule "lib/zlib"]
 	path = lib/zlib
 	url = https://github.com/madler/zlib.git
