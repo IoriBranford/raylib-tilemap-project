@@ -38,7 +38,7 @@ add_subdirectory(tmx)
 
 add_subdirectory(raylib-aseprite)
 
-set(LUA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua)
+set(LUAJIT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/luajit)
 add_subdirectory(luajit-cmake)
 
 set(BUILD_DEMOS OFF)
