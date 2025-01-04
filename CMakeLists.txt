@@ -12,6 +12,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "-fms-extensions")
 endif()
 include_directories(include lib/chipmunk2d/include/chipmunk)
+
 add_executable(game
     src/engine/engine.c
     src/engine/assets.c
@@ -25,32 +26,21 @@ add_executable(game
     src/game/physics.c
     src/game/main.c)
 
-foreach(module engine/gfx2d)
-    if(COMMAND swig)
-        set(SWIGCMD swig -lua
-            -Iinclude
-            -Ilib/box2d/include
-            -Ilib/raylib/src
-            -Ilib/raylib-tmx/include
-            -Ilib/raylib-aseprite/include
-            -Ilib/tmx/src
-            -o src/${module}_wrap.c
-            include/${module}.i)
-        execute_process(COMMAND ${SWIGCMD}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-        add_custom_command(COMMAND ${SWIGCMD}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            DEPENDS
-                ${CMAKE_SOURCE_DIR}/include/${module}.h
-                ${CMAKE_SOURCE_DIR}/include/${module}.i
-            OUTPUT ${CMAKE_SOURCE_DIR}/src/${module}_wrap.c)
-    endif()
-    target_sources(game PRIVATE
-        src/${module}_wrap.c)
-endforeach()
-
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static libluajit luajit-header)
+
+find_package(SWIG)
+if(SWIG_FOUND)
+    include(UseSWIG)
+    swig_add_library(game_wrap TYPE STATIC LANGUAGE lua SOURCES
+        include/engine/gfx2d.i)
+    target_include_directories(game_wrap PRIVATE ${GAME_INCLUDES})
+    get_target_property(GAME_LINK_LIBRARIES game LINK_LIBRARIES)
+    target_link_libraries(game_wrap ${GAME_LINK_LIBRARIES})
+    target_link_libraries(game game_wrap)
+else()
+    target_sources(game PRIVATE src/engine/gfx2d_wrap.c)
+endif()
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
