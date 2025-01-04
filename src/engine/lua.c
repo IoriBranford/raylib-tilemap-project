@@ -18,7 +18,8 @@ void Task_ResumeLuaThread(Task *t) {
         luaL_unref(lua, LUA_REGISTRYINDEX, ref);
         EndTask(t);
     } else if (result == LUA_YIELD) {
-        t->priority = luaL_optinteger(thread, 1, 0);
+        if (lua_isinteger(thread, 1))
+            t->priority = lua_tointeger(thread, 1);
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(lua, -1));
     }
