@@ -23,3 +23,6 @@
 [submodule "lib/chipmunk2d"]
 	path = lib/chipmunk2d
 	url = https://github.com/slembcke/Chipmunk2D.git
+[submodule "lib/luajit"]
+	path = lib/luajit
+	url = https://github.com/LuaJIT/LuaJIT.git
