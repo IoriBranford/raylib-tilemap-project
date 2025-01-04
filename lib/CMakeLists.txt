@@ -39,3 +39,10 @@ add_subdirectory(tmx)
 add_subdirectory(raylib-aseprite)
 
 add_subdirectory(box2d)
+
+set(BUILD_DEMOS OFF)
+set(BUILD_SHARED OFF)
+set(BUILD_STATIC ON)
+set(INSTALL_STATIC OFF)
+add_subdirectory(chipmunk2d)
+target_compile_definitions(chipmunk_static PRIVATE CP_USE_DOUBLES=1)
