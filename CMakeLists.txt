@@ -11,7 +11,7 @@ add_subdirectory(lib)
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "-fms-extensions")
 endif()
-include_directories(include lib/lua)
+include_directories(include lib/lua lib/chipmunk2d/include/chipmunk)
 add_executable(game
     src/engine/engine.c
     src/engine/assets.c
@@ -50,7 +50,7 @@ foreach(module engine/gfx2d)
 endforeach()
 
 #set(raylib_VERBOSE 1)
-target_link_libraries(game raylib tmx raylib_aseprite box2d lua::lib)
+target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static lua::lib)
 
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")

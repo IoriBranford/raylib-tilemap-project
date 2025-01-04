@@ -4,20 +4,20 @@
 #include <math.h>
 
 void Task_Confetti(Task *t) {
-    b2BodyId body = b2LoadBodyId((uint64_t)t->data);
-    Sprite *spr = b2Body_GetUserData(body);
+    cpBody *body = t->data;
+    Sprite *spr = cpBodyGetUserData(body);
 
     UpdateSpriteFromBody(body, spr);
     if (!CheckCollisionRecs(spr->rect,
     (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()})) {
         EndTask(t);
-        b2DestroyBody(body);
+        cpBodyDestroy(body);
         ReleaseSprite(spr);
         return;
     }
 
-    float mass = b2Body_GetMass(body);
-    b2Body_ApplyForceToCenter(body, (b2Vec2){0, -mass/64}, true);
+    cpFloat mass = cpBodyGetMass(body);
+    cpBodySetForce(body, cpv(0, -mass/64));
 
     spr->animTimer += GetFrameTime();
 
@@ -51,14 +51,14 @@ void AddConfetti() {
 
     Color color = ColorFromHSV(GetRandomValue(0,5) * 60, 1, 1);
 
-    b2BodyId body = NewBody((Vector2){rect.x, rect.y}, rotation * DEG2RAD);
-    b2Body_SetLinearVelocity(body, (b2Vec2){0, 4});
-    b2Body_SetAngularVelocity(body, PI/16);
-    AddBodyCircle(body, (Vector2){0}, 1);
+    cpBody *body = NewBody(rect.x, rect.y, rotation * DEG2RAD);
+    cpBodySetVelocity(body, cpv(0,4));
+    cpBodySetAngularVelocity(body, PI/16);
+    AddBodyCircle(body, 1, 0, 0);
 
     Sprite *sprite = NewRectangleSprite(rect, origin, rotation, color);
     sprite->animTimer = 0;
-    b2Body_SetUserData(body, sprite);
+    cpBodySetUserData(body, sprite);
 
-    Task *task = NewTask(Task_Confetti, b2StoreBodyId(body), 2);
+    Task *task = NewTask(Task_Confetti, body, 2);
 }
