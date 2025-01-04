@@ -3,6 +3,7 @@
 
 #include <engine/assets.h>
 #include <engine/gfx2d.h>
+#include <engine/lua.h>
 #include <engine/tasks.h>
 
 typedef struct Phase {
