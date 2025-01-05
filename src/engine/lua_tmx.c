@@ -102,11 +102,20 @@ int L_tmx_layer_get_objects(lua_State *l) {
         tmx_object *o = layer->content.objgr->head;
         for (int i = 1; o; ++i, o = o->next) {
             lua_pushinteger(l, i);
-            tmx_object **od = lua_newuserdata(l, sizeof(tmx_object*));
-            *od = o;
-            luaL_setmetatable(l, "tmx_object");
+            class_newuserdata(l, tmx_object, o);
             lua_settable(l, -3);
         }
+        return 1;
+    }
+    return 0;
+}
+
+int L_tmx_find_object_by_id(lua_State *l) {
+    tmx_map **map = luaL_checkudata(l, 1, "tmx_map");
+    int id = luaL_checkinteger(l, 2);
+    tmx_object *o = tmx_find_object_by_id(*map, id);
+    if (o) {
+        class_newuserdata(l, tmx_object, o);
         return 1;
     }
     return 0;
