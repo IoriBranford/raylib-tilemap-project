@@ -125,4 +125,6 @@ void luaopen_tmx(lua_State *l) {
     class_init_getter(tmx_map, tile_width);
     class_init_getter(tmx_map, tile_height);
     class_init_getter(tmx_map, properties);
+
+    lua_pop(l, 1);
 }
