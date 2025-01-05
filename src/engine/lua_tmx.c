@@ -8,7 +8,7 @@ void L_put_property_in_table(tmx_property *property, void *userdata) {
     lua_State *l = userdata;
     lua_pushstring(l, property->name);
     if (property->type == PT_INT)
-        lua_pushnumber(l, property->value.integer);
+        lua_pushinteger(l, property->value.integer);
     else if (property->type == PT_FLOAT)
         lua_pushnumber(l, property->value.decimal);
     else if (property->type == PT_BOOL)
@@ -16,11 +16,11 @@ void L_put_property_in_table(tmx_property *property, void *userdata) {
     else if (property->type == PT_STRING)
         lua_pushstring(l, property->value.string);
     else if (property->type == PT_COLOR)
-        lua_pushnumber(l, property->value.color);
+        lua_pushinteger(l, property->value.color);
     else if (property->type == PT_FILE)
         lua_pushstring(l, property->value.string);
     else if (property->type == PT_OBJECT)
-        lua_pushnumber(l, property->value.object_id);
+        lua_pushinteger(l, property->value.object_id);
     else
         lua_pushnil(l);
     lua_settable(l, -3);
