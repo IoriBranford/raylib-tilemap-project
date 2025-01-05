@@ -35,4 +35,11 @@ int L_##cls##_set_##field(lua_State *l) { \
     class_init_getter(cls, field) \
     class_init_setter(cls, field)
 
+
+#define class_newuserdata(l, cls, o) { \
+    cls **od = lua_newuserdata(l, sizeof(cls*)); \
+    *od = o; \
+    luaL_setmetatable(l, #cls); \
+}
+
 #endif /* CD425245_A2F7_4AB2_ADAB_E5F9A1924686 */
