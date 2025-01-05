@@ -94,12 +94,41 @@ int L_tmx_map_newindex(lua_State *l) { // [ map, k, v ]
     return 0;
 }
 
+int L_tmx_layer_get_objects(lua_State *l) {
+    tmx_layer **ud = luaL_checkudata(l, 1, "tmx_layer");
+    tmx_layer *layer = *ud;
+    if (layer->type == L_OBJGR) {
+        lua_newtable(l);
+        tmx_object *o = layer->content.objgr->head;
+        for (int i = 1; o; ++i, o = o->next) {
+            lua_pushinteger(l, i);
+            tmx_object **od = lua_newuserdata(l, sizeof(tmx_object*));
+            *od = o;
+            luaL_setmetatable(l, "tmx_object");
+            lua_settable(l, -3);
+        }
+        return 1;
+    }
+    return 0;
+}
+
 class_getter(tmx_map, string, class_type);
-class_getter(tmx_map, number, width);
-class_getter(tmx_map, number, height);
-class_getter(tmx_map, number, tile_width);
-class_getter(tmx_map, number, tile_height);
-tmx_class_properties_getter(tmx_map)
+class_getter(tmx_map, integer, width);
+class_getter(tmx_map, integer, height);
+class_getter(tmx_map, integer, tile_width);
+class_getter(tmx_map, integer, tile_height);
+tmx_class_properties_getter(tmx_map);
+
+class_getter(tmx_layer, string, class_type);
+class_getter(tmx_layer, integer, type);
+tmx_class_properties_getter(tmx_layer);
+
+class_getter(tmx_object, string, type);
+class_getter(tmx_object, number, x);
+class_getter(tmx_object, number, y);
+class_getter(tmx_object, number, width);
+class_getter(tmx_object, number, height);
+tmx_class_properties_getter(tmx_object);
 
 void luaopen_tmx(lua_State *l) {
     lua_newtable(l);
@@ -107,6 +136,22 @@ void luaopen_tmx(lua_State *l) {
     lua_pushcfunction(l, L_tmx_load);
     lua_settable(l, -3);
     lua_setglobal(l, "tmx");
+
+    luaL_newmetatable(l, "tmx_layer");
+    class_init_getter(tmx_layer, class_type);
+    class_init_getter(tmx_layer, type);
+    class_init_getter(tmx_layer, objects);
+    class_init_getter(tmx_layer, properties);
+    lua_pop(l, 1);
+
+    luaL_newmetatable(l, "tmx_object");
+    class_init_getter(tmx_object, type);
+    class_init_getter(tmx_object, x);
+    class_init_getter(tmx_object, y);
+    class_init_getter(tmx_object, width);
+    class_init_getter(tmx_object, height);
+    class_init_getter(tmx_object, properties);
+    lua_pop(l, 1);
 
     luaL_newmetatable(l, "tmx_map");
     
