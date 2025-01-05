@@ -102,8 +102,11 @@ class_getter(tmx_map, number, tile_height);
 tmx_class_properties_getter(tmx_map)
 
 void luaopen_tmx(lua_State *l) {
+    lua_newtable(l);
+    lua_pushstring(l, "load");
     lua_pushcfunction(l, L_tmx_load);
-    lua_setglobal(l, "loadmap");
+    lua_settable(l, -3);
+    lua_setglobal(l, "tmx");
 
     luaL_newmetatable(l, "tmx_map");
     
