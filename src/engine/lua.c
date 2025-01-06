@@ -1,7 +1,5 @@
 #include <engine/tasks.h>
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+#include <engine/lua.h>
 #include <stdlib.h>
 #include <assert.h>
 

@@ -1,7 +1,5 @@
 #include <tmx.h>
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+#include <engine/lua.h>
 #include <util/lua_class.h>
 
 void L_put_property_in_table(tmx_property *property, void *userdata) {
