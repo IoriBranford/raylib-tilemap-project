@@ -147,19 +147,19 @@ void luaopen_tmx(lua_State *l) {
     lua_setglobal(l, "tmx");
 
     luaL_newmetatable(l, "tmx_layer");
-    class_init_getter(tmx_layer, class_type);
-    class_init_getter(tmx_layer, type);
-    class_init_getter(tmx_layer, objects);
-    class_init_getter(tmx_layer, properties);
+    class_init_getter(l, tmx_layer, class_type);
+    class_init_getter(l, tmx_layer, type);
+    class_init_getter(l, tmx_layer, objects);
+    class_init_getter(l, tmx_layer, properties);
     lua_pop(l, 1);
 
     luaL_newmetatable(l, "tmx_object");
-    class_init_getter(tmx_object, type);
-    class_init_getter(tmx_object, x);
-    class_init_getter(tmx_object, y);
-    class_init_getter(tmx_object, width);
-    class_init_getter(tmx_object, height);
-    class_init_getter(tmx_object, properties);
+    class_init_getter(l, tmx_object, type);
+    class_init_getter(l, tmx_object, x);
+    class_init_getter(l, tmx_object, y);
+    class_init_getter(l, tmx_object, width);
+    class_init_getter(l, tmx_object, height);
+    class_init_getter(l, tmx_object, properties);
     lua_pop(l, 1);
 
     luaL_newmetatable(l, "tmx_map");
@@ -176,12 +176,12 @@ void luaopen_tmx(lua_State *l) {
     lua_pushcfunction(l, L_tmx_map_gc);
     lua_settable(l, -3);
 
-    class_init_getter(tmx_map, class_type);
-    class_init_getter(tmx_map, width);
-    class_init_getter(tmx_map, height);
-    class_init_getter(tmx_map, tile_width);
-    class_init_getter(tmx_map, tile_height);
-    class_init_getter(tmx_map, properties);
+    class_init_getter(l, tmx_map, class_type);
+    class_init_getter(l, tmx_map, width);
+    class_init_getter(l, tmx_map, height);
+    class_init_getter(l, tmx_map, tile_width);
+    class_init_getter(l, tmx_map, tile_height);
+    class_init_getter(l, tmx_map, properties);
 
     lua_pop(l, 1);
 }

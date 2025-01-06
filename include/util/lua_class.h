@@ -19,22 +19,21 @@ int L_##cls##_set_##field(lua_State *l) { \
     class_getter(cls, fieldtype, field) \
     class_setter(cls, fieldtype, field)
 
-#define class_init_getter(cls, field) { \
+#define class_init_getter(l, cls, field) { \
     lua_pushstring(l, "get_" #field); \
     lua_pushcfunction(l, L_##cls##_get_##field); \
     lua_settable(l, -3); \
 }
 
-#define class_init_setter(cls, field) { \
+#define class_init_setter(l, cls, field) { \
     lua_pushstring(l, "set_" #field); \
     lua_pushcfunction(l, L_##cls##_set_##field); \
     lua_settable(l, -3); \
 }
 
 #define class_init_getter_and_setter(cls, field) \
-    class_init_getter(cls, field) \
-    class_init_setter(cls, field)
-
+    class_init_getter(l, cls, field) \
+    class_init_setter(l, cls, field)
 
 #define class_newuserdata(l, cls, o) { \
     cls **od = lua_newuserdata(l, sizeof(cls*)); \
