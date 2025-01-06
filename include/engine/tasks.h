@@ -11,7 +11,7 @@ struct Task {
     TaskFunc func;
     void *data;
     int priority;   // lower = earlier
-    int paused;
+    int sleeping;
 };
 
 void InitTasks(unsigned n);
@@ -25,6 +25,8 @@ size_t NumTasksFree();
 
 void ReleaseTask(Task *task);
 void EndTask(Task *task);
+void PauseTask(Task *task);
+void SleepTask(Task *task, int ticks);
 
 void UpdateTasks();
 

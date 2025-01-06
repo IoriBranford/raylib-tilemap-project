@@ -6,6 +6,8 @@ enum {
     PRIO_RELEASE
 };
 
+#define SLEEP_FOREVER INT_MAX
+
 pool_typedef(Task, TaskPool)
 pool_ctor(Task, TaskPool, NewTaskPool)
 
@@ -23,6 +25,14 @@ void ReleaseTask(Task *task) {
 
 void EndTask(Task *task) {
     task->priority = PRIO_DONE;
+}
+
+void PauseTask(Task *task) {
+    task->sleeping = SLEEP_FOREVER;
+}
+
+void SleepTask(Task *task, int ticks) {
+    task->sleeping = ticks;
 }
 
 void InitTasks(unsigned n) {
@@ -87,8 +97,12 @@ void RunTasks() {
 
     for (int i = 0; i < nRunning; ++i) {
         Task *task = active[i];
-        if (task->func && !task->paused)
+        if (task->sleeping > 0) {
+            if (task->sleeping < SLEEP_FOREVER)
+                --task->sleeping;
+        } else if (task->func) {
             task->func(task);
+        }
     }
 }
 
