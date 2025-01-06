@@ -3,6 +3,10 @@
 
 #include <stddef.h>
 #include <limits.h>
+#ifdef __cplusplus
+#else
+#include <stdbool.h>
+#endif
 
 typedef struct Task Task;
 typedef void (*TaskFunc)(Task*);
@@ -25,6 +29,8 @@ void CloseTasks();
 Task* NewTask(TaskFunc func, void *data, int priority);
 size_t NumTasksActive();
 size_t NumTasksFree();
+
+bool IsTaskDone(Task *task);
 
 void ReleaseTask(Task *task);
 void EndTask(Task *task);
