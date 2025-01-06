@@ -6,25 +6,21 @@
 static lua_State *lua;
 
 void Task_ResumeLuaThread(Task *t) {
-    int ref = t->data;
+    int ref = t->idata;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, ref);
     lua_State *thread = lua_tothread(lua, -1);
+    lua_pop(lua, 1);
+
     int nArgs = lua_gettop(thread);
-    int nResults = 0;
+    
     int result = lua_resume(thread, nArgs);
     if (result == LUA_OK) {
-        luaL_unref(lua, LUA_REGISTRYINDEX, ref);
         EndTask(t);
     } else if (result == LUA_YIELD) {
-        if (lua_isnumber(thread, 1))
-            t->priority = lua_tonumber(thread, 1);
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
-        luaL_unref(lua, LUA_REGISTRYINDEX, ref);
         EndTask(t);
     }
-    lua_pop(thread, lua_gettop(thread));
-    lua_pop(lua, lua_gettop(lua));
 }
 
 int GetLua(lua_State *l, const char *luaFile) {
