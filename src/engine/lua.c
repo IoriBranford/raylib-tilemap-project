@@ -43,19 +43,6 @@ int GetLua(lua_State *l, const char *luaFile) {
     return LUA_OK;
 }
 
-Task* NewLuaTask(const char *luaFile, int priority) {
-    lua_State *thread = lua_newthread(lua);
-    int error = GetLua(thread, luaFile);
-    if (error) {
-        lua_pop(lua, lua_gettop(lua));
-        return NULL;
-    }
-
-    int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
-    lua_xmove(lua, thread, lua_gettop(lua));
-    return NewTask(Task_ResumeLuaThread, ref, priority);
-}
-
 int RunLua(const char *luaFile, int priority) {
     lua_State *thread = lua_newthread(lua);
     int error = GetLua(thread, luaFile);
