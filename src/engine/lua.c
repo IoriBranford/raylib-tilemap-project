@@ -1,5 +1,6 @@
 #include <engine/tasks.h>
 #include <engine/lua.h>
+#include <util/lua_class.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -40,28 +41,42 @@ int GetLua(lua_State *l, const char *luaFile) {
 }
 
 int RunLua(const char *luaFile, int priority) {
-    lua_State *thread = lua_newthread(lua);
-    int error = GetLua(thread, luaFile);
-    if (error) {
-        lua_pop(lua, lua_gettop(lua));
-        return error;
-    }
+    int error = GetLua(lua, luaFile);
+    if (error)
+        return LUA_REFNIL;
 
-    int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
-    int nArgs = lua_gettop(lua);
-    lua_xmove(lua, thread, nArgs);
-    int result = lua_resume(thread, nArgs);
+    lua_State *thread = lua_newthread(lua);
+    int threadRef = luaL_ref(lua, LUA_REGISTRYINDEX);
+    lua_xmove(lua, thread, 1);
+
+    int taskRef = LUA_REFNIL;
+    int result = lua_resume(thread, 0);
     if (result == LUA_OK) {
-        luaL_unref(lua, LUA_REGISTRYINDEX, ref);
+        luaL_unref(lua, LUA_REGISTRYINDEX, threadRef);
     } else if (result == LUA_YIELD) {
-        NewTask(Task_ResumeLuaThread, ref, priority);
+        class_newuserdata(lua, Task, NewTask(Task_ResumeLuaThread, threadRef, priority));
+        taskRef = luaL_ref(lua, LUA_REGISTRYINDEX);
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
-        luaL_unref(lua, LUA_REGISTRYINDEX, ref);
+        luaL_unref(lua, LUA_REGISTRYINDEX, threadRef);
     }
-    lua_pop(thread, lua_gettop(thread));
-    lua_pop(lua, lua_gettop(lua));
-    return result;
+    return taskRef;
+}
+
+Task* GetLuaTask(int taskRef) {
+    if (taskRef == LUA_REFNIL)
+        return NULL;
+    lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
+    Task **ud = luaL_testudata(lua, 1, "Task");
+    return ud ? *ud : NULL;
+}
+
+void ReleaseLuaTask(int taskRef) {
+    if (taskRef == LUA_REFNIL)
+        return;
+    lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
+    if (luaL_testudata(lua, 1, "Task"))
+        luaL_unref(lua, LUA_REGISTRYINDEX, taskRef);
 }
 
 void CloseLua() {
@@ -70,9 +85,12 @@ void CloseLua() {
     lua = NULL;
 }
 
+int luaopen_task(lua_State *l);
+
 void InitLua() {
     if (lua)
         CloseLua();
     lua = luaL_newstate();
     luaL_openlibs(lua);
+    lua_cpcall(lua, luaopen_task, NULL);
 }
