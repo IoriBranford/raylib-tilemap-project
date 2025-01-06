@@ -58,21 +58,9 @@ int L_##cls##_set_##field(lua_State *l) { \
     class_getter(cls, fieldtype, field) \
     class_setter(cls, fieldtype, field)
 
-#define class_init_getter(l, cls, field) { \
-    lua_pushstring(l, "get_" #field); \
-    lua_pushcfunction(l, L_##cls##_get_##field); \
-    lua_settable(l, -3); \
-}
-
-#define class_init_setter(l, cls, field) { \
-    lua_pushstring(l, "set_" #field); \
-    lua_pushcfunction(l, L_##cls##_set_##field); \
-    lua_settable(l, -3); \
-}
-
-#define class_init_getter_and_setter(l, cls, field) \
-    class_init_getter(l, cls, field) \
-    class_init_setter(l, cls, field)
+#define class_method_reg(cls, f) ((luaL_Reg){ .name = #f, .func = L_##cls##_##f})
+#define class_getter_reg(cls, field) class_method_reg(cls, get_##field)
+#define class_setter_reg(cls, field) class_method_reg(cls, set_##field)
 
 #define class_newuserdata(l, cls, o) { \
     cls **od = lua_newuserdata(l, sizeof(cls*)); \

@@ -49,7 +49,7 @@ int L_tmx_load(lua_State *l) {
     return 2;
 }
 
-int L_tmx_map_gc(lua_State *l) {
+int L_tmx_map___gc(lua_State *l) {
     tmx_map **map = luaL_checkudata(l, 1, "tmx_map");
     if (*map) {
         tmx_map_free(*map);
@@ -58,41 +58,7 @@ int L_tmx_map_gc(lua_State *l) {
     return 0;
 }
 
-int L_tmx_map_index(lua_State *l) {
-    tmx_map **map = luaL_checkudata(l, 1, "tmx_map"); // [ map, k ]
-    lua_pushstring(l, "get_"); // [ map, k, "get_" ]
-    lua_pushvalue(l, 2); // [ map, k, "get_", k ]
-    lua_concat(l, 2);  // [ map, k, "get_k" ]
-    const char *name = lua_tostring(l, -1);
-    lua_pop(l, 1);  // [ map, k ]
-    luaL_getmetafield(l, 1, name);
-    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) { // [ map, k, v, set_k ]
-        lua_pushvalue(l, 1);  // [ map, k, get_k, map ]
-        lua_call(l, 1, 1);  // [ map, k ]
-    } else {
-        lua_pushnil(l);
-    }
-
-    return 1;
-}
-
-int L_tmx_map_newindex(lua_State *l) { // [ map, k, v ]
-    tmx_map **map = luaL_checkudata(l, 1, "tmx_map");
-    lua_pushstring(l, "set_"); // [ map, k, v, "set_" ]
-    lua_pushvalue(l, 2); // [ map, k, v, "set_", k ]
-    lua_concat(l, 2); // [ map, k, v, "set_k" ]
-    const char *name = lua_tostring(l, -1);
-    lua_pop(l, 1);  // [ map, k, v ]
-    luaL_getmetafield(l, 1, name);
-    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) { // [ map, k, v, set_k ]
-        lua_pushvalue(l, 1);  // [ map, k, v, set_k, map ]
-        lua_pushvalue(l, 3);  // [ map, k, v, set_k, map, v ]
-        lua_call(l, 3, 0);  // [ map, k, v ]
-    } else {
-    }
-
-    return 0;
-}
+class_index_and_newindex(tmx_map);
 
 int L_tmx_layer_get_objects(lua_State *l) {
     tmx_layer **ud = luaL_checkudata(l, 1, "tmx_layer");
@@ -110,7 +76,7 @@ int L_tmx_layer_get_objects(lua_State *l) {
     return 0;
 }
 
-int L_tmx_find_object_by_id(lua_State *l) {
+int L_tmx_map_find_object_by_id(lua_State *l) {
     tmx_map **map = luaL_checkudata(l, 1, "tmx_map");
     int id = luaL_checkinteger(l, 2);
     tmx_object *o = tmx_find_object_by_id(*map, id);
@@ -140,48 +106,51 @@ class_getter(tmx_object, number, height);
 tmx_class_properties_getter(tmx_object);
 
 void luaopen_tmx(lua_State *l) {
-    lua_newtable(l);
-    lua_pushstring(l, "load");
-    lua_pushcfunction(l, L_tmx_load);
-    lua_settable(l, -3);
-    lua_setglobal(l, "tmx");
+    luaL_Reg tmx_r[] = {
+        class_method_reg(tmx, load),
+        {0}
+    };
+    luaL_register(l, "tmx", tmx_r);
+    lua_pop(l, 1);
 
     luaL_newmetatable(l, "tmx_layer");
-    class_init_getter(l, tmx_layer, class_type);
-    class_init_getter(l, tmx_layer, type);
-    class_init_getter(l, tmx_layer, objects);
-    class_init_getter(l, tmx_layer, properties);
+    luaL_Reg tmx_layer_r[] = {
+        class_getter_reg(tmx_layer, class_type),
+        class_getter_reg(tmx_layer, type),
+        class_getter_reg(tmx_layer, objects),
+        class_getter_reg(tmx_layer, properties),
+        {0}
+    };
+    luaL_register(l, NULL, tmx_layer_r);
     lua_pop(l, 1);
 
     luaL_newmetatable(l, "tmx_object");
-    class_init_getter(l, tmx_object, type);
-    class_init_getter(l, tmx_object, x);
-    class_init_getter(l, tmx_object, y);
-    class_init_getter(l, tmx_object, width);
-    class_init_getter(l, tmx_object, height);
-    class_init_getter(l, tmx_object, properties);
+    luaL_Reg tmx_object_r[] = {
+        class_getter_reg(tmx_object, type),
+        class_getter_reg(tmx_object, x),
+        class_getter_reg(tmx_object, y),
+        class_getter_reg(tmx_object, width),
+        class_getter_reg(tmx_object, height),
+        class_getter_reg(tmx_object, properties),
+        {0}
+    };
+    luaL_register(l, NULL, tmx_object_r);
     lua_pop(l, 1);
 
     luaL_newmetatable(l, "tmx_map");
-    
-    lua_pushstring(l, "__index");
-    lua_pushcfunction(l, L_tmx_map_index);
-    lua_settable(l, -3);
-    
-    lua_pushstring(l, "__newindex");
-    lua_pushcfunction(l, L_tmx_map_newindex);
-    lua_settable(l, -3);
-
-    lua_pushstring(l, "__gc");
-    lua_pushcfunction(l, L_tmx_map_gc);
-    lua_settable(l, -3);
-
-    class_init_getter(l, tmx_map, class_type);
-    class_init_getter(l, tmx_map, width);
-    class_init_getter(l, tmx_map, height);
-    class_init_getter(l, tmx_map, tile_width);
-    class_init_getter(l, tmx_map, tile_height);
-    class_init_getter(l, tmx_map, properties);
-
+    luaL_Reg tmx_map_r[] = {
+        class_method_reg(tmx_map, __index),
+        class_method_reg(tmx_map, __newindex),
+        class_method_reg(tmx_map, __gc),
+        class_method_reg(tmx_map, find_object_by_id),
+        class_getter_reg(tmx_map, class_type),
+        class_getter_reg(tmx_map, width),
+        class_getter_reg(tmx_map, height),
+        class_getter_reg(tmx_map, tile_width),
+        class_getter_reg(tmx_map, tile_height),
+        class_getter_reg(tmx_map, properties),
+        {0}
+    };
+    luaL_register(l, NULL, tmx_map_r);
     lua_pop(l, 1);
 }
