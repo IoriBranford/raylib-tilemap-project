@@ -11,6 +11,7 @@ struct Task {
     TaskFunc func;
     void *data;
     int priority;   // lower = earlier
+    int paused;
 };
 
 void InitTasks(unsigned n);

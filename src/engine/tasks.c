@@ -87,7 +87,7 @@ void RunTasks() {
 
     for (int i = 0; i < nRunning; ++i) {
         Task *task = active[i];
-        if (task->func)
+        if (task->func && !task->paused)
             task->func(task);
     }
 }
