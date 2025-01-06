@@ -45,9 +45,9 @@ void InitGame()
     SetCurrentPhase(LogoPhase);
     InitTasks(256);
     InitLua();
-    RunLua("resources/syntaxerr.lua");
-    RunLua("resources/runtimeerr.lua");
-    RunLua("resources/hello.lua");
+    RunLua("resources/syntaxerr.lua", 0);
+    RunLua("resources/runtimeerr.lua", 0);
+    RunLua("resources/hello.lua", 0);
 }
 
 void CloseGame()
