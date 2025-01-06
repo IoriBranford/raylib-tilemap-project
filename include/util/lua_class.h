@@ -31,7 +31,7 @@ int L_##cls##_set_##field(lua_State *l) { \
     lua_settable(l, -3); \
 }
 
-#define class_init_getter_and_setter(cls, field) \
+#define class_init_getter_and_setter(l, cls, field) \
     class_init_getter(l, cls, field) \
     class_init_setter(l, cls, field)
 
