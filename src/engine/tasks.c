@@ -15,6 +15,10 @@ static TaskPool *tasks;
 
 #define IsActive(task) (task->priority != PRIO_RELEASE)
 
+bool IsTaskDone(Task *task) {
+    return task->priority >= PRIO_DONE;
+}
+
 void InitEmptyTask(Task *task) {
     *task = (Task){0};
 }
@@ -89,7 +93,7 @@ void RunTasks() {
     Task **active = tasks->active;
     int nRunning = tasks->nActive;
     for (int i = 0; i < nRunning; ++i) {
-        if (active[i]->priority >= PRIO_DONE)
+        if (IsTaskDone(active[i]))
             nRunning = i;
     }
 
