@@ -4,7 +4,6 @@
 
 void L_put_property_in_table(tmx_property *property, void *userdata) {
     lua_State *l = userdata;
-    lua_pushstring(l, property->name);
     if (property->type == PT_INT)
         lua_pushinteger(l, property->value.integer);
     else if (property->type == PT_FLOAT)
@@ -21,7 +20,7 @@ void L_put_property_in_table(tmx_property *property, void *userdata) {
         lua_pushinteger(l, property->value.object_id);
     else
         lua_pushnil(l);
-    lua_settable(l, -3);
+    lua_setfield(l, -2, property->name);
 }
 
 #define tmx_class_properties_getter(cls) \
