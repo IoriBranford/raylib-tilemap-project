@@ -31,21 +31,6 @@ add_executable(game
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static libluajit luajit-header)
 
-find_package(SWIG)
-if(SWIG_FOUND)
-    include(UseSWIG)
-    swig_add_library(game_wrap TYPE STATIC LANGUAGE lua
-        OUTFILE_DIR ${CMAKE_SOURCE_DIR}/src/wrap
-        SOURCES
-            include/engine/gfx2d.i
-    )
-else()
-    add_library(game_wrap STATIC src/wrap/gfx2dLUA_wrap.c)
-endif()
-get_target_property(GAME_LINK_LIBRARIES game LINK_LIBRARIES)
-target_link_libraries(game_wrap ${GAME_LINK_LIBRARIES})
-target_link_libraries(game game_wrap)
-
 # Web Configurations
 if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
     # Tell Emscripten to build an example.html file.
