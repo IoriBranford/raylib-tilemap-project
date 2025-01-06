@@ -4,19 +4,26 @@
 #define class_index(cls) \
 int L_##cls##___index(lua_State *l) { \
     luaL_checkudata(l, 1, #cls);  /* [ map, k ] */ \
+    /* find named value */\
+    lua_getmetatable(l, 1); /* [ map, k, Map ] */\
+    lua_pushvalue(l, 2);  /* [ map, k, Map, k ] */\
+    lua_gettable(l, -2); /* [ map, k, Map, v ] */\
+    if (!lua_isnil(l, -1)) \
+        return 1; \
+    lua_pop(l, 2); /* [ map, k ] */\
+    /* find getter */\
     lua_pushstring(l, "get_");  /* [ map, k, "get_" ] */\
     lua_pushvalue(l, 2);  /* [ map, k, "get_", k ] */\
     lua_concat(l, 2);   /* [ map, k, "get_k" ] */\
     const char *name = lua_tostring(l, -1);\
     lua_pop(l, 1);   /* [ map, k ] */\
     luaL_getmetafield(l, 1, name);\
-    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, v, set_k ] */\
+    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, get_k ] */\
         lua_pushvalue(l, 1);   /* [ map, k, get_k, map ] */\
         lua_call(l, 1, 1);   /* [ map, k ] */\
-    } else {\
-        lua_pushnil(l);\
-    }\
-    return 1;\
+        return 1;\
+    } \
+    return 0; \
 }
 
 #define class_newindex(cls) \
@@ -58,7 +65,7 @@ int L_##cls##_set_##field(lua_State *l) { \
     class_getter(cls, fieldtype, field) \
     class_setter(cls, fieldtype, field)
 
-#define class_method_reg(cls, f) ((luaL_Reg){ .name = #f, .func = L_##cls##_##f})
+#define class_method_reg(cls, f) { .name = #f, .func = L_##cls##_##f}
 #define class_getter_reg(cls, field) class_method_reg(cls, get_##field)
 #define class_setter_reg(cls, field) class_method_reg(cls, set_##field)
 
