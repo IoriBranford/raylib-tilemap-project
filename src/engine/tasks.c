@@ -89,10 +89,8 @@ void RunTasks() {
     Task **active = tasks->active;
     int nRunning = tasks->nActive;
     for (int i = 0; i < nRunning; ++i) {
-        if (active[i]->priority >= PRIO_DONE) {
-            nRunning = i + 1;
-            break;
-        }
+        if (active[i]->priority >= PRIO_DONE)
+            nRunning = i;
     }
 
     for (int i = 0; i < nRunning; ++i) {

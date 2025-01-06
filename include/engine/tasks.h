@@ -9,7 +9,10 @@ typedef void (*TaskFunc)(Task*);
 
 struct Task {
     TaskFunc func;
-    void *data;
+    union {
+        void *data;
+        int idata;
+    };
     int priority;   // lower = earlier
     int sleeping;
 };
