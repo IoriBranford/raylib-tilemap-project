@@ -1,28 +1,28 @@
 #include <engine/tasks.h>
 #include <util.h>
 
+enum {
+    PRIO_DONE = INT_MAX-1,
+    PRIO_RELEASE
+};
+
 pool_typedef(Task, TaskPool)
 pool_ctor(Task, TaskPool, NewTaskPool)
 
 static TaskPool *tasks;
 
-#define IsActive(task) (task->func)
+#define IsActive(task) (task->priority != PRIO_RELEASE)
 
 void InitEmptyTask(Task *task) {
-    *task = (Task){
-        .priority = 0,
-        .data = NULL,
-        .func = NULL
-    };
+    *task = (Task){0};
 }
 
-void RunTask(Task *task) {
-    if (task->func)
-        task->func(task);
+void ReleaseTask(Task *task) {
+    task->priority = PRIO_RELEASE;
 }
 
 void EndTask(Task *task) {
-    task->func = NULL;
+    task->priority = PRIO_DONE;
 }
 
 void InitTasks(unsigned n) {
@@ -60,7 +60,11 @@ Task* NewTask(TaskFunc func, void *data, int priority) {
 
 int CompareTasks(const void *pa, const void *pb) {
     const Task *a = pa, *b = pb;
-    return a->priority - b->priority;
+    if (a->priority < b->priority)
+        return -1;
+    if (a->priority > b->priority)
+        return 1;
+    return 0;
 }
 
 void PruneTasks() {
@@ -72,11 +76,24 @@ void SortTasks() {
 }
 
 void RunTasks() {
-    pool_foreachactive(tasks, RunTask);
+    Task **active = tasks->active;
+    int nRunning = tasks->nActive;
+    for (int i = 0; i < nRunning; ++i) {
+        if (active[i]->priority >= PRIO_DONE) {
+            nRunning = i + 1;
+            break;
+        }
+    }
+
+    for (int i = 0; i < nRunning; ++i) {
+        Task *task = active[i];
+        if (task->func)
+            task->func(task);
+    }
 }
 
 void UpdateTasks() {
-    pool_foreachactive(tasks, RunTask);
+    RunTasks();
     prune_pool(tasks, IsActive);
     sort_pool_active(tasks, CompareTasks);
 }

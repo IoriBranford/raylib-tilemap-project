@@ -10,7 +10,7 @@ void Task_Confetti(Task *t) {
     UpdateSpriteFromBody(body, spr);
     if (!CheckCollisionRecs(spr->rect,
     (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()})) {
-        EndTask(t);
+        ReleaseTask(t);
         cpBodyDestroy(body);
         ReleaseSprite(spr);
         return;

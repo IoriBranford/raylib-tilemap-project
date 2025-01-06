@@ -22,6 +22,7 @@ Task* NewTask(TaskFunc func, void *data, int priority);
 size_t NumTasksActive();
 size_t NumTasksFree();
 
+void ReleaseTask(Task *task);
 void EndTask(Task *task);
 
 void UpdateTasks();
