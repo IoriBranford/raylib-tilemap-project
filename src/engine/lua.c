@@ -58,7 +58,7 @@ Task* NewLuaTask(const char *luaFile, int priority) {
     return NewTask(Task_ResumeLuaThread, ref, priority);
 }
 
-int RunLua(const char *luaFile) {
+int RunLua(const char *luaFile, int priority) {
     lua_State *thread = lua_newthread(lua);
     int error = GetLua(thread, luaFile);
     if (error) {
@@ -73,7 +73,6 @@ int RunLua(const char *luaFile) {
     if (result == LUA_OK) {
         luaL_unref(lua, LUA_REGISTRYINDEX, ref);
     } else if (result == LUA_YIELD) {
-        int priority = luaL_optnumber(thread, 1, 0);
         NewTask(Task_ResumeLuaThread, ref, priority);
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
