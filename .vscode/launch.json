@@ -37,6 +37,15 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": []
+        },
+        {
+            "type": "lua-local",
+            "request": "launch",
+            "name": "Lua Debug",
+            "program": {
+                "command": "build/game",
+            },
+            "cwd": "${workspaceFolder}",
         }
     ]
 }
