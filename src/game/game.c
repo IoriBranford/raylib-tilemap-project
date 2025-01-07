@@ -48,7 +48,7 @@ void InitGame()
     InitLua();
     // RunLua("resources/syntaxerr.lua", 0);
     // RunLua("resources/runtimeerr.lua", 0);
-    luaTask = RunLua("resources/hello.lua", 0, "ii", 10, 6);
+    luaTask = RunLua("resources/hello.lua", 0, "ii", 4, 30);
 }
 
 void CloseGame()
@@ -86,7 +86,7 @@ void UpdateLogo()
     if (t) {
         if (IsTaskDone(t)) {
             const char *result = LuaResultString(luaTask, 1);
-            printf(result);
+            printf("%s\n", result);
             ReleaseLuaTask(luaTask);
             luaTask = LUA_REFNIL;
         }
