@@ -85,6 +85,8 @@ void UpdateLogo()
     Task *t = GetLuaTask(luaTask);
     if (t) {
         if (IsTaskDone(t)) {
+            const char *result = LuaResultString(luaTask, 1);
+            printf(result);
             ReleaseLuaTask(luaTask);
             luaTask = LUA_REFNIL;
         }

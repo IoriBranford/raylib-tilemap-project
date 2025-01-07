@@ -11,4 +11,4 @@ end, 0, 10, 6)
 while not t.done do
     coroutine.yield()
 end
-print(t:results())
+return t:results()

@@ -51,9 +51,7 @@ int RunLua(const char *luaFile, int priority) {
 
     int taskRef = LUA_REFNIL;
     int result = lua_resume(thread, 0);
-    if (result == LUA_OK) {
-        luaL_unref(lua, LUA_REGISTRYINDEX, threadRef);
-    } else if (result == LUA_YIELD) {
+    if (result == LUA_OK || result == LUA_YIELD) {
         class_newuserdata(lua, Task, NewTask(Task_ResumeLuaThread, threadRef, priority));
         taskRef = luaL_ref(lua, LUA_REGISTRYINDEX);
     } else {
@@ -64,11 +62,87 @@ int RunLua(const char *luaFile, int priority) {
 }
 
 Task* GetLuaTask(int taskRef) {
-    if (taskRef == LUA_REFNIL)
-        return NULL;
+    if (taskRef == LUA_REFNIL) return NULL;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
     Task **ud = luaL_testudata(lua, 1, "Task");
+    lua_pop(lua, 1);
     return ud ? *ud : NULL;
+}
+
+lua_State* GetLuaThread(int taskRef) {
+    Task *task = GetLuaTask(taskRef);
+    if (!task) return NULL;
+    lua_rawgeti(lua, LUA_REGISTRYINDEX, task->idata);
+    lua_State *thread = lua_isthread(lua, -1) ? lua_tothread(lua, -1) : NULL;
+    lua_pop(lua, 1);
+    return thread;
+}
+
+int LuaResultBool(int taskRef, int i) {
+    lua_State *thread = GetLuaThread(taskRef);
+    return lua_toboolean(thread, i);
+}
+
+lua_Integer LuaResultInt(int taskRef, int i) {
+    lua_State *thread = GetLuaThread(taskRef);
+    return lua_tointeger(thread, i);
+}
+
+lua_Number LuaResultNumber(int taskRef, int i) {
+    lua_State *thread = GetLuaThread(taskRef);
+    return lua_tonumber(thread, i);
+}
+
+const char* LuaResultString(int taskRef, int i) {
+    lua_State *thread = GetLuaThread(taskRef);
+    return lua_tostring(thread, i);
+}
+
+void* LuaResultUserdata(int taskRef, int i, const char *udType) {
+    lua_State *thread = GetLuaThread(taskRef);
+    if (udType)
+        return luaL_testudata(thread, i, udType);
+    return lua_touserdata(thread, i);
+}
+
+int LuaResultFieldBool(int taskRef, int ti, const char *k) {
+    lua_State *thread = GetLuaThread(taskRef);
+    lua_getfield(thread, ti, k);
+    int v = lua_toboolean(thread, -1);
+    lua_pop(thread, 1);
+    return v;
+}
+
+lua_Integer LuaResultFieldInt(int taskRef, int ti, const char *k) {
+    lua_State *thread = GetLuaThread(taskRef);
+    lua_getfield(thread, ti, k);
+    lua_Integer v = lua_tointeger(thread, -1);
+    lua_pop(thread, 1);
+    return v;
+}
+
+lua_Number LuaResultFieldNumber(int taskRef, int ti, const char *k) {
+    lua_State *thread = GetLuaThread(taskRef);
+    lua_getfield(thread, ti, k);
+    lua_Number v = lua_tonumber(thread, -1);
+    lua_pop(thread, 1);
+    return v;
+}
+
+const char* LuaResultFieldString(int taskRef, int ti, const char *k) {
+    lua_State *thread = GetLuaThread(taskRef);
+    lua_getfield(thread, ti, k);
+    const char *v = lua_tostring(thread, -1);
+    lua_pop(thread, 1);
+    return v;
+}
+
+void* LuaResultFieldUserdata(int taskRef, int ti, const char *k, const char *udType) {
+    lua_State *thread = GetLuaThread(taskRef);
+    lua_getfield(thread, ti, k);
+    void *v = udType ? luaL_testudata(thread, -1, udType) : lua_touserdata(thread, -1);
+    lua_pop(thread, 1);
+    return v;
 }
 
 void ReleaseLuaTask(int taskRef) {
