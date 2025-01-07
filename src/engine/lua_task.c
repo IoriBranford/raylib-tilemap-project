@@ -45,13 +45,13 @@ int L_Task_run(lua_State *l) {
 int L_Task___gc(lua_State *l) {
     Task **ud = luaL_checkudata(l, 1, "Task");
     ReleaseTask(*ud);
-    int threadRef = (*ud)->data;
+    int threadRef = (*ud)->idata;
     luaL_unref(l, LUA_REGISTRYINDEX, threadRef);
     return 0;
 }
 
 int PushTaskResults(lua_State *l, Task *task) {
-    int threadRef = task->data;
+    int threadRef = task->idata;
     lua_rawgeti(l, LUA_REGISTRYINDEX, threadRef);
     lua_State *thread = lua_tothread(l, -1);
     int nResults = lua_gettop(thread);
