@@ -22,21 +22,22 @@ int L_Task_run(lua_State *l) {
     int nArgs = lua_gettop(l) - 1;
 
     lua_State *thread = lua_newthread(l);
-    int ref = luaL_ref(l, LUA_REGISTRYINDEX);
+    int threadRef = luaL_ref(l, LUA_REGISTRYINDEX);
     lua_xmove(l, thread, lua_gettop(l));
 
     int result = lua_resume(thread, nArgs);
     int nResults = 1;
-    if (result == LUA_OK) {
-        nResults = lua_gettop(thread);
-        lua_xmove(thread, l, nResults);
-        luaL_unref(l, LUA_REGISTRYINDEX, ref);
-    } else if (result == LUA_YIELD) {
-        class_newuserdata(l, Task, NewTask(Task_ResumeLuaThread, ref, priority));
+    if (result == LUA_OK || result == LUA_YIELD) {
+        Task *task = NewTask(Task_ResumeLuaThread, threadRef, priority);
+        if (result == LUA_OK)
+            EndTask(task);
+        class_newuserdata(l, Task, task);
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
+        lua_pushnil(l);
         lua_xmove(thread, l, 1);
-        luaL_unref(l, LUA_REGISTRYINDEX, ref);
+        nResults = 2;
+        luaL_unref(l, LUA_REGISTRYINDEX, threadRef);
     }
     return nResults;
 }
