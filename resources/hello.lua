@@ -5,7 +5,7 @@ intv = intv or 1
 print("hello")
 local t = task.run(function(n, intv)
     for i = 1, n do
-        for _ = 1, 6 do
+        for _ = 1, intv do
             io.write('.')
             coroutine.yield()
         end
