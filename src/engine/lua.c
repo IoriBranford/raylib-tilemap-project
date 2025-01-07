@@ -3,6 +3,7 @@
 #include <util/lua_class.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdarg.h>
 
 static lua_State *lua;
 
@@ -40,7 +41,7 @@ int GetLua(lua_State *l, const char *luaFile) {
     return LUA_OK;
 }
 
-int RunLua(const char *luaFile, int priority) {
+int RunLua(const char *luaFile, int priority, const char *argf, ...) {
     int error = GetLua(lua, luaFile);
     if (error)
         return LUA_REFNIL;
@@ -48,9 +49,27 @@ int RunLua(const char *luaFile, int priority) {
     lua_State *thread = lua_newthread(lua);
     int threadRef = luaL_ref(lua, LUA_REGISTRYINDEX);
     lua_xmove(lua, thread, 1);
-
     int taskRef = LUA_REFNIL;
-    int result = lua_resume(thread, 0);
+
+    int argc = 0;
+    if (argf) {
+        va_list args;
+        va_start(args, argf);
+        while (*argf) {
+            switch (*argf) {
+            case 'i':
+            case 'd': lua_pushinteger(thread, va_arg(args, lua_Integer));   ++argc; break;
+            case 'f': lua_pushnumber(thread, va_arg(args, lua_Number));     ++argc; break;
+            case 's': lua_pushstring(thread, va_arg(args, const char*));    ++argc; break;
+            case 'b': lua_pushboolean(thread, va_arg(args, int));           ++argc; break;
+            case 'l': lua_pushlightuserdata(thread, va_arg(args, void*));   ++argc; break;
+            }
+            ++argf;
+        }
+        va_end(args);
+    }
+
+    int result = lua_resume(thread, argc);
     if (result == LUA_OK || result == LUA_YIELD) {
         class_newuserdata(lua, Task, NewTask(Task_ResumeLuaThread, threadRef, priority));
         taskRef = luaL_ref(lua, LUA_REGISTRYINDEX);

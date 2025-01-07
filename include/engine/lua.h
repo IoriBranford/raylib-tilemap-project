@@ -10,7 +10,7 @@ typedef struct Task Task;
 void InitLua();
 void CloseLua();
 
-int RunLua(const char *luaFile, int priority);
+int RunLua(const char *luaFile, int priority, const char *argf, ...);
 Task* GetLuaTask(int ref);
 
 int LuaResultBool(int taskRef, int i);

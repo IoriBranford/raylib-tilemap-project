@@ -48,7 +48,7 @@ void InitGame()
     InitLua();
     // RunLua("resources/syntaxerr.lua", 0);
     // RunLua("resources/runtimeerr.lua", 0);
-    luaTask = RunLua("resources/hello.lua", 0);
+    luaTask = RunLua("resources/hello.lua", 0, "ii", 10, 6);
 }
 
 void CloseGame()
