@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <stdarg.h>
 
+int L_Task_run(lua_State *l);
+
 static lua_State *lua;
 
 void Task_ResumeLuaThread(Task *t) {
@@ -42,41 +44,32 @@ int GetLua(lua_State *l, const char *luaFile) {
 }
 
 int RunLua(const char *luaFile, int priority, const char *argf, ...) {
-    int error = GetLua(lua, luaFile);
-    if (error)
-        return LUA_REFNIL;
+    lua_pushcfunction(lua, L_Task_run);
+    lua_pushstring(lua, luaFile);
+    lua_pushinteger(lua, priority);
 
-    lua_State *thread = lua_newthread(lua);
-    int threadRef = luaL_ref(lua, LUA_REGISTRYINDEX);
-    lua_xmove(lua, thread, 1);
-    int taskRef = LUA_REFNIL;
-
-    int argc = 0;
+    int argc = 2;
     if (argf) {
         va_list args;
         va_start(args, argf);
         while (*argf) {
             switch (*argf) {
             case 'i':
-            case 'd': lua_pushinteger(thread, va_arg(args, lua_Integer));   ++argc; break;
-            case 'f': lua_pushnumber(thread, va_arg(args, lua_Number));     ++argc; break;
-            case 's': lua_pushstring(thread, va_arg(args, const char*));    ++argc; break;
-            case 'b': lua_pushboolean(thread, va_arg(args, int));           ++argc; break;
-            case 'l': lua_pushlightuserdata(thread, va_arg(args, void*));   ++argc; break;
+            case 'd': lua_pushinteger(lua, va_arg(args, lua_Integer));   ++argc; break;
+            case 'f': lua_pushnumber(lua, va_arg(args, lua_Number));     ++argc; break;
+            case 's': lua_pushstring(lua, va_arg(args, const char*));    ++argc; break;
+            case 'b': lua_pushboolean(lua, va_arg(args, int));           ++argc; break;
+            case 'l': lua_pushlightuserdata(lua, va_arg(args, void*));   ++argc; break;
             }
             ++argf;
         }
         va_end(args);
     }
 
-    int result = lua_resume(thread, argc);
-    if (result == LUA_OK || result == LUA_YIELD) {
-        class_newuserdata(lua, Task, NewTask(Task_ResumeLuaThread, threadRef, priority));
-        taskRef = luaL_ref(lua, LUA_REGISTRYINDEX);
-    } else {
-        fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
-        luaL_unref(lua, LUA_REGISTRYINDEX, threadRef);
-    }
+    int result = lua_pcall(lua, argc, 1, 0);
+    int taskRef = luaL_testudata(lua, -1, "Task") ?
+        luaL_ref(lua, LUA_REGISTRYINDEX) : LUA_REFNIL;
+    lua_pop(lua, lua_gettop(lua));
     return taskRef;
 }
 
