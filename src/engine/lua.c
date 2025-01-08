@@ -55,11 +55,11 @@ int RunLua(const char *luaFile, int priority, const char *argf, ...) {
         while (*argf) {
             switch (*argf) {
             case 'i':
-            case 'd': lua_pushinteger(lua, va_arg(args, lua_Integer));   ++argc; break;
-            case 'f': lua_pushnumber(lua, va_arg(args, lua_Number));     ++argc; break;
+            case 'd': lua_pushinteger(lua, va_arg(args, int));   ++argc; break;
+            case 'f': lua_pushnumber(lua, va_arg(args, double));     ++argc; break;
             case 's': lua_pushstring(lua, va_arg(args, const char*));    ++argc; break;
             case 'b': lua_pushboolean(lua, va_arg(args, int));           ++argc; break;
-            case 'l': lua_pushlightuserdata(lua, va_arg(args, void*));   ++argc; break;
+            case 'p': lua_pushlightuserdata(lua, va_arg(args, void*));   ++argc; break;
             }
             ++argf;
         }
