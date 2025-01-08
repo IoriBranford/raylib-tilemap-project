@@ -72,7 +72,7 @@ size_t NumSpritesFree() {
 }
 
 int CompareSprites(const void *ap, const void *bp) {
-    const Sprite *a = ap, *b = bp;
+    const Sprite *a = *(Sprite**)ap, *b = *(Sprite**)bp;
     float diff;
     // float diff = a->order - b->order;
     // if (diff > 0.0f)
