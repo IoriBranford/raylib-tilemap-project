@@ -38,5 +38,8 @@ void PauseTask(Task *task);
 void SleepTask(Task *task, int ticks);
 
 void UpdateTasks();
+void RunTasks();
+void PruneTasks();
+void SortTasks();
 
 #endif /* AB0F4716_F889_4E95_8EBF_0036D400024E */
