@@ -38,7 +38,7 @@ static int framesCounter = 0;          // Useful to count frames
 
 static tmx_map *map;
 static Camera2D camera;
-static int luaTask = LUA_REFNIL;
+static int luaTasks[2] = {LUA_REFNIL, LUA_REFNIL};
 
 void InitGame()
 {
@@ -48,7 +48,8 @@ void InitGame()
     InitLua();
     // RunLua("resources/syntaxerr.lua", 0);
     // RunLua("resources/runtimeerr.lua", 0);
-    luaTask = RunLua("resources/hello.lua", 0, "ii", 4, 30);
+    luaTasks[0] = RunLua("resources/hello.lua", 0, "ii", 2, 30);
+    luaTasks[1] = RunLua("resources/hello.lua", 0, "ii", 3, 30);
 }
 
 void CloseGame()
@@ -82,13 +83,15 @@ void UpdateLogo()
     // TODO: Update LOGO screen variables here!
     UpdateTasks();
 
-    Task *t = GetLuaTask(luaTask);
-    if (t) {
-        if (IsTaskDone(t)) {
-            const char *result = LuaResultString(luaTask, 1);
-            printf("%s\n", result);
-            ReleaseLuaTask(luaTask);
-            luaTask = LUA_REFNIL;
+    for (int i = 0; i < 2; ++i) {
+        Task *t = GetLuaTask(luaTasks[i]);
+        if (t) {
+            if (IsTaskDone(t)) {
+                const char *result = LuaResultString(luaTasks[i], 1);
+                printf("%s\n", result);
+                ReleaseLuaTask(luaTasks[i]);
+                luaTasks[i] = LUA_REFNIL;
+            }
         }
     }
 
