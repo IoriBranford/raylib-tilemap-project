@@ -76,7 +76,7 @@ int RunLua(const char *luaFile, int priority, const char *argf, ...) {
 Task* GetLuaTask(int taskRef) {
     if (taskRef == LUA_REFNIL) return NULL;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
-    Task **ud = luaL_testudata(lua, 1, "Task");
+    Task **ud = luaL_testudata(lua, -1, "Task");
     lua_pop(lua, 1);
     return ud ? *ud : NULL;
 }
@@ -161,8 +161,9 @@ void ReleaseLuaTask(int taskRef) {
     if (taskRef == LUA_REFNIL)
         return;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
-    if (luaL_testudata(lua, 1, "Task"))
+    if (luaL_testudata(lua, -1, "Task"))
         luaL_unref(lua, LUA_REGISTRYINDEX, taskRef);
+    lua_pop(lua, 1);
 }
 
 void CloseLua() {
