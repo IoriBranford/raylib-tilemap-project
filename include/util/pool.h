@@ -63,4 +63,6 @@ PT* ctor(size_t size) { \
 
 #define sort_pool_active(pool, compare) qsort(pool->active, pool->nActive, sizeof(void*), compare)
 
+#define is_from_pool(p) (pool->objects <= p && p < pool->objects + pool->nObjects)
+
 #endif /* A5613A39_7304_4AFC_91F5_5476D15F4288 */
