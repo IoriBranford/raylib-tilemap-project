@@ -173,26 +173,10 @@ void CloseLua() {
 
 int luaopen_task(lua_State *l);
 
-int luaopen_lldebugger(lua_State *l) {
-    lua_getglobal(lua, "require");
-    lua_pushstring(lua, "lldebugger");
-    lua_pcall(lua, 1, 1, 0);
-
-    if (lua_istable(lua, -1)) {
-        lua_getfield(lua, -1, "start");
-        lua_pcall(lua, 1, 0, 0);
-    } else if (lua_isstring(lua, -1)) {
-        printf("%s\n", lua_tostring(lua, -1));
-    }
-    return 0;
-}
-
 void InitLua() {
     if (lua)
         CloseLua();
     lua = luaL_newstate();
     luaL_openlibs(lua);
     lua_cpcall(lua, luaopen_task, NULL);
-    if (getenv("LOCAL_LUA_DEBUGGER_VSCODE"))
-        lua_cpcall(lua, luaopen_lldebugger, NULL);
 }
