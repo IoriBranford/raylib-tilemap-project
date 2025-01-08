@@ -73,7 +73,7 @@ Task* NewTask(TaskFunc func, void *data, int priority) {
 }
 
 int CompareTasks(const void *pa, const void *pb) {
-    const Task *a = pa, *b = pb;
+    const Task *a = *(Task**)pa, *b = *(Task**)pb;
     if (a->priority < b->priority)
         return -1;
     if (a->priority > b->priority)
