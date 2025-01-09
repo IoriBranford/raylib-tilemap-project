@@ -20,6 +20,7 @@ add_executable(game
     src/engine/gfx2d_text.c
     src/engine/gfx2d_tmx.c
     src/engine/lua.c
+    src/engine/lua_gfx2d.c
     src/engine/lua_task.c
     src/engine/lua_tmx.c
     src/engine/tasks.c
