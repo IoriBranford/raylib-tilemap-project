@@ -68,6 +68,9 @@ int L_##cls##_set_##field(lua_State *l) { \
 #define class_method_reg(cls, f) { .name = #f, .func = L_##cls##_##f}
 #define class_getter_reg(cls, field) class_method_reg(cls, get_##field)
 #define class_setter_reg(cls, field) class_method_reg(cls, set_##field)
+#define class_getter_and_setter_reg(cls, field) \
+    class_getter_reg(cls, field),\
+    class_setter_reg(cls, field)
 
 #define class_newuserdata(l, cls, o) { \
     cls **od = lua_newuserdata(l, sizeof(cls*)); \
