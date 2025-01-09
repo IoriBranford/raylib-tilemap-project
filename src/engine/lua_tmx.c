@@ -24,7 +24,7 @@ void L_put_property_in_table(tmx_property *property, void *userdata) {
 }
 
 #define tmx_class_properties_getter(cls) \
-int L_##cls##_get_properties(lua_State *l) { \
+int L_##cls##___getproperties(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
     lua_newtable(l); \
     tmx_property_foreach((*o)->properties, L_put_property_in_table, l); \
@@ -57,7 +57,7 @@ int L_tmx_map___gc(lua_State *l) {
 
 class_index_and_newindex(tmx_map);
 
-int L_tmx_layer_get_objects(lua_State *l) {
+int L_tmx_layer___getobjects(lua_State *l) {
     tmx_layer **ud = luaL_checkudata(l, 1, "tmx_layer");
     tmx_layer *layer = *ud;
     if (layer->type == L_OBJGR) {
