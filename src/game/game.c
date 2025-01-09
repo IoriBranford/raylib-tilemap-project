@@ -37,7 +37,7 @@ static int framesCounter = 0;          // Useful to count frames
 #define MAX_CONFETTI 1000
 
 static tmx_map *map;
-static Camera2D camera;
+static Sprite *camera;
 
 void InitGame()
 {
@@ -97,11 +97,17 @@ void UpdateTitle()
     {
         InitSprites(MAX_CONFETTI);
         InitLayers(map->ly_head, map);
-        camera.offset.x = GetScreenWidth()/2;
-        camera.offset.y = GetScreenHeight()/2;
-        camera.target = camera.offset;
-        camera.rotation = 0;
-        camera.zoom = 1;
+        camera = NewSpriteCamera((Camera2D){0}, WHITE);
+        camera->z = 0x10000;
+        camera = NewSpriteCamera((Camera2D){
+            .offset.x = GetScreenWidth()/2,
+            .offset.y = GetScreenHeight()/2,
+            .target.x = GetScreenWidth()/2,
+            .target.y = GetScreenHeight()/2,
+            .rotation = 0,
+            .zoom = 1
+        }, WHITE);
+        camera->z = -0x10000;
         SetCurrentPhase(GameplayPhase);
     }
 }
@@ -112,8 +118,8 @@ void UpdateGameplay()
 
     if (IsMouseButtonDown(0)) {
         Vector2 move = GetMouseDelta();
-        camera.target.x -= move.x;
-        camera.target.y -= move.y;
+        camera->x -= move.x;
+        camera->y -= move.y;
     }
 
     // Press enter to change to ENDING screen
@@ -169,9 +175,8 @@ void DrawGameplay()
 {
     // TODO: Draw GAMEPLAY screen here!
     ClearBackground(tmx2rl_Color(map->backgroundcolor));
-    BeginMode2D(camera);
+    SortSprites(SpriteZYXSort);
     DrawSprites();
-    EndMode2D();
     DrawText("GAMEPLAY SCREEN", 0, 0, 40, MAROON);
     DrawText("PRESS ENTER to JUMP to ENDING SCREEN", 0, 40, 20, MAROON);
 }
