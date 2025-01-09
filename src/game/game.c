@@ -51,14 +51,20 @@ void CloseGame()
 }
 
 void InitLayers(tmx_layer *head, tmx_map *map) {
+    float z = 0;
     for (tmx_layer *layer = head; layer; layer = layer->next) {
         if (layer->type == L_GROUP) {
             InitLayers(layer->content.group_head, map);
         } else if (layer->type == L_OBJGR) {
-            for (tmx_object *o = layer->content.objgr->head; o; o = o->next)
-                NewTMXObjectSprite(o, map->tiles, WHITE);
+            z += 1;
+            for (tmx_object *o = layer->content.objgr->head; o; o = o->next) {
+                Sprite *s = NewTMXObjectSprite(o, map->tiles, WHITE);
+                if (s)
+                    s->z = z;
+            }
         } else if (layer->type == L_LAYER) {
-            NewTileLayerSprite(layer, map);
+            Sprite *s = NewTileLayerSprite(layer, map);
+            s->z = z += 1;
         }
     }
 }
