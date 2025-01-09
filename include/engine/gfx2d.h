@@ -47,6 +47,7 @@ struct Sprite {
             Vector2 position, size;
         };
     };
+    float z;
     union {
         struct {
             float originX, originY;
@@ -100,6 +101,7 @@ void CloseSprites();
 
 void PruneSprites();
 void UpdateSprites();
+int SpriteZYXSort(const void *ap, const void *bp);
 void SortSprites(int (*compare)(const void*,const void*));
 void DrawSprites();
 

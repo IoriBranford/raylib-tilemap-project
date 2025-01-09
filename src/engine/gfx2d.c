@@ -71,14 +71,14 @@ size_t NumSpritesFree() {
     return count_free_pool_objs(sprites);
 }
 
-int CompareSprites(const void *ap, const void *bp) {
+int SpriteZYXSort(const void *ap, const void *bp) {
     const Sprite *a = *(Sprite**)ap, *b = *(Sprite**)bp;
     float diff;
-    // float diff = a->order - b->order;
-    // if (diff > 0.0f)
-    //     return 1;
-    // if (diff < 0.0f)
-    //     return -1;
+    diff = a->z - b->z;
+    if (diff > 0.0f)
+        return 1;
+    if (diff < 0.0f)
+        return -1;
     diff = a->position.y - b->position.y;
     if (diff > 0.0f)
         return 1;
@@ -89,7 +89,7 @@ int CompareSprites(const void *ap, const void *bp) {
         return 1;
     if (diff < 0.0f)
         return -1;
-    return 0;
+    return a - b;
 }
 
 void UpdateSprites() {
