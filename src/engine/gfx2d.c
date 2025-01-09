@@ -143,6 +143,14 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
     return spr;
 }
 
+bool IsNearCamera2D(Vector2 position, Camera2D Camera) {
+    float w = GetScreenWidth(), h = GetScreenHeight();
+    Vector2 screenCenter = {w/2, h/2};
+    Vector2 cameraCenter = GetScreenToWorld2D(screenCenter, currentCamera);
+    float nearDist = fmaxf(w, h);
+    return Vector2DistanceSqr(position, cameraCenter) <= nearDist*nearDist;
+}
+
 void ReleaseSprite(Sprite* spr) {
     spr->active = false;
 }

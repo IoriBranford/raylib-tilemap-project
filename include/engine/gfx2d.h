@@ -115,6 +115,8 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
 void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
 
+bool IsNearCamera2D(Vector2 position, Camera2D Camera);
+
 void ReleaseSprite(Sprite* sprite);
 
 #endif /* E222BE36_5310_48C7_9586_70543D02A1F0 */
