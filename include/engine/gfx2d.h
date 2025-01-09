@@ -3,6 +3,7 @@
 
 #include <tmx.h>
 #include <raylib-aseprite.h>
+#include <raymath.h>
 #include <util.h>
 
 typedef struct Sprite Sprite;
@@ -12,6 +13,7 @@ pool_typedef(Sprite, SpritePool);
 
 typedef enum SpriteType {
     SPRITETYPE_NONE,
+    SPRITETYPE_CAMERA,
     SPRITETYPE_RECTANGLE,
     SPRITETYPE_TEXTURE,
     SPRITETYPE_TEXT,
@@ -93,6 +95,8 @@ struct Sprite {
         } shape;
 
         AsepriteTag asepriteTag;
+
+        float cameraZoom;
     };
 };
 
@@ -114,6 +118,7 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
 void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
+Sprite* NewSpriteCamera(Camera2D camera, Color color);
 
 bool IsNearCamera2D(Vector2 position, Camera2D Camera);
 

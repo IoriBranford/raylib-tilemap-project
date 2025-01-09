@@ -5,6 +5,13 @@
 #define RAYLIB_ASEPRITE_IMPLEMENTATION
 #include <raylib-aseprite.h>
 
+pool_ctor(Sprite, SpritePool, NewSpritePool)
+
+SpritePool *sprites;
+Camera2D currentCamera;
+
+#define IsActive(g) (g->active)
+
 void UpdateSprite(Sprite *spr) {
     if (spr->behavior.update) spr->behavior.update(spr);
 }
@@ -38,11 +45,21 @@ void DrawSprite_AsepriteTag(Sprite *spr) {
     DrawAsepriteTagPro(spr->asepriteTag, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
-pool_ctor(Sprite, SpritePool, NewSpritePool)
-
-SpritePool *sprites;
-
-#define IsActive(g) (g->active)
+void DrawSprite_Camera(Sprite *spr) {
+    if (spr->cameraZoom == 0) {
+        currentCamera = (Camera2D){0};
+        currentCamera.zoom = 1;
+        EndMode2D();
+    } else {
+        currentCamera = (Camera2D){
+            .target = spr->position,
+            .offset = spr->origin,
+            .rotation = spr->rotationDeg,
+            .zoom = spr->cameraZoom
+        };
+        BeginMode2D(currentCamera);
+    }
+}
 
 static void InitEmptySprite(Sprite *spr) {
     spr->active = false;
@@ -55,6 +72,8 @@ void InitSprites(unsigned n) {
         CloseSprites();
     sprites = NewSpritePool(n);
     pool_foreachall(sprites, InitEmptySprite);
+    currentCamera = (Camera2D){0};
+    currentCamera.zoom = 1;
 }
 
 void CloseSprites() {
@@ -143,12 +162,40 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
     return spr;
 }
 
+Sprite* NewSpriteCamera(Camera2D camera, Color color) {
+    Sprite *spr = NewSprite();
+    if (spr) {
+        spr->active = true;
+        spr->rect = (Rectangle){
+            .x = camera.target.x,
+            .y = camera.target.y,
+            .width = GetScreenWidth(),
+            .height = GetScreenHeight()
+        };
+        spr->origin = (Vector2){
+            camera.offset.x,
+            camera.offset.y
+        };
+        spr->rotationDeg = camera.rotation;
+        spr->color = color;
+        spr->behavior.type = SPRITETYPE_CAMERA;
+        spr->behavior.update = NULL;
+        spr->behavior.draw = DrawSprite_Camera;
+        spr->cameraZoom = camera.zoom;
+    }
+    return spr;
+}
+
 bool IsNearCamera2D(Vector2 position, Camera2D Camera) {
     float w = GetScreenWidth(), h = GetScreenHeight();
     Vector2 screenCenter = {w/2, h/2};
     Vector2 cameraCenter = GetScreenToWorld2D(screenCenter, currentCamera);
     float nearDist = fmaxf(w, h);
     return Vector2DistanceSqr(position, cameraCenter) <= nearDist*nearDist;
+}
+
+bool IsSpriteNearCamera(Sprite *sprite) {
+    return IsNearCamera2D(sprite->position, currentCamera);
 }
 
 void ReleaseSprite(Sprite* spr) {
