@@ -65,6 +65,62 @@ int L_##cls##___set##field(lua_State *l) { \
     class_getter(cls, fieldtype, field) \
     class_setter(cls, fieldtype, field)
 
+#define class_getter_Vector2(cls, vector2) \
+int L_##cls##_get##vector2(lua_State *l) { \
+    cls **o = luaL_checkudata(l, 1, #cls); \
+    lua_pushnumber(l, (*o)->vector2.x); \
+    lua_pushnumber(l, (*o)->vector2.y); \
+    return 2; \
+}
+
+#define class_setter_Vector2(cls, vector2) \
+int L_##cls##_set##vector2(lua_State *l) { \
+    cls **o = luaL_checkudata(l, 1, #cls); \
+    if (lua_isnumber(l, 2)) (*o)->vector2.x = lua_tonumber(l, 2); \
+    if (lua_isnumber(l, 3)) (*o)->vector2.y = lua_tonumber(l, 3); \
+    return 0; \
+}
+
+#define class_getter_and_setter_Vector2(cls, vector2) \
+    class_getter_Vector2(cls, vector2) \
+    class_setter_Vector2(cls, vector2)
+
+#define class_getter_Color(cls, color) \
+int L_##cls##_get##color(lua_State *l) { \
+    cls **o = luaL_checkudata(l, 1, #cls); \
+    lua_pushinteger(l, (*o)->color.r); \
+    lua_pushinteger(l, (*o)->color.g); \
+    lua_pushinteger(l, (*o)->color.b); \
+    lua_pushinteger(l, (*o)->color.a); \
+    return 4; \
+}
+
+#define class_setter_Color(cls, color) \
+int L_##cls##_set##color(lua_State *l) { \
+    cls **o = luaL_checkudata(l, 1, #cls); \
+    if (lua_isnumber(l, 2)) { \
+        int c = lua_tointeger(l, 2); \
+        (*o)->color.r = c < 0 ? 0 : c > 255 ? 255 : c; \
+    }\
+    if (lua_isnumber(l, 3)) { \
+        int c = lua_tointeger(l, 2); \
+        (*o)->color.g = c < 0 ? 0 : c > 255 ? 255 : c; \
+    }\
+    if (lua_isnumber(l, 4)) { \
+        int c = lua_tointeger(l, 4); \
+        (*o)->color.b = c < 0 ? 0 : c > 255 ? 255 : c; \
+    }\
+    if (lua_isnumber(l, 5)) { \
+        int c = lua_tointeger(l, 5); \
+        (*o)->color.a = c < 0 ? 0 : c > 255 ? 255 : c; \
+    }\
+    return 0; \
+}
+
+#define class_getter_and_setter_Color(cls, color) \
+    class_getter_Color(cls, color) \
+    class_setter_Color(cls, color)
+
 #define class_method_reg(cls, f) { .name = #f, .func = L_##cls##_##f}
 #define class_getter_reg(cls, field) class_method_reg(cls, __get##field)
 #define class_setter_reg(cls, field) class_method_reg(cls, __set##field)
@@ -77,5 +133,11 @@ int L_##cls##___set##field(lua_State *l) { \
     *od = o; \
     luaL_setmetatable(l, #cls); \
 }
+
+#define class_multi_getter_reg(cls, field) class_method_reg(cls, get##field)
+#define class_multi_setter_reg(cls, field) class_method_reg(cls, set##field)
+#define class_multi_getter_and_setter_reg(cls, field) \
+    class_multi_getter_reg(cls, field),\
+    class_multi_setter_reg(cls, field)
 
 #endif /* CD425245_A2F7_4AB2_ADAB_E5F9A1924686 */
