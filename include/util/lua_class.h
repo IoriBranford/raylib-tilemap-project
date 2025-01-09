@@ -57,7 +57,7 @@ int L_##cls##_get_##field(lua_State *l) { \
 #define class_setter(cls, fieldtype, field) \
 int L_##cls##_set_##field(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
-    (*o)->field = lua_to##fieldtype(l, 2); \
+    (*o)->field = luaL_check##fieldtype(l, 2); \
     return 0; \
 }
 
