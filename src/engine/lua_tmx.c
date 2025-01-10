@@ -85,14 +85,14 @@ int L_tmx_map_find_object_by_id(lua_State *l) {
 }
 
 class_getter(tmx_map, string, class_type);
-class_getter(tmx_map, integer, width);
-class_getter(tmx_map, integer, height);
-class_getter(tmx_map, integer, tile_width);
-class_getter(tmx_map, integer, tile_height);
+class_getter(tmx_map, number, width);
+class_getter(tmx_map, number, height);
+class_getter(tmx_map, number, tile_width);
+class_getter(tmx_map, number, tile_height);
 tmx_class_properties_getter(tmx_map);
 
 class_getter(tmx_layer, string, class_type);
-class_getter(tmx_layer, integer, type);
+class_getter(tmx_layer, number, type);
 tmx_class_properties_getter(tmx_layer);
 
 class_getter(tmx_object, string, type);

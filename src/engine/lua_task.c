@@ -81,8 +81,8 @@ int L_Task_sleep(lua_State *l) {
 }
 
 class_index_and_newindex(Task);
-class_getter_and_setter(Task, integer, priority);
-class_getter(Task, integer, sleeping);
+class_getter_and_setter(Task, number, priority);
+class_getter(Task, number, sleeping);
 
 int luaopen_task(lua_State *l) {
     luaL_Reg task_r[] = {
