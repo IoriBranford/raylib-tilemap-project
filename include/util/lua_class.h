@@ -57,14 +57,14 @@ int L_##cls##___gc(lua_State *l) { \
 #define class_getter(cls, fieldtype, field) \
 int L_##cls##___get##field(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
-    lua_push##fieldtype(l, (*o)->field); \
+    if (*o) lua_push##fieldtype(l, (*o)->field); \
     return 1; \
 }
 
 #define class_setter(cls, fieldtype, field) \
 int L_##cls##___set##field(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
-    (*o)->field = luaL_check##fieldtype(l, 2); \
+    if (*o) (*o)->field = luaL_check##fieldtype(l, 2); \
     return 0; \
 }
 
@@ -75,6 +75,7 @@ int L_##cls##___set##field(lua_State *l) { \
 #define class_getter_Vector2(cls, vector2) \
 int L_##cls##_get##vector2(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
+    if (!*o) return 0; \
     lua_pushnumber(l, (*o)->vector2.x); \
     lua_pushnumber(l, (*o)->vector2.y); \
     return 2; \
@@ -83,6 +84,7 @@ int L_##cls##_get##vector2(lua_State *l) { \
 #define class_setter_Vector2(cls, vector2) \
 int L_##cls##_set##vector2(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
+    if (!*o) return 0; \
     if (lua_isnumber(l, 2)) (*o)->vector2.x = lua_tonumber(l, 2); \
     if (lua_isnumber(l, 3)) (*o)->vector2.y = lua_tonumber(l, 3); \
     return 0; \
@@ -95,6 +97,7 @@ int L_##cls##_set##vector2(lua_State *l) { \
 #define class_getter_Color(cls, color) \
 int L_##cls##_get##color(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
+    if (!*o) return 0; \
     lua_pushinteger(l, (*o)->color.r); \
     lua_pushinteger(l, (*o)->color.g); \
     lua_pushinteger(l, (*o)->color.b); \
@@ -105,6 +108,7 @@ int L_##cls##_get##color(lua_State *l) { \
 #define class_setter_Color(cls, color) \
 int L_##cls##_set##color(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
+    if (!*o) return 0; \
     if (lua_isnumber(l, 2)) { \
         int c = lua_tointeger(l, 2); \
         (*o)->color.r = c < 0 ? 0 : c > 255 ? 255 : c; \
