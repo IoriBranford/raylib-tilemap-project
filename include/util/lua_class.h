@@ -134,10 +134,10 @@ int L_##cls##_set##color(lua_State *l) { \
     luaL_setmetatable(l, #cls); \
 }
 
-#define class_multi_getter_reg(cls, field) class_method_reg(cls, get##field)
-#define class_multi_setter_reg(cls, field) class_method_reg(cls, set##field)
-#define class_multi_getter_and_setter_reg(cls, field) \
-    class_multi_getter_reg(cls, field),\
-    class_multi_setter_reg(cls, field)
+#define class_getter_multi_reg(cls, field) class_method_reg(cls, get##field)
+#define class_setter_multi_reg(cls, field) class_method_reg(cls, set##field)
+#define class_getter_and_setter_multi_reg(cls, field) \
+    class_getter_multi_reg(cls, field),\
+    class_setter_multi_reg(cls, field)
 
 #endif /* CD425245_A2F7_4AB2_ADAB_E5F9A1924686 */

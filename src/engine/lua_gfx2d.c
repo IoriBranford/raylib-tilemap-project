@@ -76,18 +76,18 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_reg(Sprite, active),
         class_getter_and_setter_reg(Sprite, x),
         class_getter_and_setter_reg(Sprite, y),
-        class_multi_getter_and_setter_reg(Sprite, position),
         class_getter_and_setter_reg(Sprite, width),
         class_getter_and_setter_reg(Sprite, height),
-        class_multi_getter_and_setter_reg(Sprite, size),
         class_getter_and_setter_reg(Sprite, rotationDeg),
         class_getter_and_setter_reg(Sprite, red),
         class_getter_and_setter_reg(Sprite, green),
         class_getter_and_setter_reg(Sprite, blue),
         class_getter_and_setter_reg(Sprite, alpha),
-        class_multi_getter_and_setter_reg(Sprite, color),
         class_getter_and_setter_reg(Sprite, animSpeedMS),
         class_getter_reg(Sprite, animTimer),
+        class_getter_and_setter_multi_reg(Sprite, position),
+        class_getter_and_setter_multi_reg(Sprite, size),
+        class_getter_and_setter_multi_reg(Sprite, color),
         {0}
     };
     luaL_register(l, NULL, instanceMethods);
