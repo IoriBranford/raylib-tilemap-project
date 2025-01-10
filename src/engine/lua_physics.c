@@ -74,8 +74,8 @@ int L_##cls##___set##field(lua_State *l) { \
     cls **ud = luaL_checkudata(l, 1, #cls); \
     if (!*ud) return 0; \
     if (!lua_is##fieldtype(l, 2)) \
-        fprintf(stderr, "WARN: converting %s to %s in %s.%s = %s\n", \
-            luaL_typename(l, 2), #fieldtype, #cls, #field, lua_tostring(l, 2)); \
+        fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
+            luaL_typename(l, 2), #fieldtype, #cls, #field); \
     cls##Set##field(*ud, lua_to##fieldtype(l, 2)); \
     return 0; \
 }
