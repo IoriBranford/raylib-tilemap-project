@@ -2,8 +2,6 @@
 #include <util/lua_class.h>
 #include "gfx2d.h"
 
-class_index_and_newindex(Sprite);
-
 int L_Sprite_rectangle(lua_State *l) {
     if (!NumSpritesFree())
         return 0;
@@ -35,15 +33,8 @@ int L_Sprite_rectangle(lua_State *l) {
     return 1;
 }
 
-int L_Sprite___gc(lua_State *l) {
-    Sprite **ud = luaL_testudata(l, 1, "Sprite");
-    if (ud && *ud) {
-        ReleaseSprite(*ud);
-        *ud == NULL;
-    }
-    return 0;
-}
-
+class_index_and_newindex(Sprite)
+class_gc(Sprite, ReleaseSprite)
 class_getter(Sprite, boolean, active)
 class_getter_and_setter(Sprite, number, x)
 class_getter_and_setter(Sprite, number, y)
