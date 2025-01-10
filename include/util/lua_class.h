@@ -50,7 +50,7 @@ int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
 #define class_gc(cls, free) \
 int L_##cls##___gc(lua_State *l) { \
     cls **ud = luaL_testudata(l, 1, #cls); \
-    if (ud && *ud) { free(*ud); *ud == NULL; } \
+    if (ud && *ud) { free(*ud); *ud = NULL; } \
     return 0; \
 }
 
