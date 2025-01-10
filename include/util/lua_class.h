@@ -64,7 +64,11 @@ int L_##cls##___get##field(lua_State *l) { \
 #define class_setter(cls, fieldtype, field) \
 int L_##cls##___set##field(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
-    if (*o) (*o)->field = luaL_check##fieldtype(l, 2); \
+    if (!*o) return 0; \
+    if (!lua_is##fieldtype(l, 2)) \
+        fprintf(stderr, "WARN: converting %s to %s in %s.%s = %s\n", \
+            luaL_typename(l, 2), #fieldtype, #cls, #field, lua_tostring(l, 2)); \
+    (*o)->field = lua_to##fieldtype(l, 2); \
     return 0; \
 }
 
