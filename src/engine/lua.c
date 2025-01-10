@@ -157,13 +157,24 @@ void* LuaResultFieldUserdata(int taskRef, int ti, const char *k, const char *udT
     return v;
 }
 
-void ReleaseLuaTask(int taskRef) {
+void ReleaseLuaTaskRef(int taskRef) {
     if (taskRef == LUA_REFNIL)
         return;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
     if (luaL_testudata(lua, -1, "Task"))
         luaL_unref(lua, LUA_REGISTRYINDEX, taskRef);
     lua_pop(lua, 1);
+}
+
+void ReleaseLuaTask(Task *task) {
+    if (task) {
+        ReleaseTask(task);
+        int threadRef = task->idata;
+        lua_rawgeti(lua, LUA_REGISTRYINDEX, threadRef);
+        if (lua_isthread(lua, -1))
+            luaL_unref(lua, LUA_REGISTRYINDEX, threadRef);
+        lua_pop(lua, 1);
+    }
 }
 
 void CloseLua() {

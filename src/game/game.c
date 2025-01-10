@@ -89,7 +89,7 @@ void UpdateLogo()
             if (IsTaskDone(t)) {
                 const char *result = LuaResultString(luaTasks[i], 1);
                 printf("%s\n", result);
-                ReleaseLuaTask(luaTasks[i]);
+                ReleaseLuaTaskRef(luaTasks[i]);
                 luaTasks[i] = LUA_REFNIL;
             }
         }

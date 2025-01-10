@@ -4,6 +4,9 @@
 
 int GetLua(lua_State *l, const char *luaFile);
 void Task_ResumeLuaThread(Task *t);
+void ReleaseLuaTask(Task *task);
+
+class_gc(Task, ReleaseLuaTask)
 
 int L_Task_run(lua_State *l) {
     if (lua_isstring(l, 1)) {
@@ -40,14 +43,6 @@ int L_Task_run(lua_State *l) {
         luaL_unref(l, LUA_REGISTRYINDEX, threadRef);
     }
     return nResults;
-}
-
-int L_Task___gc(lua_State *l) {
-    Task **ud = luaL_checkudata(l, 1, "Task");
-    ReleaseTask(*ud);
-    int threadRef = (*ud)->idata;
-    luaL_unref(l, LUA_REGISTRYINDEX, threadRef);
-    return 0;
 }
 
 int PushTaskResults(lua_State *l, Task *task) {
