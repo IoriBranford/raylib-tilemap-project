@@ -103,7 +103,7 @@ int L_##cls##_set##color(lua_State *l) { \
         (*o)->color.r = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 3)) { \
-        int c = lua_tointeger(l, 2); \
+        int c = lua_tointeger(l, 3); \
         (*o)->color.g = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 4)) { \
