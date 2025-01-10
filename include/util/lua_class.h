@@ -47,6 +47,13 @@ int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
     class_index(cls) \
     class_newindex(cls)
 
+#define class_gc(cls, free) \
+int L_##cls##___gc(lua_State *l) { \
+    cls **ud = luaL_testudata(l, 1, #cls); \
+    if (ud && *ud) { free(*ud); *ud == NULL; } \
+    return 0; \
+}
+
 #define class_getter(cls, fieldtype, field) \
 int L_##cls##___get##field(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
