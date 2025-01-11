@@ -6,6 +6,18 @@ int L_Sprite_rectangle(lua_State *l) {
     if (!NumSpritesFree())
         return 0;
 
+    int r = luaL_optint(l, 8, 255);
+    int g = luaL_optint(l, 9, 255);
+    int b = luaL_optint(l, 10, 255);
+    int a = luaL_optint(l, 11, 255);
+
+    Color color = {
+        .r = r < 0 ? 0 : r > 255 ? 255 : r,
+        .g = g < 0 ? 0 : g > 255 ? 255 : g,
+        .b = b < 0 ? 0 : b > 255 ? 255 : b,
+        .a = a < 0 ? 0 : a > 255 ? 255 : a
+    };
+
     Sprite *s = NewRectangleSprite(
         (Rectangle){
             .x = luaL_optnumber(l, 1, 0),
@@ -21,12 +33,7 @@ int L_Sprite_rectangle(lua_State *l) {
 
         luaL_optnumber(l, 7, 0),
 
-        (Color) {
-            .r = luaL_optint(l, 8, 255),
-            .g = luaL_optint(l, 9, 255),
-            .b = luaL_optint(l, 10, 255),
-            .a = luaL_optint(l, 11, 255),
-        }
+        color
     );
 
     class_newuserdata(l, Sprite, s);
