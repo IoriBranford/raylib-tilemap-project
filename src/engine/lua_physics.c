@@ -41,19 +41,40 @@ int L_physics_segmentshape(lua_State *l) {
 int L_physics_polyshape(lua_State *l) {
     cpBody **ud = luaL_checkudata(l, 1, "cpBody");
     cpBody *body = *ud;
+
+    int argType = lua_type(l, 2);
+
+    int nVertArgs = 0;
+    if (argType == LUA_TTABLE) {
+        nVertArgs = lua_objlen(l, 2);
+    } else if (argType == LUA_TNUMBER) {
+        nVertArgs = lua_gettop(l) - 1;
+    }
+
+    if (nVertArgs % 2 != 0)
+        luaL_error(l, "physics.polyshape expected even number of point components { x1, y1, x2, y2, ... }");
+    else if (nVertArgs == 0)
+        luaL_error(l, "physics.polyshape expected point components { x1, y1, x2, y2, ... }");
     
-    luaL_checktype(l, 2, LUA_TTABLE);
-    int len = lua_objlen(l, 2);
-    int nVerts = len/2;
+    int nVerts = nVertArgs / 2;
     cpVect *verts = calloc(sizeof(cpVect), nVerts);
     cpVect *vert = verts;
-    for (int i = 2; i <= len; i += 2) {
-        lua_rawgeti(l, 2, i-1);
-        lua_rawgeti(l, 2, i);
-        vert->x = luaL_checknumber(l, -2);
-        vert->y = luaL_checknumber(l, -1);
-        lua_pop(l, 2);
-        ++vert;
+    if (argType == LUA_TTABLE) {
+        for (int i = 2; i <= nVertArgs; i += 2) {
+            lua_rawgeti(l, 2, i-1);
+            lua_rawgeti(l, 2, i);
+            vert->x = luaL_checknumber(l, -2);
+            vert->y = luaL_checknumber(l, -1);
+            lua_pop(l, 2);
+            ++vert;
+        }
+    } else if (argType == LUA_TNUMBER) {
+        int nArgs = nVertArgs + 1;
+        for (int i = 2; i <= nVertArgs; i += 2) {
+            vert->x = luaL_checknumber(l, i);
+            vert->y = luaL_checknumber(l, i+1);
+            ++vert;
+        }
     }
 
     class_newuserdata(l, cpShape, cpPolyShapeNew(body, nVerts, verts, cpTransformIdentity, 0));
