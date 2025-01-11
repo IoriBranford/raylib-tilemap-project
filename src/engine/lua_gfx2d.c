@@ -41,6 +41,8 @@ class_getter_and_setter(Sprite, number, y)
 class_getter_and_setter(Sprite, number, width)
 class_getter_and_setter(Sprite, number, height)
 class_getter_and_setter(Sprite, number, rotationDeg)
+class_getter_and_setter(Sprite, number, originX)
+class_getter_and_setter(Sprite, number, originY)
 class_getter_and_setter(Sprite, number, red)
 class_getter_and_setter(Sprite, number, green)
 class_getter_and_setter(Sprite, number, blue)
@@ -49,6 +51,7 @@ class_getter_and_setter(Sprite, number, animSpeedMS)
 class_getter(Sprite, number, animTimer)
 class_getter_and_setter_Vector2(Sprite, position)
 class_getter_and_setter_Vector2(Sprite, size)
+class_getter_and_setter_Vector2(Sprite, origin)
 class_getter_and_setter_Color(Sprite, color)
 
 int luaopen_gfx2d(lua_State *l) {
@@ -70,6 +73,8 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_and_setter_reg(Sprite, width),
         class_getter_and_setter_reg(Sprite, height),
         class_getter_and_setter_reg(Sprite, rotationDeg),
+        class_getter_and_setter_reg(Sprite, originX),
+        class_getter_and_setter_reg(Sprite, originY),
         class_getter_and_setter_reg(Sprite, red),
         class_getter_and_setter_reg(Sprite, green),
         class_getter_and_setter_reg(Sprite, blue),
@@ -79,6 +84,7 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_and_setter_multi_reg(Sprite, position),
         class_getter_and_setter_multi_reg(Sprite, size),
         class_getter_and_setter_multi_reg(Sprite, color),
+        class_getter_and_setter_multi_reg(Sprite, origin),
         {0}
     };
     luaL_register(l, NULL, instanceMethods);
