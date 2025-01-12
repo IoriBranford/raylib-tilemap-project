@@ -71,8 +71,8 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
             }
 
             offset = ALIGNMENT_ORIGIN[tile->tileset->objectalignment];
-            offset.x *= -tile->width;
-            offset.y *= -tile->height;
+            offset.x = -offset.x * tile->width;
+            offset.y = -offset.y * tile->height;
             offset.x += tile->tileset->x_offset;
             offset.y += tile->tileset->y_offset;
 
