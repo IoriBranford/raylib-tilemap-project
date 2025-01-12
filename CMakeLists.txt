@@ -21,6 +21,7 @@ add_executable(game
     src/engine/tasks.c
     src/game/game.c
     src/game/confetti.c
+    src/game/confetti_tmx.c
     src/game/physics.c
     src/game/physics_tmx.c
     src/game/main.c)

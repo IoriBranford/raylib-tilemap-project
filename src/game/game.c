@@ -14,6 +14,7 @@ void UpdateEnding();
 void DrawEnding();
 
 void AddConfetti();
+void AddTMXObjectConfetti(tmx_object *obj, tmx_tile **maptiles);
 
 const Phase LogoPhase = {
     .update = UpdateLogo,
@@ -71,7 +72,7 @@ void InitLayers(tmx_layer *head, tmx_map *map) {
 
 void Task_SpawnConfetti(void *p) {
     if (framesCounter == 0) {
-        AddConfetti();
+        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
     }
     ++framesCounter;
     framesCounter %= FRAMES_PER_CONFETTI;
@@ -125,7 +126,8 @@ void UpdateGameplay()
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER))
     {
-        InitPhysics(64);
+        framesCounter = 0;
+        InitPhysics();
         InitSprites(MAX_CONFETTI);
         InitTasks(MAX_CONFETTI);
         SetCurrentPhase(EndingPhase);
@@ -139,7 +141,7 @@ void UpdateEnding()
     UpdateTasks();
 
     if (framesCounter == 0) {
-        AddConfetti();
+        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
     }
     ++framesCounter;
     framesCounter %= FRAMES_PER_CONFETTI;
