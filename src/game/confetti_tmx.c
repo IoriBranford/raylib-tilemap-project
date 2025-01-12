@@ -33,6 +33,15 @@ void Task_TMXObjectConfetti(Task *t) {
     spr->color = color;
 }
 
+void DrawTMXTileCollisionShapes(tmx_tile *tile, Vector2 position, float rotationDeg, Color color);
+
+void DrawSprite_ConfettiWithCollision(Sprite *spr) {
+    DrawTexturePro(*spr->tile.texture, spr->tile.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
+    DrawRectangle(spr->x - 1, spr->y - 4, 2, 8, WHITE);
+    DrawRectangle(spr->x - 4, spr->y - 1, 8, 2, WHITE);
+    DrawTMXTileCollisionShapes(spr->tile.tile, spr->position, spr->rotationDeg, WHITE);
+}
+
 void AddTMXObjectConfetti(tmx_object *obj, tmx_tile **maptiles) {
     if (!NumSpritesFree() || !NumTasksFree())
         return;
@@ -49,6 +58,7 @@ void AddTMXObjectConfetti(tmx_object *obj, tmx_tile **maptiles) {
     cpBodySetAngularVelocity(body, PI/16);
 
     Sprite *sprite = NewTMXObjectSprite(obj, maptiles, color);
+    sprite->behavior.draw = DrawSprite_ConfettiWithCollision;
     cpBodySetUserData(body, sprite);
     UpdateSpriteFromBody(body, sprite);
     Task *task = NewTask(Task_TMXObjectConfetti, body, 2);
