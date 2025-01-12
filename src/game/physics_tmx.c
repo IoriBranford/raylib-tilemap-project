@@ -1,6 +1,8 @@
 #include <game/physics.h>
 #include <tmx.h>
 #include <stdio.h>
+#include <raylib.h>
+#include <rlgl.h>
 
 const cpFloat SHAPE_BEVEL = 1;
 const cpFloat POINT_RADIUS = .5;
@@ -78,4 +80,71 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
     }
 
     return body;
+}
+
+void DrawTMXTileCollisionShape(tmx_object *obj, Vector2 offset, Color color) {
+    tmx_property *collidable = tmx_get_property(obj->properties, "collidable");
+    if (!collidable || !collidable->value.boolean)
+        return;
+
+    switch (obj->obj_type) {
+        case OT_POINT: {
+            DrawCircleLinesV(offset, POINT_RADIUS, color);
+        } break;
+        case OT_ELLIPSE: {
+            double radius = (obj->width + obj->height)/4;
+            DrawCircleLinesV(VECTOR2(offset.x + radius, offset.y + radius),
+                (obj->width + obj->height)/4, color);
+        } break;
+        case OT_SQUARE: {
+            DrawRectangleLines(offset.x,offset.y,obj->width,obj->height,color);
+        } break;
+        case OT_POLYGON: {
+            int nPoints = obj->content.shape->points_len;
+            double **points = obj->content.shape->points;
+            Vector2 a = {
+                offset.x + points[nPoints-1][0],
+                offset.y + points[nPoints-1][1]
+            };
+            for (int i = 0; i < nPoints; ++i) {
+                Vector2 b = {
+                    offset.x + points[i][0],
+                    offset.y + points[i][1]
+                };
+                DrawLineV(a, b, color);
+                a = b;
+            }
+        } break;
+        case OT_POLYLINE: {
+            int nPoints = obj->content.shape->points_len;
+            double **points = obj->content.shape->points;
+            Vector2 a = {
+                offset.x + points[0][0],
+                offset.y + points[0][1]
+            };
+            for (int i = 1; i < nPoints; ++i) {
+                Vector2 b = {
+                    offset.x + points[i][0],
+                    offset.y + points[i][1]
+                };
+                DrawLineV(a, b, color);
+                a = b;
+            }
+        } break;
+    }
+
+    return;
+}
+
+void DrawTMXTileCollisionShapes(tmx_tile *tile, Vector2 position, float rotationDeg, Color color) {
+    Vector2 origin = {0, 0};
+    GetTileOrigin(&origin, tile, VECTOR2(0, 0));
+    rlPushMatrix();
+    rlTranslatef(position.x, position.y, 0);
+    rlRotatef(rotationDeg, 0, 0, 1);
+    for (tmx_object *col = tile->collision; col; col = col->next) {
+        Vector2 offset = {col->x-origin.x, col->y-origin.y};
+        DrawTMXTileCollisionShape(col, offset, color);
+    }
+    rlPopMatrix();
 }
