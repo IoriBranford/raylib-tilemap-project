@@ -22,6 +22,7 @@ add_executable(game
     src/game/game.c
     src/game/confetti.c
     src/game/physics.c
+    src/game/physics_tmx.c
     src/game/main.c)
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static)

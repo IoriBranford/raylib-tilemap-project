@@ -9,6 +9,8 @@ void ClosePhysics();
 void UpdatePhysics();
 
 cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad);
+cpBody* NewBodyFromTMXObject(tmx_object *obj, tmx_tile **maptiles);
+
 cpCircleShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy);
 cpPolyShape* AddBodyRectangle(cpBody *body, cpFloat w, cpFloat h, cpFloat ox, cpFloat oy);
 
