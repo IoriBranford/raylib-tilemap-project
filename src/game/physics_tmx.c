@@ -3,19 +3,7 @@
 #include <stdio.h>
 
 const cpFloat SHAPE_BEVEL = 1;
-
-static const cpVect ALIGNMENT_ORIGIN[OA_BOTTOMRIGHT+1] = {
-    [OA_NONE]       = {0.0, 1.0},
-    [OA_TOPLEFT]    = {0.0, 0.0},
-    [OA_TOP]        = {0.5, 0.0},
-    [OA_TOPRIGHT]   = {1.0, 0.0},
-    [OA_LEFT]       = {0.0, 0.5},
-    [OA_CENTER]     = {0.5, 0.5},
-    [OA_RIGHT]      = {1.0, 0.5},
-    [OA_BOTTOMLEFT] = {0.0, 1.0},
-    [OA_BOTTOM]     = {0.5, 1.0},
-    [OA_BOTTOMRIGHT]= {1.0, 1.0},
-};
+const cpFloat POINT_RADIUS = .5;
 
 cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset) {
     tmx_property *collidable = tmx_get_property(obj->properties, "collidable");
@@ -26,7 +14,7 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
     cpSpace *space = cpBodyGetSpace(body);
     switch (obj->obj_type) {
         case OT_POINT: {
-            shape = cpCircleShapeNew(body, .5f, offset);
+            shape = cpCircleShapeNew(body, POINT_RADIUS, offset);
             if (space) cpSpaceAddShape(space, shape);
         } break;
         case OT_ELLIPSE: {
@@ -79,14 +67,13 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
                 break;
             }
 
-            offset = ALIGNMENT_ORIGIN[tile->tileset->objectalignment];
-            offset.x = -offset.x * tile->width;
-            offset.y = -offset.y * tile->height;
-            offset.x += tile->tileset->x_offset;
-            offset.y += tile->tileset->y_offset;
+            Vector2 origin = {0,0};
+            GetTileOrigin(&origin, tile, VECTOR2(0, 0));
 
-            for (tmx_object *col = tile->collision; col; col = col->next)
+            for (tmx_object *col = tile->collision; col; col = col->next) {
+                cpVect offset = {col->x-origin.x, col->y-origin.y};
                 GiveBodyTMXShape(body, col, maptiles, offset);
+            }
         } break;
     }
 

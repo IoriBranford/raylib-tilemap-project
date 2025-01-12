@@ -117,6 +117,7 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
+void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
 void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
 
