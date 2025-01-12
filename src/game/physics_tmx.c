@@ -22,44 +22,53 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
     if (!collidable || !collidable->value.boolean)
         return body;
 
+    cpShape *shape = NULL;
+    cpSpace *space = cpBodyGetSpace(body);
     switch (obj->obj_type) {
         case OT_POINT: {
-            cpCircleShapeNew(body, .5f, offset);
+            shape = cpCircleShapeNew(body, .5f, offset);
+            if (space) cpSpaceAddShape(space, shape);
         } break;
         case OT_ELLIPSE: {
             double radius = (obj->width + obj->height)/4;
-            cpCircleShapeNew(body, radius, cpv(offset.x + radius, offset.y + radius));
+            shape = cpCircleShapeNew(body, radius, cpv(offset.x + radius, offset.y + radius));
+            if (space) cpSpaceAddShape(space, shape);
         } break;
         case OT_SQUARE: {
-            cpBoxShapeNew2(body, (cpBB) {
+            shape = cpBoxShapeNew2(body, (cpBB) {
                 .l = offset.x,
                 .t = offset.y,
                 .r = offset.x + obj->width,
                 .b = offset.y + obj->height
             }, SHAPE_BEVEL);
+            if (space) cpSpaceAddShape(space, shape);
         } break;
         case OT_POLYGON: {
-            tmx_shape *shape = obj->content.shape;
-            cpVect *verts = calloc(shape->points_len, sizeof(cpVect));
-            for (int i = 0; i < shape->points_len; ++i) {
-                verts[i].x = offset.x + shape->points[i][0];
-                verts[i].y = offset.y + shape->points[i][1];
+            int nPoints = obj->content.shape->points_len;
+            double **points = obj->content.shape->points;
+            cpVect *verts = calloc(nPoints, sizeof(cpVect));
+            for (int i = 0; i < nPoints; ++i) {
+                verts[i].x = offset.x + points[i][0];
+                verts[i].y = offset.y + points[i][1];
             }
-            cpPolyShapeNew(body, shape->points_len, verts, cpTransformIdentity, SHAPE_BEVEL);
+            shape = cpPolyShapeNew(body, nPoints, verts, cpTransformIdentity, SHAPE_BEVEL);
+            if (space) cpSpaceAddShape(space, shape);
             free(verts);
         } break;
         case OT_POLYLINE: {
-            tmx_shape *shape = obj->content.shape;
+            int nPoints = obj->content.shape->points_len;
+            double **points = obj->content.shape->points;
             cpVect a = {
-                offset.x + shape->points[0][0],
-                offset.y + shape->points[0][1]
+                offset.x + points[0][0],
+                offset.y + points[0][1]
             };
-            for (int i = 1; i < shape->points_len; ++i) {
+            for (int i = 1; i < nPoints; ++i) {
                 cpVect b = {
-                    offset.x + shape->points[i][0],
-                    offset.y + shape->points[i][1]
+                    offset.x + points[i][0],
+                    offset.y + points[i][1]
                 };
-                cpSegmentShapeNew(body, a, b, SHAPE_BEVEL);
+                shape = cpSegmentShapeNew(body, a, b, SHAPE_BEVEL);
+                if (space) cpSpaceAddShape(space, shape);
                 a = b;
             }
         } break;
@@ -81,13 +90,5 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
         } break;
     }
 
-    return body;
-}
-
-cpBody* NewBodyFromTMXObject(tmx_object *obj, tmx_tile **maptiles) {
-    cpBody *body = cpBodyNewKinematic();
-    GiveBodyTMXShape(body, obj, maptiles, cpv(0, 0));
-    cpBodySetPosition(body, cpv(obj->x, obj->y));
-    cpBodySetAngle(body, obj->rotation * DEG2RAD);
     return body;
 }
