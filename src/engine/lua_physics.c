@@ -201,6 +201,9 @@ cp_getter_and_setter(cpShape, boolean, Sensor)
 int luaopen_physics(lua_State *l) {
     luaL_Reg staticMethods[] = {
         class_method_reg(physics, body),
+        class_method_reg(physics, kinematicbody),
+        class_method_reg(physics, staticbody),
+        class_method_reg(physics, circleshape),
         {0}
     };
     luaL_register(l, "physics", staticMethods);
