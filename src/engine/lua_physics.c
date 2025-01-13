@@ -137,37 +137,14 @@ cp_getter_and_setter_vect(cpBody, CenterOfGravity)
 cp_getter_and_setter_vect(cpBody, Velocity)
 cp_getter_and_setter_vect(cpBody, Force)
 
-void iter_removeShape(cpBody *body, cpShape *shape, void *space) {
-    cpSpaceRemoveShape(space, shape);
-}
-
-void iter_freeShape(cpBody *body, cpShape *shape, void *_) {
-    cpShapeFree(shape);
-}
-
-void iter_removeConstraint(cpBody *body, cpConstraint *constraint, void *space) {
-    cpSpaceRemoveConstraint(space, constraint);
-}
-
-void iter_freeConstraint(cpBody *body, cpConstraint *constraint, void *_) {
-    cpConstraintFree(constraint);
-}
-
-int L_cpBody___gc(lua_State *l) {
-    cpBody **ud = luaL_checkudata(l, 1, "cpBody");
-    cpBody *body = *ud;
-    cpSpace *space = cpBodyGetSpace(body);
-    if (space) {
-        cpBodyEachShape(body, iter_removeShape, space);
-        cpBodyEachConstraint(body, iter_removeConstraint, space);
-        cpSpaceRemoveBody(space, body);
-    }
-    cpBodyEachShape(body, iter_freeShape, space);
-    cpBodyEachConstraint(body, iter_freeConstraint, space);
-    cpBodyFree(body);
-    *ud = NULL;
+int L_cpBody_UpdateSprite(lua_State *l) {
+    cpBody **body = luaL_checkudata(l, 1, "cpBody");
+    Sprite **sprite = luaL_checkudata(l, 2, "Sprite");
+    UpdateSpriteFromBody(*body, *sprite);
     return 0;
 }
+
+class_gc(cpBody, ReleaseBody)
 
 int L_cpBody_RemoveFromSpace(lua_State *l) {
     cpBody **ud = luaL_checkudata(l, 1, "cpBody");
@@ -180,13 +157,7 @@ int L_cpBody_RemoveFromSpace(lua_State *l) {
 
 class_index_and_newindex(cpShape)
 
-int L_cpShape___gc(lua_State *l) {
-    cpShape **ud = luaL_checkudata(l, 1, "cpShape");
-    cpShape *shape = *ud;
-    if (!cpShapeGetBody(shape) && !cpShapeGetSpace(shape))
-        cpShapeFree(shape);
-    return 0;
-}
+class_gc(cpShape, ReleaseOrphanedShape)
 
 int L_cpShape_RemoveFromSpace(lua_State *l) {
     cpShape **ud = luaL_checkudata(l, 1, "cpShape");
@@ -214,6 +185,7 @@ int luaopen_physics(lua_State *l) {
         class_method_reg(cpBody, __index),
         class_method_reg(cpBody, __newindex),
         class_method_reg(cpBody, __gc),
+        class_method_reg(cpBody, UpdateSprite),
         class_method_reg(cpBody, RemoveFromSpace),
         class_getter_and_setter_reg(cpBody, Angle),
         class_getter_and_setter_reg(cpBody, AngularVelocity),
