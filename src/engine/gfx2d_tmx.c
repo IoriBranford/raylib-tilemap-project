@@ -28,7 +28,7 @@ void GetTileSource(Rectangle *source, tmx_tile *tile, Vector2 flip) {
         source->height *= -1;
 }
 
-static const Vector2 ALIGNMENT_ORIGIN[OA_BOTTOMRIGHT+1] = {
+static const Vector2 ALIGNMENT_ORIGIN[] = {
     [OA_NONE]       = {0.0f, 1.0f},
     [OA_TOPLEFT]    = {0.0f, 0.0f},
     [OA_TOP]        = {0.5f, 0.0f},

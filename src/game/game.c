@@ -14,6 +14,7 @@ void UpdateEnding();
 void DrawEnding();
 
 void AddConfetti();
+void AddTMXObjectConfetti(tmx_object *obj, tmx_tile **maptiles);
 
 const Phase LogoPhase = {
     .update = UpdateLogo,
@@ -37,7 +38,7 @@ static int framesCounter = 0;          // Useful to count frames
 #define MAX_CONFETTI 1000
 
 static tmx_map *map;
-static Camera2D camera;
+static Sprite *camera;
 static int luaTasks[2] = {LUA_REFNIL, LUA_REFNIL};
 
 void InitGame()
@@ -58,21 +59,27 @@ void CloseGame()
 }
 
 void InitLayers(tmx_layer *head, tmx_map *map) {
+    float z = 0;
     for (tmx_layer *layer = head; layer; layer = layer->next) {
         if (layer->type == L_GROUP) {
             InitLayers(layer->content.group_head, map);
         } else if (layer->type == L_OBJGR) {
-            for (tmx_object *o = layer->content.objgr->head; o; o = o->next)
-                NewTMXObjectSprite(o, map->tiles, WHITE);
+            z += 1;
+            for (tmx_object *o = layer->content.objgr->head; o; o = o->next) {
+                Sprite *s = NewTMXObjectSprite(o, map->tiles, WHITE);
+                if (s)
+                    s->z = z;
+            }
         } else if (layer->type == L_LAYER) {
-            NewTileLayerSprite(layer, map);
+            Sprite *s = NewTileLayerSprite(layer, map);
+            s->z = z += 1;
         }
     }
 }
 
 void Task_SpawnConfetti(void *p) {
     if (framesCounter == 0) {
-        AddConfetti();
+        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
     }
     ++framesCounter;
     framesCounter %= FRAMES_PER_CONFETTI;
@@ -113,11 +120,17 @@ void UpdateTitle()
     {
         InitSprites(MAX_CONFETTI);
         InitLayers(map->ly_head, map);
-        camera.offset.x = GetScreenWidth()/2;
-        camera.offset.y = GetScreenHeight()/2;
-        camera.target = camera.offset;
-        camera.rotation = 0;
-        camera.zoom = 1;
+        camera = NewSpriteCamera((Camera2D){0}, WHITE);
+        camera->z = 0x10000;
+        camera = NewSpriteCamera((Camera2D){
+            .offset.x = GetScreenWidth()/2,
+            .offset.y = GetScreenHeight()/2,
+            .target.x = GetScreenWidth()/2,
+            .target.y = GetScreenHeight()/2,
+            .rotation = 0,
+            .zoom = 1
+        }, WHITE);
+        camera->z = -0x10000;
         SetCurrentPhase(GameplayPhase);
     }
 }
@@ -128,14 +141,15 @@ void UpdateGameplay()
 
     if (IsMouseButtonDown(0)) {
         Vector2 move = GetMouseDelta();
-        camera.target.x -= move.x;
-        camera.target.y -= move.y;
+        camera->x -= move.x;
+        camera->y -= move.y;
     }
 
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER))
     {
-        InitPhysics(64);
+        framesCounter = 0;
+        InitPhysics();
         InitSprites(MAX_CONFETTI);
         InitTasks(MAX_CONFETTI);
         SetCurrentPhase(EndingPhase);
@@ -149,7 +163,7 @@ void UpdateEnding()
     UpdateTasks();
 
     if (framesCounter == 0) {
-        AddConfetti();
+        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
     }
     ++framesCounter;
     framesCounter %= FRAMES_PER_CONFETTI;
@@ -185,9 +199,8 @@ void DrawGameplay()
 {
     // TODO: Draw GAMEPLAY screen here!
     ClearBackground(tmx2rl_Color(map->backgroundcolor));
-    BeginMode2D(camera);
+    SortSprites(SpriteZYXSort);
     DrawSprites();
-    EndMode2D();
     DrawText("GAMEPLAY SCREEN", 0, 0, 40, MAROON);
     DrawText("PRESS ENTER to JUMP to ENDING SCREEN", 0, 40, 20, MAROON);
 }

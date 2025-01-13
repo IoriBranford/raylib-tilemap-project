@@ -3,6 +3,7 @@
 
 #include <tmx.h>
 #include <raylib-aseprite.h>
+#include <raymath.h>
 #include <util.h>
 
 typedef struct Sprite Sprite;
@@ -12,6 +13,7 @@ pool_typedef(Sprite, SpritePool);
 
 typedef enum SpriteType {
     SPRITETYPE_NONE,
+    SPRITETYPE_CAMERA,
     SPRITETYPE_RECTANGLE,
     SPRITETYPE_TEXTURE,
     SPRITETYPE_TEXT,
@@ -47,6 +49,7 @@ struct Sprite {
             Vector2 position, size;
         };
     };
+    float z;
     union {
         struct {
             float originX, originY;
@@ -92,6 +95,8 @@ struct Sprite {
         } shape;
 
         AsepriteTag asepriteTag;
+
+        float cameraZoom;
     };
 };
 
@@ -100,6 +105,7 @@ void CloseSprites();
 
 void PruneSprites();
 void UpdateSprites();
+int SpriteZYXSort(const void *ap, const void *bp);
 void SortSprites(int (*compare)(const void*,const void*));
 void DrawSprites();
 
@@ -111,7 +117,11 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
+void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
 void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
+Sprite* NewSpriteCamera(Camera2D camera, Color color);
+
+bool IsNearCamera2D(Vector2 position, Camera2D Camera);
 
 void ReleaseSprite(Sprite* sprite);
 

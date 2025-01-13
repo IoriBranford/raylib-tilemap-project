@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="52">
+<map version="1.11" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="52">
  <editorsettings>
   <export target="desert.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" name="Desert" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
+ <tileset firstgid="1" name="Desert" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8" objectalignment="center">
   <image source="tmw_desert_spacing.png" width="265" height="199"/>
   <tile id="30" probability="0.01"/>
   <tile id="31" probability="0.01"/>
@@ -12,6 +12,14 @@
   <tile id="39" probability="0.01"/>
   <tile id="45" probability="0"/>
   <tile id="46" probability="0.01">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="8" y="8" width="16" height="16">
+     <properties>
+      <property name="collidable" type="bool" value="true"/>
+     </properties>
+     <ellipse/>
+    </object>
+   </objectgroup>
    <animation>
     <frame tileid="46" duration="100"/>
     <frame tileid="47" duration="100"/>
@@ -175,6 +183,10 @@
   <object id="13" name="Sign Post" gid="46" x="352" y="160" width="64" height="32"/>
   <object id="11" name="Sign Post" gid="2147483694" x="320" y="192" width="32" height="32"/>
   <object id="10" name="Sign Post" gid="46" x="384" y="160" width="32" height="32" rotation="90"/>
-  <object id="16" gid="47" x="416" y="160" width="32" height="32"/>
+  <object id="16" gid="47" x="416" y="160" width="32" height="32">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
