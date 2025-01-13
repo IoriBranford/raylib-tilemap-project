@@ -49,6 +49,11 @@ void ReleaseBody(cpBody *body) {
     cpBodyFree(body);
 }
 
+void ReleaseOrphanedShape(cpShape *shape) {
+    if (!cpShapeGetBody(shape) && !cpShapeGetSpace(shape))
+        cpShapeFree(shape);
+}
+
 cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset);
 
 cpBody* NewTMXObjectBody(tmx_object *obj, tmx_tile **maptiles) {
