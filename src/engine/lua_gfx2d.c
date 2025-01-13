@@ -61,6 +61,12 @@ class_getter_and_setter_Vector2(Sprite, size)
 class_getter_and_setter_Vector2(Sprite, origin)
 class_getter_and_setter_Color(Sprite, color)
 
+int L_Sprite___getnearcamera(lua_State *l) {
+    Sprite **o = luaL_checkudata(l, 1, "Sprite");
+    lua_pushboolean(l, IsSpriteNearCamera(*o));
+    return 1;
+}
+
 int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
         class_method_reg(Sprite, rectangle),
@@ -75,6 +81,7 @@ int luaopen_gfx2d(lua_State *l) {
         class_method_reg(Sprite, __newindex),
         class_method_reg(Sprite, __gc),
         class_getter_reg(Sprite, active),
+        class_getter_reg(Sprite, nearcamera),
         class_getter_and_setter_reg(Sprite, x),
         class_getter_and_setter_reg(Sprite, y),
         class_getter_and_setter_reg(Sprite, width),
