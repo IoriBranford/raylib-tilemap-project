@@ -3,7 +3,7 @@
 #include <game/physics.h>
 
 int L_physics_body(lua_State *l) {
-    cpFloat mass = luaL_optnumber(l, 1, 0);
+    cpFloat mass = luaL_optnumber(l, 1, 1);
     cpFloat moment = luaL_optnumber(l, 2, HUGE_VAL);
     class_newuserdata(l, cpBody, cpBodyNew(mass, moment));
     return 1;
