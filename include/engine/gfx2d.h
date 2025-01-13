@@ -122,6 +122,7 @@ void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
 
 bool IsNearCamera2D(Vector2 position, Camera2D Camera);
+bool IsSpriteNearCamera(Sprite *sprite);
 
 void ReleaseSprite(Sprite* sprite);
 
