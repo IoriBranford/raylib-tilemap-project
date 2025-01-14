@@ -73,6 +73,10 @@ int RunLua(const char *luaFile, int priority, const char *argf, ...) {
     return taskRef;
 }
 
+void UpdateLua() {
+    lua_gc(lua, LUA_GCSTEP, 1);
+}
+
 Task* GetLuaTask(int taskRef) {
     if (taskRef == LUA_REFNIL) return NULL;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
@@ -184,6 +188,9 @@ void CloseLua() {
 }
 
 int luaopen_task(lua_State *l);
+int luaopen_gfx2d(lua_State *l);
+int luaopen_physics(lua_State *l);
+int luaopen_raylib(lua_State *l);
 
 void InitLua() {
     if (lua)
@@ -191,4 +198,7 @@ void InitLua() {
     lua = luaL_newstate();
     luaL_openlibs(lua);
     lua_cpcall(lua, luaopen_task, NULL);
+    lua_cpcall(lua, luaopen_gfx2d, NULL);
+    lua_cpcall(lua, luaopen_physics, NULL);
+    lua_cpcall(lua, luaopen_raylib, NULL);
 }

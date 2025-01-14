@@ -9,6 +9,7 @@ typedef struct Task Task;
 
 void InitLua();
 void CloseLua();
+void UpdateLua();
 
 int RunLua(const char *luaFile, int priority, const char *argf, ...);
 Task* GetLuaTask(int ref);
