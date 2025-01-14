@@ -1,32 +1,33 @@
 local x, y = ...
-x = x or 0
+x = x or math.random(0, 1280)
 y = y or 0
 
-local w, h = 0, 8
+local w, h = 8, 8
 local ox, oy = w/2, h/2
-local rotationDeg = math.random() * math.pi / 2
+local rotationRad = math.random() * math.pi / 2
 local hueDeg = math.random(0, 5) * 60
-local red, green, blue = color.fromHSV(hueDeg, 1, 1)
+local red, green, blue = color.FromHSV(hueDeg, 1, 1)
 
 local body = physics.body();
 body:setPosition(x, y)
 body:setVelocity(0, 4)
-body:setAngularVelocity(math.pi/16)
-physics.circleshape(oy)
+body.Angle = rotationRad
+body.AngularVelocity = math.pi/16
+physics.circleshape(body, oy)
 
-local spr = sprite.rectangle(x, y, w, h, ox, oy, rotationDeg, red, green, blue)
+local spr = sprite.rectangle(x, y, w, h, ox, oy, rotationRad, red, green, blue)
 local timer = 0
 while spr.nearcamera do
     coroutine.yield()
 
-    body:updateSprite(spr)
+    body:UpdateSprite(spr)
 
     local mass = body.Mass
     body:setForce(0, -mass/64)
 
-    timer = timer + raylib.FrameTime
+    timer = timer + time.FrameTime
 
-    local sin = math.sin(timer * math.pi / 4)
+    local sin = math.cos(timer * math.pi * 4)
     local w = (sin + 1) * 4
     spr.width = w
     spr.originX = w/2
