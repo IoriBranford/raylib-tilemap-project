@@ -176,10 +176,10 @@ void UpdateEnding()
     // Press enter to return to TITLE screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
+        CloseLua();
         ClosePhysics();
         CloseSprites();
         CloseTasks();
-        CloseLua();
         SetCurrentPhase(TitlePhase);
     }
 }
