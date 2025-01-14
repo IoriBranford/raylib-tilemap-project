@@ -26,6 +26,6 @@ lua_Number LuaResultFieldNumber(int taskRef, int ti, const char *k);
 const char* LuaResultFieldString(int taskRef, int ti, const char *k);
 void* LuaResultFieldUserdata(int taskRef, int ti, const char *k, const char *udType);
 
-void ReleaseLuaTaskRef(int ref);
+void UnrefLuaTask(int ref);
 
 #endif /* F368B866_5240_4102_BE90_898768165E85 */

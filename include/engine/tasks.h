@@ -16,6 +16,9 @@ struct Task {
     union {
         void *data;
         int idata;
+        struct LuaTaskData {
+            int taskRef, threadRef;
+        };
     };
     int priority;   // lower = earlier
     int sleeping;

@@ -31,10 +31,16 @@ int L_Task_run(lua_State *l) {
     int result = lua_resume(thread, nArgs);
     int nResults = 1;
     if (result == LUA_OK || result == LUA_YIELD) {
-        Task *task = NewTask(Task_ResumeLuaThread, threadRef, priority);
-        if (result == LUA_OK)
-            EndTask(task);
+        Task *task = NewTask(Task_ResumeLuaThread, NULL, priority);
+        task->threadRef = threadRef;
         class_newuserdata(l, Task, task);
+        if (result == LUA_OK) {
+            EndTask(task);
+            task->taskRef = LUA_REFNIL;
+        } else {
+            lua_pushvalue(l, -1);
+            task->taskRef = luaL_ref(l, LUA_REGISTRYINDEX);
+        }
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
         lua_pushnil(l);
@@ -46,7 +52,7 @@ int L_Task_run(lua_State *l) {
 }
 
 int PushTaskResults(lua_State *l, Task *task) {
-    int threadRef = task->idata;
+    int threadRef = task->threadRef;
     lua_rawgeti(l, LUA_REGISTRYINDEX, threadRef);
     lua_State *thread = lua_tothread(l, -1);
     int nResults = lua_gettop(thread);

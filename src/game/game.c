@@ -96,7 +96,7 @@ void UpdateLogo()
             if (IsTaskDone(t)) {
                 const char *result = LuaResultString(luaTasks[i], 1);
                 printf("%s\n", result);
-                ReleaseLuaTaskRef(luaTasks[i]);
+                UnrefLuaTask(luaTasks[i]);
                 luaTasks[i] = LUA_REFNIL;
             }
         }
@@ -165,7 +165,7 @@ void UpdateEnding()
     UpdateLua();
 
     if (framesCounter == 0) {
-        RunLua("resources/confetti.lua", 0, NULL);
+        UnrefLuaTask(RunLua("resources/confetti.lua", 0, NULL));
         // AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
     }
     ++framesCounter;

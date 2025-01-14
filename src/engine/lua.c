@@ -10,20 +10,21 @@ int L_Task_run(lua_State *l);
 static lua_State *lua;
 
 void Task_ResumeLuaThread(Task *t) {
-    int ref = t->idata;
-    lua_rawgeti(lua, LUA_REGISTRYINDEX, ref);
+    int threadRef = t->threadRef;
+    lua_rawgeti(lua, LUA_REGISTRYINDEX, threadRef);
     lua_State *thread = lua_tothread(lua, -1);
     lua_pop(lua, 1);
 
     int nArgs = lua_gettop(thread);
     
     int result = lua_resume(thread, nArgs);
-    if (result == LUA_OK) {
-        EndTask(t);
-    } else if (result == LUA_YIELD) {
+    if (result == LUA_YIELD) {
     } else {
-        fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
+        if (result != LUA_OK)
+            fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
         EndTask(t);
+        UnrefLuaTask(t->taskRef);
+        t->taskRef = LUA_REFNIL;
     }
 }
 
@@ -88,7 +89,7 @@ Task* GetLuaTask(int taskRef) {
 lua_State* GetLuaThread(int taskRef) {
     Task *task = GetLuaTask(taskRef);
     if (!task) return NULL;
-    lua_rawgeti(lua, LUA_REGISTRYINDEX, task->idata);
+    lua_rawgeti(lua, LUA_REGISTRYINDEX, task->threadRef);
     lua_State *thread = lua_isthread(lua, -1) ? lua_tothread(lua, -1) : NULL;
     lua_pop(lua, 1);
     return thread;
@@ -161,7 +162,7 @@ void* LuaResultFieldUserdata(int taskRef, int ti, const char *k, const char *udT
     return v;
 }
 
-void ReleaseLuaTaskRef(int taskRef) {
+void UnrefLuaTask(int taskRef) {
     if (taskRef == LUA_REFNIL)
         return;
     lua_rawgeti(lua, LUA_REGISTRYINDEX, taskRef);
@@ -173,7 +174,7 @@ void ReleaseLuaTaskRef(int taskRef) {
 void ReleaseLuaTask(Task *task) {
     if (task) {
         ReleaseTask(task);
-        int threadRef = task->idata;
+        int threadRef = task->threadRef;
         lua_rawgeti(lua, LUA_REGISTRYINDEX, threadRef);
         if (lua_isthread(lua, -1))
             luaL_unref(lua, LUA_REGISTRYINDEX, threadRef);
