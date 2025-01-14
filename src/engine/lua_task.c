@@ -2,7 +2,6 @@
 #include <engine/tasks.h>
 #include <util/lua_class.h>
 
-int GetLua(lua_State *l, const char *luaFile);
 void Task_ResumeLuaThread(Task *t);
 void ReleaseLuaTask(Task *task);
 
@@ -10,14 +9,14 @@ class_gc(Task, ReleaseLuaTask)
 
 int L_Task_run(lua_State *l) {
     if (lua_isstring(l, 1)) {
-        const char *luaFile = lua_tostring(l, 1);
-        int error = GetLua(l, luaFile);
-        if (error)
-            return 0;
+        lua_getglobal(l, "require");
+        lua_pushvalue(l, 1);
+        if (lua_pcall(l, 1, 1, 0) != LUA_OK)
+            lua_error(l);
         lua_replace(l, 1);
     }
     if (!lua_isfunction(l, 1) && !lua_iscfunction(l, 1))
-        return luaL_typerror(l, 1, "function or valid script path");
+        return luaL_typerror(l, 1, "function or valid require string");
     
     int priority = luaL_checkinteger(l, 2);
     lua_remove(l, 2);

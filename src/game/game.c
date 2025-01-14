@@ -49,8 +49,8 @@ void InitGame()
     InitLua();
     // RunLua("resources/syntaxerr.lua", 0);
     // RunLua("resources/runtimeerr.lua", 0);
-    luaTasks[0] = RunLua("resources/hello.lua", 0, "ii", 2, 30);
-    luaTasks[1] = RunLua("resources/hello.lua", 0, "ii", 3, 30);
+    luaTasks[0] = RunLua("hello", 0, "ii", 2, 30);
+    luaTasks[1] = RunLua("hello", 0, "ii", 3, 30);
 }
 
 void CloseGame()
@@ -165,7 +165,7 @@ void UpdateEnding()
     UpdateLua();
 
     if (framesCounter == 0) {
-        UnrefLuaTask(RunLua("resources/confetti.lua", 0, NULL));
+        UnrefLuaTask(RunLua("confetti", 0, NULL));
         // AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
     }
     ++framesCounter;
