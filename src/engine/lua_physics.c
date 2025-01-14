@@ -5,7 +5,10 @@
 int L_physics_body(lua_State *l) {
     cpFloat mass = luaL_optnumber(l, 1, 1);
     cpFloat moment = luaL_optnumber(l, 2, HUGE_VAL);
-    class_newuserdata(l, cpBody, cpBodyNew(mass, moment));
+    cpBody *body = NewBody(0, 0, 0);
+    cpBodySetMass(body, mass);
+    cpBodySetMoment(body, moment);
+    class_newuserdata(l, cpBody, body);
     return 1;
 }
 
@@ -24,7 +27,8 @@ int L_physics_circleshape(lua_State *l) {
     cpBody *body = *ud;
     cpFloat radius = luaL_optnumber(l, 2, 1);
     cpVect offset = cpv(luaL_optnumber(l, 3, 0), luaL_optnumber(l, 4, 0));
-    class_newuserdata(l, cpShape, cpCircleShapeNew(body, radius, offset));
+    cpShape *shape = AddBodyCircle(body, radius, offset.x, offset.y);
+    class_newuserdata(l, cpShape, shape);
     return 1;
 }
 
