@@ -15,12 +15,16 @@ body.Angle = rotationRad
 body.AngularVelocity = math.pi/16
 physics.circleshape(body, oy)
 
-local spr = sprite.rectangle(x, y, w, h, ox, oy, rotationRad, red, green, blue)
+local spr = sprite.rectangle(x, y, w, h, ox, oy, math.deg(rotationRad), red, green, blue)
 local timer = 0
-while spr.nearcamera do
+local popped
+while spr.nearcamera and not popped do
     coroutine.yield()
 
     body:UpdateSprite(spr)
+    body:EachArbiter(function(arbiter)
+        popped = true
+    end)
 
     local mass = body.Mass
     body:setForce(0, -mass/64)
@@ -43,3 +47,6 @@ end
 
 body:RemoveFromSpace()
 spr.alpha = 0
+if popped then
+    task.run("resources/pop.lua", 0, spr.x, spr.y)
+end
