@@ -20,7 +20,7 @@ int L_##cls##___index(lua_State *l) { \
     luaL_getmetafield(l, 1, name);\
     if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, __getk ] */\
         lua_pushvalue(l, 1);   /* [ map, k, __getk, map ] */\
-        lua_pcall(l, 1, 1, 0);   /* [ map, k ] */\
+        if (lua_pcall(l, 1, 1, 0) != LUA_OK) lua_error(l); /* [ map, k, v ] */\
         return 1;\
     } \
     return 0; \
@@ -38,7 +38,7 @@ int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
     if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, v, __setk ] */\
         lua_pushvalue(l, 1);   /* [ map, k, v, __setk, map ] */\
         lua_pushvalue(l, 3);   /* [ map, k, v, __setk, map, v ] */\
-        lua_pcall(l, 3, 0, 0);   /* [ map, k, v ] */\
+        if (lua_pcall(l, 2, 0, 0) != LUA_OK) lua_error(l); /* [ map, k, v ] */\
     }\
     return 0;\
 }
