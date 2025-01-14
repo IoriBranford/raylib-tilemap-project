@@ -202,4 +202,10 @@ void InitLua() {
     lua_cpcall(lua, luaopen_gfx2d, NULL);
     lua_cpcall(lua, luaopen_physics, NULL);
     lua_cpcall(lua, luaopen_raylib, NULL);
+
+    lua_getglobal(lua, "package");
+    lua_pushstring(lua, "path");
+    lua_pushstring(lua, "lua" LUA_DIRSEP "?.lua");
+    lua_settable(lua, -3);
+    lua_pop(lua, 1);
 }
