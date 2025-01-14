@@ -148,6 +148,20 @@ int L_cpBody_UpdateSprite(lua_State *l) {
     return 0;
 }
 
+void L_cpBody_EachArbiter_iter(cpBody *body, cpArbiter *arbiter, lua_State *l) {
+    lua_pushvalue(l, 2);
+    lua_pushlightuserdata(l, arbiter); // TODO make userdata class for Arbiter
+    if (lua_pcall(l, 1, 0, 0) != LUA_OK) lua_error(l);
+}
+
+int L_cpBody_EachArbiter(lua_State *l) {
+    cpBody **ud = luaL_checkudata(l, 1, "cpBody");
+    cpBody *body = *ud;
+    if (lua_isfunction(l, 2))
+        cpBodyEachArbiter(body, L_cpBody_EachArbiter_iter, l);
+    return 0;
+}
+
 class_gc(cpBody, ReleaseBody)
 
 int L_cpBody_RemoveFromSpace(lua_State *l) {
@@ -190,6 +204,7 @@ int luaopen_physics(lua_State *l) {
         class_method_reg(cpBody, __newindex),
         class_method_reg(cpBody, __gc),
         class_method_reg(cpBody, UpdateSprite),
+        class_method_reg(cpBody, EachArbiter),
         class_method_reg(cpBody, RemoveFromSpace),
         class_getter_and_setter_reg(cpBody, Angle),
         class_getter_and_setter_reg(cpBody, AngularVelocity),
