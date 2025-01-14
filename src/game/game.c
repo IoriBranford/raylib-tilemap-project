@@ -152,6 +152,7 @@ void UpdateGameplay()
         InitPhysics();
         InitSprites(MAX_CONFETTI);
         InitTasks(MAX_CONFETTI);
+        InitLua();
         SetCurrentPhase(EndingPhase);
     }
 }
@@ -161,9 +162,11 @@ void UpdateEnding()
     UpdatePhysics();
     UpdateSprites();
     UpdateTasks();
+    UpdateLua();
 
     if (framesCounter == 0) {
-        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
+        RunLua("resources/confetti.lua", 0, NULL);
+        // AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
     }
     ++framesCounter;
     framesCounter %= FRAMES_PER_CONFETTI;
@@ -176,6 +179,7 @@ void UpdateEnding()
         ClosePhysics();
         CloseSprites();
         CloseTasks();
+        CloseLua();
         SetCurrentPhase(TitlePhase);
     }
 }
