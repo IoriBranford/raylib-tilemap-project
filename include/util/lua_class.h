@@ -72,6 +72,19 @@ int L_##cls##___set##field(lua_State *l) { \
     return 0; \
 }
 
+#define class_setter_clamped(cls, field, min, max) \
+int L_##cls##___set##field(lua_State *l) { \
+    cls **o = luaL_checkudata(l, 1, #cls); \
+    if (!*o) return 0; \
+    if (!lua_isnumber(l, 2)) \
+        fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
+            luaL_typename(l, 2), "number", #cls, #field); \
+    lua_Number n = lua_tonumber(l, 2); \
+    if (n < min) n = min; else if (n > max) n = max; \
+    (*o)->field = n; \
+    return 0; \
+}
+
 #define class_getter_and_setter(cls, fieldtype, field) \
     class_getter(cls, fieldtype, field) \
     class_setter(cls, fieldtype, field)
