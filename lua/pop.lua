@@ -7,7 +7,7 @@ return function(x, y)
     while spr.alpha > 0 do
         coroutine.yield()
 
-        local dt = time.FrameTime
+        local dt = GetFrameTime()
         spr.alpha = spr.alpha - dt*1024
         spr.rotationDeg = spr.rotationDeg + dt*720
         spr.width = spr.width + dt*128

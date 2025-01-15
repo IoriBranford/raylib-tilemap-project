@@ -6,7 +6,7 @@ return function(x, y)
     local ox, oy = w/2, h/2
     local rotationRad = math.random() * math.pi / 2
     local hueDeg = math.random(0, 5) * 60
-    local red, green, blue = color.FromHSV(hueDeg, 1, 1)
+    local red, green, blue = ColorFromHSV(hueDeg, 1, 1)
 
     local body = physics.body();
     body:setPosition(x, y)
@@ -29,7 +29,7 @@ return function(x, y)
         local mass = body.Mass
         body:setForce(0, -mass/64)
 
-        timer = timer + time.FrameTime
+        timer = timer + GetFrameTime()
 
         local sin = math.cos(timer * math.pi * 4)
         local w = (sin + 1) * 4
