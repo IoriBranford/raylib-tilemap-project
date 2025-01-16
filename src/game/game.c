@@ -14,7 +14,7 @@ void UpdateEnding();
 void DrawEnding();
 
 void AddConfetti();
-void AddTMXObjectConfetti(tmx_object *obj, tmx_tile **maptiles);
+void AddTMXObjectConfetti(tmx_object *obj, tmx_map *map);
 
 const Phase LogoPhase = {
     .update = UpdateLogo,
