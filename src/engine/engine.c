@@ -18,7 +18,7 @@ void InitEngine() {
     const int screenHeight = 270*2;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic screen manager");
-
+    InitAudioDevice();
     // TODO: Initialize all required variables and load all required data here!
 
     SetTargetFPS(60);               // Set desired framerate (frames-per-second)
@@ -47,7 +47,7 @@ void StopEngine() {
     // De-Initialization
     //--------------------------------------------------------------------------------------
 
-    // TODO: Unload all loaded data (textures, fonts, audio) here!
+    CloseAudioDevice();
 
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
