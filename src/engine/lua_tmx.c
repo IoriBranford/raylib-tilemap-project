@@ -56,8 +56,6 @@ int L_tmx_map___gc(lua_State *l) {
     return 0;
 }
 
-class_index_and_newindex(tmx_map);
-
 int L_tmx_layer___getobjects(lua_State *l) {
     tmx_layer **ud = luaL_checkudata(l, 1, "tmx_layer");
     tmx_layer *layer = *ud;
@@ -85,23 +83,26 @@ int L_tmx_map_find_object_by_id(lua_State *l) {
     return 0;
 }
 
-class_getter(tmx_map, string, class_type);
-class_getter(tmx_map, number, width);
-class_getter(tmx_map, number, height);
-class_getter(tmx_map, number, tile_width);
-class_getter(tmx_map, number, tile_height);
-tmx_class_properties_getter(tmx_map);
+class_index_and_newindex(tmx_map)
+class_getter(tmx_map, string, class_type)
+class_getter(tmx_map, number, width)
+class_getter(tmx_map, number, height)
+class_getter(tmx_map, number, tile_width)
+class_getter(tmx_map, number, tile_height)
+tmx_class_properties_getter(tmx_map)
 
-class_getter(tmx_layer, string, class_type);
-class_getter(tmx_layer, number, type);
-tmx_class_properties_getter(tmx_layer);
+class_index_and_newindex(tmx_layer)
+class_getter(tmx_layer, string, class_type)
+class_getter(tmx_layer, number, type)
+tmx_class_properties_getter(tmx_layer)
 
-class_getter(tmx_object, string, type);
-class_getter(tmx_object, number, x);
-class_getter(tmx_object, number, y);
-class_getter(tmx_object, number, width);
-class_getter(tmx_object, number, height);
-tmx_class_properties_getter(tmx_object);
+class_index_and_newindex(tmx_object)
+class_getter(tmx_object, string, type)
+class_getter(tmx_object, number, x)
+class_getter(tmx_object, number, y)
+class_getter(tmx_object, number, width)
+class_getter(tmx_object, number, height)
+tmx_class_properties_getter(tmx_object)
 
 void luaopen_tmx(lua_State *l) {
     luaL_Reg tmx_r[] = {
@@ -113,6 +114,8 @@ void luaopen_tmx(lua_State *l) {
 
     luaL_newmetatable(l, "tmx_layer");
     luaL_Reg tmx_layer_r[] = {
+        class_method_reg(tmx_layer, __index),
+        class_method_reg(tmx_layer, __newindex),
         class_getter_reg(tmx_layer, class_type),
         class_getter_reg(tmx_layer, type),
         class_getter_reg(tmx_layer, objects),
@@ -124,6 +127,8 @@ void luaopen_tmx(lua_State *l) {
 
     luaL_newmetatable(l, "tmx_object");
     luaL_Reg tmx_object_r[] = {
+        class_method_reg(tmx_object, __index),
+        class_method_reg(tmx_object, __newindex),
         class_getter_reg(tmx_object, type),
         class_getter_reg(tmx_object, x),
         class_getter_reg(tmx_object, y),
