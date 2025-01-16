@@ -148,11 +148,11 @@ void UpdateGameplay()
     // Press enter to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER))
     {
-        framesCounter = 0;
         InitPhysics();
         InitSprites(MAX_CONFETTI);
         InitTasks(MAX_CONFETTI);
         InitLua();
+        RunLua("confettiscreen", 0, NULL);
         SetCurrentPhase(EndingPhase);
     }
 }
@@ -164,13 +164,6 @@ void UpdateEnding()
     UpdateTasks();
     UpdateLua();
 
-    if (framesCounter == 0) {
-        UnrefLuaTask(RunLua("confetti", 0, NULL));
-        // AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
-    }
-    ++framesCounter;
-    framesCounter %= FRAMES_PER_CONFETTI;
-    
     PruneSprites();
 
     // Press enter to return to TITLE screen
