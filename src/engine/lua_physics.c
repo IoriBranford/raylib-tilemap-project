@@ -141,6 +141,21 @@ cp_getter_and_setter_vect(cpBody, CenterOfGravity)
 cp_getter_and_setter_vect(cpBody, Velocity)
 cp_getter_and_setter_vect(cpBody, Force)
 
+int L_cpBody_NewCircleShape(lua_State *l) {
+    cpBody **body = luaL_checkudata(l, 1, "cpBody");
+    lua_Number radius = luaL_optnumber(l, 2, 0.5);
+    cpVect offset = {
+        luaL_optnumber(l, 3, 0),
+        luaL_optnumber(l, 4, 0),
+    };
+    cpShape *shape = cpCircleShapeNew(*body, radius, offset);
+    cpSpace *space = cpBodyGetSpace(*body);
+    if (space)
+        cpSpaceAddShape(space, shape);
+    class_newuserdata(l, cpShape, shape);
+    return 1;
+}
+
 int L_cpBody_UpdateSprite(lua_State *l) {
     cpBody **body = luaL_checkudata(l, 1, "cpBody");
     Sprite **sprite = luaL_checkudata(l, 2, "Sprite");
@@ -203,6 +218,7 @@ int luaopen_physics(lua_State *l) {
         class_method_reg(cpBody, __index),
         class_method_reg(cpBody, __newindex),
         class_method_reg(cpBody, __gc),
+        class_method_reg(cpBody, NewCircleShape),
         class_method_reg(cpBody, UpdateSprite),
         class_method_reg(cpBody, EachArbiter),
         class_method_reg(cpBody, RemoveFromSpace),
