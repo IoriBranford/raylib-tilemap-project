@@ -1,4 +1,5 @@
 #include <tmx.h>
+#include <engine/assets.h>
 #include <engine/lua.h>
 #include <util/lua_class.h>
 
@@ -49,7 +50,7 @@ int L_tmx_load(lua_State *l) {
 int L_tmx_map___gc(lua_State *l) {
     tmx_map **map = luaL_checkudata(l, 1, "tmx_map");
     if (*map) {
-        tmx_map_free(*map);
+        UnloadMap(*map);
         *map = NULL;
     }
     return 0;
