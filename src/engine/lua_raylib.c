@@ -62,6 +62,9 @@ l_func_1_0(SetMouseCursor, integer)
 // Color/pixel related functions
 l_func_3_Color(ColorFromHSV, number, number, number)
 
+// Wave/Sound loading/unloading functions
+l_func_1_ud(LoadSound, string, Sound, IsSoundValid)
+
 int luaopen_raylib(lua_State *l) {
     l_global_enum(l, KEY_NULL            );
     l_global_enum(l, KEY_APOSTROPHE      );
@@ -294,6 +297,10 @@ int luaopen_raylib(lua_State *l) {
 
         // Color/pixel related functions
         l_func_reg(ColorFromHSV),
+
+
+        // Wave/Sound loading/unloading functions
+        l_func_reg(LoadSound),
 
         {0}
     };
