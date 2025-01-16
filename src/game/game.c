@@ -59,7 +59,7 @@ void InitLayers(tmx_layer *head, tmx_map *map) {
         } else if (layer->type == L_OBJGR) {
             z += 1;
             for (tmx_object *o = layer->content.objgr->head; o; o = o->next) {
-                Sprite *s = NewTMXObjectSprite(o, map->tiles, WHITE);
+                Sprite *s = NewTMXObjectSprite(o, map, WHITE);
                 if (s)
                     s->z = z;
             }

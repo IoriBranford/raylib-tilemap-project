@@ -114,7 +114,7 @@ size_t NumSpritesFree();
 
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
-Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color);
+Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
 void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
