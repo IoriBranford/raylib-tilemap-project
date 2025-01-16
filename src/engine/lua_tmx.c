@@ -1,5 +1,7 @@
 #include <tmx.h>
 #include <engine/assets.h>
+#include <engine/gfx2d.h>
+#include <game/physics.h>
 #include <engine/lua.h>
 #include <util/lua_class.h>
 
@@ -83,6 +85,30 @@ int L_tmx_map_find_object_by_id(lua_State *l) {
     return 0;
 }
 
+int L_tmx_object_new_body(lua_State *l) {
+    tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
+    tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
+    class_newuserdata(l, cpBody, NewTMXObjectBody(*o, *m));
+    return 1;
+}
+
+int L_tmx_object_new_sprite(lua_State *l) {
+    tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
+    tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
+    lua_Integer r = luaL_optinteger(l, 3, 255);
+    lua_Integer g = luaL_optinteger(l, 4, 255);
+    lua_Integer b = luaL_optinteger(l, 5, 255);
+    lua_Integer a = luaL_optinteger(l, 6, 255);
+    Color color = {
+        r < 0 ? 0 : r > 255 ? 255 : r,
+        g < 0 ? 0 : g > 255 ? 255 : g,
+        b < 0 ? 0 : b > 255 ? 255 : b,
+        a < 0 ? 0 : a > 255 ? 255 : a,
+    };
+    class_newuserdata(l, Sprite, NewTMXObjectSprite(*o, *m, color));
+    return 1;
+}
+
 class_index_and_newindex(tmx_map)
 class_getter(tmx_map, string, class_type)
 class_getter(tmx_map, number, width)
@@ -129,6 +155,8 @@ void luaopen_tmx(lua_State *l) {
     luaL_Reg tmx_object_r[] = {
         class_method_reg(tmx_object, __index),
         class_method_reg(tmx_object, __newindex),
+        class_method_reg(tmx_object, new_body),
+        class_method_reg(tmx_object, new_sprite),
         class_getter_reg(tmx_object, type),
         class_getter_reg(tmx_object, x),
         class_getter_reg(tmx_object, y),
