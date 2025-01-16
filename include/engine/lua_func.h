@@ -21,10 +21,10 @@ int L_##f(lua_State *l) { \
     return 4; \
 }
 
-#define l_func_1_ud(f, at, ud) int L_##f(lua_State *l) { \
-    ud *o = f(lua_to##at(l, 1)); \
-    if (o) { \
-        ud** od = lua_newuserdata(l, sizeof(ud*)); \
+#define l_func_1_ud(f, at, ud, isValid) int L_##f(lua_State *l) { \
+    ud o = f(lua_to##at(l, 1)); \
+    if (isValid(o)) { \
+        ud* od = lua_newuserdata(l, sizeof(ud)); \
         *od = o; \
         luaL_setmetatable(l, #ud); \
         return 1; \

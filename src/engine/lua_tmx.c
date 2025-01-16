@@ -34,7 +34,7 @@ int L_##cls##___getproperties(lua_State *l) { \
     return 1; \
 }
 
-l_func_1_ud(LoadMap, string, tmx_map)
+l_func_1_ud(LoadMap, string, tmx_map*, )
 class_gc(tmx_map, UnloadMap)
 class_index_and_newindex(tmx_map)
 class_getter(tmx_map, string, class_type)
