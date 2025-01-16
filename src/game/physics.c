@@ -108,12 +108,12 @@ void ReleaseOrphanedShape(cpShape *shape) {
 
 cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset);
 
-cpBody* NewTMXObjectBody(tmx_object *obj, tmx_tile **maptiles) {
+cpBody* NewTMXObjectBody(tmx_object *obj, tmx_map *map) {
     cpBody *body = cpBodyNew(1, HUGE_VAL);
     cpBodySetPosition(body, cpv(obj->x, obj->y));
     cpBodySetAngle(body, obj->rotation * DEG2RAD);
     cpSpaceAddBody(space, body);
-    GiveBodyTMXShape(body, obj, maptiles, cpv(0, 0));
+    GiveBodyTMXShape(body, obj, map->tiles, cpv(0, 0));
     return body;
 }
 

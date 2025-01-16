@@ -149,7 +149,7 @@ Sprite* NewShapeSprite(tmx_shape *shape, float thick, bool closed, Vector2 posit
     return spr;
 }
 
-Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
+Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color) {
     Rectangle rect = {
         .x = o->x, .y = o->y,
         .width = o->width, .height = o->height
@@ -170,7 +170,7 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_tile **maptiles, Color color) {
         tmx_tile *tile = NULL;
         if (gid) {
             int i = gid & TMX_FLIP_BITS_REMOVAL;
-            tile = maptiles[i];
+            tile = map->tiles[i];
         } else if (tmpl && tmpl->tileset_ref) {
             gid = tmplObj->content.gid;
             int i = gid & TMX_FLIP_BITS_REMOVAL;

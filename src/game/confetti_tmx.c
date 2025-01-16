@@ -42,7 +42,7 @@ void DrawSprite_ConfettiWithCollision(Sprite *spr) {
     DrawTMXTileCollisionShapes(spr->tile.tile, spr->position, spr->rotationDeg, WHITE);
 }
 
-void AddTMXObjectConfetti(tmx_object *obj, tmx_tile **maptiles) {
+void AddTMXObjectConfetti(tmx_object *obj, tmx_map *map) {
     if (!NumSpritesFree() || !NumTasksFree())
         return;
 
@@ -52,12 +52,12 @@ void AddTMXObjectConfetti(tmx_object *obj, tmx_tile **maptiles) {
 
     Color color = ColorFromHSV(GetRandomValue(0,5) * 60, 1, 1);
 
-    cpBody *body = NewTMXObjectBody(obj, maptiles);
+    cpBody *body = NewTMXObjectBody(obj, map);
     cpBodySetPosition(body, pos);
     cpBodySetVelocity(body, cpv(0,4));
     cpBodySetAngularVelocity(body, PI/16);
 
-    Sprite *sprite = NewTMXObjectSprite(obj, maptiles, color);
+    Sprite *sprite = NewTMXObjectSprite(obj, map, color);
     sprite->behavior.draw = DrawSprite_ConfettiWithCollision;
     cpBodySetUserData(body, sprite);
     UpdateSpriteFromBody(body, sprite);

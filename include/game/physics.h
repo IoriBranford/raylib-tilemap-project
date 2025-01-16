@@ -9,7 +9,7 @@ void ClosePhysics();
 void UpdatePhysics();
 
 cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad);
-cpBody* NewTMXObjectBody(tmx_object *obj, tmx_tile **maptiles);
+cpBody* NewTMXObjectBody(tmx_object *obj, tmx_map *map);
 void ReleaseBody(cpBody *body);
 void ReleaseOrphanedShape(cpShape *shape);
 
