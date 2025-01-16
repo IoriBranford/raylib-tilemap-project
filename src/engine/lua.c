@@ -192,6 +192,7 @@ int luaopen_task(lua_State *l);
 int luaopen_gfx2d(lua_State *l);
 int luaopen_physics(lua_State *l);
 int luaopen_raylib(lua_State *l);
+int luaopen_tmx(lua_State *l);
 
 void InitLua() {
     if (lua)
@@ -202,6 +203,7 @@ void InitLua() {
     lua_cpcall(lua, luaopen_gfx2d, NULL);
     lua_cpcall(lua, luaopen_physics, NULL);
     lua_cpcall(lua, luaopen_raylib, NULL);
+    lua_cpcall(lua, luaopen_tmx, NULL);
 
     lua_getglobal(lua, "package");
     lua_pushstring(lua, "path");
