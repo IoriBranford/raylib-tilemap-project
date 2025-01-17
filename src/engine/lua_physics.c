@@ -173,7 +173,7 @@ int L_cpBody_EachArbiter(lua_State *l) {
     cpBody **ud = luaL_checkudata(l, 1, "cpBody");
     cpBody *body = *ud;
     if (lua_isfunction(l, 2))
-        cpBodyEachArbiter(body, L_cpBody_EachArbiter_iter, l);
+        cpBodyEachArbiter(body, (cpBodyArbiterIteratorFunc)L_cpBody_EachArbiter_iter, l);
     return 0;
 }
 
