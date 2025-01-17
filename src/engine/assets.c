@@ -75,7 +75,7 @@ tmx_map* LoadMap(const char *fileName) {
     // Load the TMX file.
     tmx_map* map = tmx_load(fileName);
     if (!map) {
-        TraceLog(LOG_ERROR, "TMX: Failed to load TMX file %s", fileName);
+        TraceLog(LOG_ERROR, "TMX: Failed to load %s - %s", fileName, tmx_strerr());
         return NULL;
     }
     TraceLog(LOG_INFO, "TMX: Loaded %ix%i map", map->width, map->height);
