@@ -1,17 +1,17 @@
 #ifndef CD425245_A2F7_4AB2_ADAB_E5F9A1924686
 #define CD425245_A2F7_4AB2_ADAB_E5F9A1924686
 
-#define class_func_0_0(cls, p, f) \
-int L_##cls##_##f(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o); return 0; }
-#define class_func_1_0(cls, p, f, at) \
-int L_##cls##_##f(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2)); return 0; }
-#define class_func_2_0(cls, p, f, at, at2) \
-int L_##cls##_##f(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2), luaL_check##at2(l, 3)); return 0; }
+#define class_func_0_0(cls, p, name, f) \
+int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o); return 0; }
+#define class_func_1_0(cls, p, name, f, at) \
+int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2)); return 0; }
+#define class_func_2_0(cls, p, name, f, at, at2) \
+int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2), luaL_check##at2(l, 3)); return 0; }
 
-#define class_func_0_1(cls, p, f, rt) \
-int L_##cls##_##f(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o)); return 1; }
-#define class_func_1_1(cls, p, f, at, rt) \
-int L_##cls##_##f(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; }
+#define class_func_0_1(cls, p, name, f, rt) \
+int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o)); return 1; }
+#define class_func_1_1(cls, p, name, f, at, rt) \
+int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; }
 
 #define class_index(cls) \
 int L_##cls##___index(lua_State *l) { \
