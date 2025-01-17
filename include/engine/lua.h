@@ -16,13 +16,11 @@ int RunLua(const char *luaFile, int priority, const char *argf, ...);
 Task* GetLuaTask(int ref);
 
 int LuaResultBool(int taskRef, int i);
-lua_Integer LuaResultInt(int taskRef, int i);
 lua_Number LuaResultNumber(int taskRef, int i);
 const char* LuaResultString(int taskRef, int i);
 void* LuaResultUserdata(int taskRef, int i, const char *udType);
 
 int LuaResultFieldBool(int taskRef, int ti, const char *k);
-lua_Integer LuaResultFieldInt(int taskRef, int ti, const char *k);
 lua_Number LuaResultFieldNumber(int taskRef, int ti, const char *k);
 const char* LuaResultFieldString(int taskRef, int ti, const char *k);
 void* LuaResultFieldUserdata(int taskRef, int ti, const char *k, const char *udType);

@@ -94,10 +94,10 @@ int L_tmx_object_new_body(lua_State *l) {
 int L_tmx_object_new_sprite(lua_State *l) {
     tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
     tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
-    lua_Integer r = luaL_optinteger(l, 3, 255);
-    lua_Integer g = luaL_optinteger(l, 4, 255);
-    lua_Integer b = luaL_optinteger(l, 5, 255);
-    lua_Integer a = luaL_optinteger(l, 6, 255);
+    lua_Number r = luaL_optnumber(l, 3, 255);
+    lua_Number g = luaL_optnumber(l, 4, 255);
+    lua_Number b = luaL_optnumber(l, 5, 255);
+    lua_Number a = luaL_optnumber(l, 6, 255);
     Color color = {
         r < 0 ? 0 : r > 255 ? 255 : r,
         g < 0 ? 0 : g > 255 ? 255 : g,

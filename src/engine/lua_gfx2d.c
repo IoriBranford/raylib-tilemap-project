@@ -6,10 +6,10 @@ int L_Sprite_rectangle(lua_State *l) {
     if (!NumSpritesFree())
         return 0;
 
-    int r = luaL_optint(l, 8, 255);
-    int g = luaL_optint(l, 9, 255);
-    int b = luaL_optint(l, 10, 255);
-    int a = luaL_optint(l, 11, 255);
+    lua_Number r = luaL_optnumber(l, 8, 255);
+    lua_Number g = luaL_optnumber(l, 9, 255);
+    lua_Number b = luaL_optnumber(l, 10, 255);
+    lua_Number a = luaL_optnumber(l, 11, 255);
 
     Color color = {
         .r = r < 0 ? 0 : r > 255 ? 255 : r,

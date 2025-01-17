@@ -168,19 +168,19 @@ int L_##cls##_set##color(lua_State *l) { \
     cls p*o = luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (lua_isnumber(l, 2)) { \
-        int c = lua_tointeger(l, 2); \
+        lua_Number c = lua_tonumber(l, 2); \
         (p*o).color.r = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 3)) { \
-        int c = lua_tointeger(l, 3); \
+        lua_Number c = lua_tonumber(l, 3); \
         (p*o).color.g = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 4)) { \
-        int c = lua_tointeger(l, 4); \
+        lua_Number c = lua_tonumber(l, 4); \
         (p*o).color.b = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 5)) { \
-        int c = lua_tointeger(l, 5); \
+        lua_Number c = lua_tonumber(l, 5); \
         (p*o).color.a = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     return 0; \

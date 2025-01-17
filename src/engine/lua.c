@@ -100,11 +100,6 @@ int LuaResultBool(int taskRef, int i) {
     return lua_toboolean(thread, i);
 }
 
-lua_Integer LuaResultInt(int taskRef, int i) {
-    lua_State *thread = GetLuaThread(taskRef);
-    return lua_tointeger(thread, i);
-}
-
 lua_Number LuaResultNumber(int taskRef, int i) {
     lua_State *thread = GetLuaThread(taskRef);
     return lua_tonumber(thread, i);
@@ -126,14 +121,6 @@ int LuaResultFieldBool(int taskRef, int ti, const char *k) {
     lua_State *thread = GetLuaThread(taskRef);
     lua_getfield(thread, ti, k);
     int v = lua_toboolean(thread, -1);
-    lua_pop(thread, 1);
-    return v;
-}
-
-lua_Integer LuaResultFieldInt(int taskRef, int ti, const char *k) {
-    lua_State *thread = GetLuaThread(taskRef);
-    lua_getfield(thread, ti, k);
-    lua_Integer v = lua_tointeger(thread, -1);
     lua_pop(thread, 1);
     return v;
 }
