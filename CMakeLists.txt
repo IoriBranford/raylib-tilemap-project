@@ -5,10 +5,14 @@ project(rltmx)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Dependencies
+if (EMSCRIPTEN)
+    set(USE_LUAJIT OFF)
+endif()
 add_subdirectory(lib)
 
 # Our Project
-if(CMAKE_COMPILER_IS_GNUCC)
+if(MSVC)
+else()
     set(CMAKE_C_FLAGS "-fms-extensions")
 endif()
 if(${USE_LUAJIT})
@@ -42,7 +46,7 @@ add_executable(game
 target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static ${LUALIBS})
 
 # Web Configurations
-if (DEFINED ${PLATFORM} AND ${PLATFORM} STREQUAL "Web")
+if (EMSCRIPTEN)
     # Tell Emscripten to build an example.html file.
     set_target_properties(game PROPERTIES SUFFIX ".html")
 endif()
@@ -62,5 +66,13 @@ if(MSVC)
         endforeach()
     endforeach()
 else()
-    file(CREATE_LINK ${CMAKE_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources SYMBOLIC)
+    foreach(RESOURCE_DIR lua resources)
+        file(CREATE_LINK ${CMAKE_SOURCE_DIR}/${RESOURCE_DIR} ${CMAKE_BINARY_DIR}/${RESOURCE_DIR} SYMBOLIC)
+    endforeach()
+
+    if(EMSCRIPTEN)
+        foreach(RESOURCE_DIR lua resources)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --preload-file ${RESOURCE_DIR}")
+        endforeach()
+    endif()
 endif()
