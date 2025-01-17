@@ -3,6 +3,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(BUILD_SHARED_LIBS OFF)
 
 option(USE_INCLUDED_RAYLIB "use raylib included as submodule in project" ON)
+option(USE_LUAJIT ON)
 
 if(${USE_INCLUDED_RAYLIB})
     add_subdirectory(raylib)
@@ -35,10 +36,13 @@ FetchContent_Declare(
 set(INSTALL_TMX OFF)
 add_subdirectory(tmx)
 
-
 add_subdirectory(raylib-aseprite)
 
-set(LUAJIT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/luajit)
+if (${USE_LUAJIT})
+    set(LUAJIT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/luajit)
+else()
+    set(LUA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua)
+endif()
 add_subdirectory(luajit-cmake)
 
 set(BUILD_DEMOS OFF)
