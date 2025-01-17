@@ -27,8 +27,13 @@ int L_Task_run(lua_State *l) {
     int threadRef = luaL_ref(l, LUA_REGISTRYINDEX);
     lua_xmove(l, thread, lua_gettop(l));
 
-    int result = lua_resume(thread, nArgs);
-    int nResults = 1;
+    int nResults;
+    int result;
+#ifdef LUA54
+    result = lua_resume(thread, NULL, nArgs, &nResults);
+#else
+    result = lua_resume(thread, nArgs);
+#endif
     if (result == LUA_OK || result == LUA_YIELD) {
         Task *task = NewTask(Task_ResumeLuaThread, NULL, priority);
         task->threadRef = threadRef;
@@ -40,14 +45,14 @@ int L_Task_run(lua_State *l) {
             lua_pushvalue(l, -1);
             task->taskRef = luaL_ref(l, LUA_REGISTRYINDEX);
         }
+        return 1;
     } else {
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
         lua_pushnil(l);
         lua_xmove(thread, l, 1);
-        nResults = 2;
         luaL_unref(l, LUA_REGISTRYINDEX, threadRef);
+        return 2;
     }
-    return nResults;
 }
 
 int PushTaskResults(lua_State *l, Task *task) {

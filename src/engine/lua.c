@@ -17,7 +17,12 @@ void Task_ResumeLuaThread(Task *t) {
 
     int nArgs = lua_gettop(thread);
     
-    int result = lua_resume(thread, nArgs);
+    int result, nResults;
+#ifdef LUA54
+    result = lua_resume(thread, NULL, nArgs, &nResults);
+#else
+    result = lua_resume(thread, nArgs);
+#endif
     if (result == LUA_YIELD) {
     } else {
         if (result != LUA_OK)

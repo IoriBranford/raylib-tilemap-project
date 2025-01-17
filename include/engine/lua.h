@@ -6,6 +6,41 @@
 #include <lauxlib.h>
 #include "lua_func.h"
 
+#if LUA_VERSION_RELEASE_NUM >= 504
+#define LUA54
+static void luaL_register(lua_State *l, const char *name, luaL_Reg *reg) {
+    if (name) {
+        lua_getglobal(l, "package"); // [ package ]
+        lua_pushstring(l, "loaded"); // [ package, "loaded" ]
+        lua_gettable(l, -2); // [ package, loaded ]
+        lua_pushstring(l, name); // [ package, loaded, name ]
+        lua_gettable(l, -2);
+        if (lua_isnil(l, -1)) { // [ package, loaded, nil ]
+            luaL_newlib(l, reg); // [ package, loaded, nil, newlib ]
+            lua_pushstring(l, name); // [ package, loaded, nil, newlib, name ]
+            lua_replace(l, -3); // [ package, loaded, name, newlib ]
+            lua_pushvalue(l, -1); // [ package, loaded, name, newlib, newlib ]
+            lua_setglobal(l, name); // [ package, loaded, name, newlib ]
+            lua_copy(l, -1, -4); // [ newlib, loaded, name, newlib ]
+            lua_settable(l, -3); // [ newlib, loaded ]
+        } else if (lua_istable(l, -1)) { // [ package, loaded, lib ]
+            luaL_setfuncs(l, reg, 0);
+            lua_replace(l, -1); // [ lib, loaded ]
+        }
+        lua_pop(l, 1); // [ lib ]
+    } else {
+        luaL_setfuncs(l, reg, 0);
+    }
+}
+#define luaL_typerror luaL_typeerror
+#define lua_objlen lua_rawlen
+static inline int lua_cpcall(lua_State *l, lua_CFunction f, void *ud) {
+    lua_pushcfunction(l, f);
+    lua_pushlightuserdata(l, ud);
+    return lua_pcall(l, 1, 0, 0);
+}
+#endif
+
 typedef struct Task Task;
 
 void InitLua();
