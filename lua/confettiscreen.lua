@@ -1,6 +1,6 @@
 return function()
     local map = LoadMap("resources/desert.tmx")
-    local sound = LoadSound("resources/決定ボタンを押す7.mp3")
+    local sound = LoadSound("resources/決定ボタンを押す7.ogg")
     local t = 0
     local obj = map:find_object_by_id(16)
     repeat until GetKeyPressed() == 0
