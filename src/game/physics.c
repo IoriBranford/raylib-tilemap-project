@@ -29,23 +29,23 @@ void ReleaseEachSpaceBody(cpBody *body, void *_) {
 
 void ReleaseEachSpaceShape(cpSpace *sp, cpShape *shape, void *_) {
     if (cpSpaceIsLocked(sp))
-        cpSpaceAddPostStepCallback(sp, FreeSpaceShape, shape, NULL);
+        cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceShape, shape, NULL);
     else
         FreeSpaceShape(sp, shape, NULL);
 }
 
 void ReleaseEachSpaceConstraint(cpSpace *sp, cpConstraint *constraint, void *_) {
     if (cpSpaceIsLocked(sp))
-        cpSpaceAddPostStepCallback(sp, FreeSpaceConstraint, constraint, NULL);
+        cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceConstraint, constraint, NULL);
     else
         FreeSpaceConstraint(sp, constraint, NULL);
 }
 
 void ClosePhysics() {
     if (space) {
-        cpSpaceEachBody(space, ReleaseEachSpaceBody, NULL);
-        cpSpaceEachShape(space, ReleaseEachSpaceShape, NULL);
-        cpSpaceEachConstraint(space, ReleaseEachSpaceConstraint, NULL);
+        cpSpaceEachBody(space, (cpSpaceBodyIteratorFunc)ReleaseEachSpaceBody, NULL);
+        cpSpaceEachShape(space, (cpSpaceShapeIteratorFunc)ReleaseEachSpaceShape, NULL);
+        cpSpaceEachConstraint(space, (cpSpaceConstraintIteratorFunc)ReleaseEachSpaceConstraint, NULL);
         cpSpaceFree(space);
     }
     space = NULL;
@@ -67,7 +67,7 @@ void ReleaseEachBodyShape(cpBody *body, cpShape *shape, void *_) {
     cpSpace *sp = cpShapeGetSpace(shape);
     if (sp) {
         if (cpSpaceIsLocked(sp))
-            cpSpaceAddPostStepCallback(sp, FreeSpaceShape, shape, NULL);
+            cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceShape, shape, NULL);
         else
             FreeSpaceShape(sp, shape, NULL);
     } else {
@@ -79,7 +79,7 @@ void ReleaseEachBodyConstraint(cpBody *body, cpConstraint *constraint, void *_) 
     cpSpace *sp = cpConstraintGetSpace(constraint);
     if (sp) {
         if (cpSpaceIsLocked(sp))
-            cpSpaceAddPostStepCallback(sp, FreeSpaceConstraint, constraint, NULL);
+            cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceConstraint, constraint, NULL);
         else
             FreeSpaceConstraint(sp, constraint, NULL);
     } else {
@@ -88,12 +88,12 @@ void ReleaseEachBodyConstraint(cpBody *body, cpConstraint *constraint, void *_) 
 }
 
 void ReleaseBody(cpBody *body) {
-    cpBodyEachConstraint(body, ReleaseEachBodyConstraint, NULL);
-    cpBodyEachShape(body, ReleaseEachBodyShape, NULL);
+    cpBodyEachConstraint(body, (cpBodyConstraintIteratorFunc)ReleaseEachBodyConstraint, NULL);
+    cpBodyEachShape(body, (cpBodyShapeIteratorFunc)ReleaseEachBodyShape, NULL);
     cpSpace *sp = cpBodyGetSpace(body);
     if (sp) {
         if (cpSpaceIsLocked(sp))
-            cpSpaceAddPostStepCallback(sp, FreeSpaceBody, body, NULL);
+            cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceBody, body, NULL);
         else
             FreeSpaceBody(sp, body, NULL);
     } else {
