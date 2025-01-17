@@ -63,7 +63,19 @@ l_func_1_0(SetMouseCursor, integer)
 l_func_3_Color(ColorFromHSV, number, number, number)
 
 // Wave/Sound loading/unloading functions
-l_func_1_ud(LoadSound, string, Sound, IsSoundValid)
+class_ctor_1(Sound, , LoadSound, IsSoundValid, string)
+class_index_and_newindex(Sound)
+class_gc(Sound, , UnloadSound)
+
+// Wave/Sound management functions
+class_func_0_0(Sound, , Play, PlaySound)
+class_func_0_0(Sound, , Stop, StopSound)
+class_func_0_0(Sound, , Pause, PauseSound)
+class_func_0_0(Sound, , Resume, ResumeSound)
+class_getterf(Sound, , boolean, Playing, IsSoundPlaying)
+class_setterf(Sound, , number, Volume, SetSoundVolume)
+class_setterf(Sound, , number, Pitch, SetSoundPitch)
+class_setterf(Sound, , number, Pan, SetSoundPan)
 
 int luaopen_raylib(lua_State *l) {
     l_global_enum(l, KEY_NULL            );
@@ -298,13 +310,29 @@ int luaopen_raylib(lua_State *l) {
         // Color/pixel related functions
         l_func_reg(ColorFromHSV),
 
-
         // Wave/Sound loading/unloading functions
         l_func_reg(LoadSound),
-
         {0}
     };
     luaL_register(l, NULL, raylibFunctions);
+    lua_pop(l, 1);
+
+    luaL_newmetatable(l, "Sound");
+    luaL_Reg soundMethods[] = {
+        class_method_reg(Sound, __index),
+        class_method_reg(Sound, __newindex),
+        class_method_reg(Sound, __gc),
+        class_method_reg(Sound, Play),
+        class_method_reg(Sound, Stop),
+        class_method_reg(Sound, Pause),
+        class_method_reg(Sound, Resume),
+        class_getter_reg(Sound, Playing),
+        class_setter_reg(Sound, Volume),
+        class_setter_reg(Sound, Pitch),
+        class_setter_reg(Sound, Pan),
+        {0}
+    };
+    luaL_register(l, NULL, soundMethods);
     lua_pop(l, 1);
     return 0;
 }
