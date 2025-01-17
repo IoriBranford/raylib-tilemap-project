@@ -8,9 +8,46 @@ void InitPhysics() {
     space = cpSpaceNew();
 }
 
+void FreeSpaceShape(cpSpace *sp, cpShape *shape, void *_) {
+    cpSpaceRemoveShape(sp, shape);
+    cpShapeFree(shape);
+}
+
+void FreeSpaceConstraint(cpSpace *sp, cpConstraint *constraint, void *_) {
+    cpSpaceRemoveConstraint(sp, constraint);
+    cpConstraintFree(constraint);
+}
+
+void FreeSpaceBody(cpSpace *sp, cpBody *body, void *_) {
+    cpSpaceRemoveBody(sp, body);
+    cpBodyFree(body);
+}
+
+void ReleaseEachSpaceBody(cpBody *body, void *_) {
+    ReleaseBody(body);
+}
+
+void ReleaseEachSpaceShape(cpSpace *sp, cpShape *shape, void *_) {
+    if (cpSpaceIsLocked(sp))
+        cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceShape, shape, NULL);
+    else
+        FreeSpaceShape(sp, shape, NULL);
+}
+
+void ReleaseEachSpaceConstraint(cpSpace *sp, cpConstraint *constraint, void *_) {
+    if (cpSpaceIsLocked(sp))
+        cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceConstraint, constraint, NULL);
+    else
+        FreeSpaceConstraint(sp, constraint, NULL);
+}
+
 void ClosePhysics() {
-    if (space)
-        cpSpaceDestroy(space);
+    if (space) {
+        cpSpaceEachBody(space, (cpSpaceBodyIteratorFunc)ReleaseEachSpaceBody, NULL);
+        cpSpaceEachShape(space, (cpSpaceShapeIteratorFunc)ReleaseEachSpaceShape, NULL);
+        cpSpaceEachConstraint(space, (cpSpaceConstraintIteratorFunc)ReleaseEachSpaceConstraint, NULL);
+        cpSpaceFree(space);
+    }
     space = NULL;
 }
 
@@ -28,25 +65,40 @@ cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad) {
 
 void ReleaseEachBodyShape(cpBody *body, cpShape *shape, void *_) {
     cpSpace *sp = cpShapeGetSpace(shape);
-    if (sp)
-        cpSpaceRemoveShape(sp, shape);
-    cpShapeFree(shape);
+    if (sp) {
+        if (cpSpaceIsLocked(sp))
+            cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceShape, shape, NULL);
+        else
+            FreeSpaceShape(sp, shape, NULL);
+    } else {
+        cpShapeFree(shape);
+    }
 }
 
 void ReleaseEachBodyConstraint(cpBody *body, cpConstraint *constraint, void *_) {
     cpSpace *sp = cpConstraintGetSpace(constraint);
-    if (sp)
-        cpSpaceRemoveConstraint(sp, constraint);
-    cpConstraintFree(constraint);
+    if (sp) {
+        if (cpSpaceIsLocked(sp))
+            cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceConstraint, constraint, NULL);
+        else
+            FreeSpaceConstraint(sp, constraint, NULL);
+    } else {
+        cpConstraintFree(constraint);
+    }
 }
 
 void ReleaseBody(cpBody *body) {
-    cpBodyEachShape(body, ReleaseEachBodyShape, NULL);
-    cpBodyEachConstraint(body, ReleaseEachBodyConstraint, NULL);
+    cpBodyEachConstraint(body, (cpBodyConstraintIteratorFunc)ReleaseEachBodyConstraint, NULL);
+    cpBodyEachShape(body, (cpBodyShapeIteratorFunc)ReleaseEachBodyShape, NULL);
     cpSpace *sp = cpBodyGetSpace(body);
-    if (sp)
-        cpSpaceRemoveBody(sp, body);
-    cpBodyFree(body);
+    if (sp) {
+        if (cpSpaceIsLocked(sp))
+            cpSpaceAddPostStepCallback(sp, (cpPostStepFunc)FreeSpaceBody, body, NULL);
+        else
+            FreeSpaceBody(sp, body, NULL);
+    } else {
+        cpBodyFree(body);
+    }
 }
 
 void ReleaseOrphanedShape(cpShape *shape) {
