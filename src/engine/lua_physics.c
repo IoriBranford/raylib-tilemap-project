@@ -177,7 +177,7 @@ int L_cpBody_EachArbiter(lua_State *l) {
     return 0;
 }
 
-class_gc(cpBody, ReleaseBody)
+class_gc(cpBody, *, ReleaseBody)
 
 int L_cpBody_RemoveFromSpace(lua_State *l) {
     cpBody **ud = luaL_checkudata(l, 1, "cpBody");
@@ -190,7 +190,7 @@ int L_cpBody_RemoveFromSpace(lua_State *l) {
 
 class_index_and_newindex(cpShape)
 
-class_gc(cpShape, ReleaseOrphanedShape)
+class_gc(cpShape, *, ReleaseOrphanedShape)
 
 int L_cpShape_RemoveFromSpace(lua_State *l) {
     cpShape **ud = luaL_checkudata(l, 1, "cpShape");

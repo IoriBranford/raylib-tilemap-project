@@ -5,7 +5,7 @@
 void Task_ResumeLuaThread(Task *t);
 void ReleaseLuaTask(Task *task);
 
-class_gc(Task, ReleaseLuaTask)
+class_gc(Task, *, ReleaseLuaTask)
 
 int L_Task_run(lua_State *l) {
     if (lua_isstring(l, 1)) {
@@ -85,9 +85,9 @@ int L_Task_sleep(lua_State *l) {
     return 0;
 }
 
-class_index_and_newindex(Task);
-class_getter_and_setter(Task, number, priority);
-class_getter(Task, number, sleeping);
+class_index_and_newindex(Task)
+class_getter_and_setter(Task, *, number, priority)
+class_getter(Task, *, number, sleeping)
 
 int luaopen_task(lua_State *l) {
     luaL_Reg task_r[] = {

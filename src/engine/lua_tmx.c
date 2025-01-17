@@ -34,14 +34,14 @@ int L_##cls##___getproperties(lua_State *l) { \
     return 1; \
 }
 
-l_func_1_ud(LoadMap, string, tmx_map*, )
-class_gc(tmx_map, UnloadMap)
+class_ctor_1(tmx_map, *, LoadMap, , string)
+class_gc(tmx_map, *, UnloadMap)
 class_index_and_newindex(tmx_map)
-class_getter(tmx_map, string, class_type)
-class_getter(tmx_map, number, width)
-class_getter(tmx_map, number, height)
-class_getter(tmx_map, number, tile_width)
-class_getter(tmx_map, number, tile_height)
+class_getter(tmx_map, *, string, class_type)
+class_getter(tmx_map, *, number, width)
+class_getter(tmx_map, *, number, height)
+class_getter(tmx_map, *, number, tile_width)
+class_getter(tmx_map, *, number, tile_height)
 tmx_class_properties_getter(tmx_map)
 
 int L_tmx_map_find_object_by_id(lua_State *l) {
@@ -56,8 +56,8 @@ int L_tmx_map_find_object_by_id(lua_State *l) {
 }
 
 class_index_and_newindex(tmx_layer)
-class_getter(tmx_layer, string, class_type)
-class_getter(tmx_layer, number, type)
+class_getter(tmx_layer, *, string, class_type)
+class_getter(tmx_layer, *, number, type)
 tmx_class_properties_getter(tmx_layer)
 
 int L_tmx_layer___getobjects(lua_State *l) {
@@ -77,11 +77,11 @@ int L_tmx_layer___getobjects(lua_State *l) {
 }
 
 class_index_and_newindex(tmx_object)
-class_getter(tmx_object, string, type)
-class_getter(tmx_object, number, x)
-class_getter(tmx_object, number, y)
-class_getter(tmx_object, number, width)
-class_getter(tmx_object, number, height)
+class_getter(tmx_object, *, string, type)
+class_getter(tmx_object, *, number, x)
+class_getter(tmx_object, *, number, y)
+class_getter(tmx_object, *, number, width)
+class_getter(tmx_object, *, number, height)
 tmx_class_properties_getter(tmx_object)
 
 int L_tmx_object_new_body(lua_State *l) {

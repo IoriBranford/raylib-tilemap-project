@@ -70,107 +70,125 @@ int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
     class_index(cls) \
     class_newindex(cls)
 
-#define class_gc(cls, free) \
+#define class_gc(cls, p, free) \
 int L_##cls##___gc(lua_State *l) { \
-    cls **ud = luaL_testudata(l, 1, #cls); \
-    if (ud && *ud) { free(*ud); *ud = NULL; } \
+    cls p*o = luaL_testudata(l, 1, #cls); \
+    if (o) { free(*o); } \
     return 0; \
 }
 
-#define class_getter(cls, fieldtype, field) \
+#define class_getterf(cls, p, fieldtype, field, getField) \
 int L_##cls##___get##field(lua_State *l) { \
-    cls **o = luaL_checkudata(l, 1, #cls); \
-    if (*o) lua_push##fieldtype(l, (*o)->field); \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (o) lua_push##fieldtype(l, getField(*o)); \
     return 1; \
 }
 
-#define class_setter(cls, fieldtype, field) \
+#define class_getter(cls, p, fieldtype, field) \
+int L_##cls##___get##field(lua_State *l) { \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (o) lua_push##fieldtype(l, (p*o).field); \
+    return 1; \
+}
+
+#define class_setterf(cls, p, fieldtype, field, setField) \
 int L_##cls##___set##field(lua_State *l) { \
-    cls **o = luaL_checkudata(l, 1, #cls); \
-    if (!*o) return 0; \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
     if (!lua_is##fieldtype(l, 2)) \
         fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
             luaL_typename(l, 2), #fieldtype, #cls, #field); \
-    (*o)->field = lua_to##fieldtype(l, 2); \
+    setField(*o, lua_to##fieldtype(l, 2)); \
     return 0; \
 }
 
-#define class_setter_clamped(cls, field, min, max) \
+#define class_setter(cls, p, fieldtype, field) \
 int L_##cls##___set##field(lua_State *l) { \
-    cls **o = luaL_checkudata(l, 1, #cls); \
-    if (!*o) return 0; \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    if (!lua_is##fieldtype(l, 2)) \
+        fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
+            luaL_typename(l, 2), #fieldtype, #cls, #field); \
+    (p*o).field = lua_to##fieldtype(l, 2); \
+    return 0; \
+}
+
+#define class_setter_clamped(cls, p, field, min, max) \
+int L_##cls##___set##field(lua_State *l) { \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
     if (!lua_isnumber(l, 2)) \
         fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
             luaL_typename(l, 2), "number", #cls, #field); \
     lua_Number n = lua_tonumber(l, 2); \
     if (n < min) n = min; else if (n > max) n = max; \
-    (*o)->field = n; \
+    (p*o).field = n; \
     return 0; \
 }
 
-#define class_getter_and_setter(cls, fieldtype, field) \
-    class_getter(cls, fieldtype, field) \
-    class_setter(cls, fieldtype, field)
+#define class_getter_and_setter(cls, p, fieldtype, field) \
+    class_getter(cls, p, fieldtype, field) \
+    class_setter(cls, p, fieldtype, field)
 
-#define class_getter_Vector2(cls, vector2) \
+#define class_getter_Vector2(cls, p, vector2) \
 int L_##cls##_get##vector2(lua_State *l) { \
-    cls **o = luaL_checkudata(l, 1, #cls); \
-    if (!*o) return 0; \
-    lua_pushnumber(l, (*o)->vector2.x); \
-    lua_pushnumber(l, (*o)->vector2.y); \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    lua_pushnumber(l, (p*o).vector2.x); \
+    lua_pushnumber(l, (p*o).vector2.y); \
     return 2; \
 }
 
-#define class_setter_Vector2(cls, vector2) \
+#define class_setter_Vector2(cls, p, vector2) \
 int L_##cls##_set##vector2(lua_State *l) { \
-    cls **o = luaL_checkudata(l, 1, #cls); \
-    if (!*o) return 0; \
-    if (lua_isnumber(l, 2)) (*o)->vector2.x = lua_tonumber(l, 2); \
-    if (lua_isnumber(l, 3)) (*o)->vector2.y = lua_tonumber(l, 3); \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    if (lua_isnumber(l, 2)) (p*o).vector2.x = lua_tonumber(l, 2); \
+    if (lua_isnumber(l, 3)) (p*o).vector2.y = lua_tonumber(l, 3); \
     return 0; \
 }
 
-#define class_getter_and_setter_Vector2(cls, vector2) \
-    class_getter_Vector2(cls, vector2) \
-    class_setter_Vector2(cls, vector2)
+#define class_getter_and_setter_Vector2(cls, p, vector2) \
+    class_getter_Vector2(cls, p, vector2) \
+    class_setter_Vector2(cls, p, vector2)
 
-#define class_getter_Color(cls, color) \
+#define class_getter_Color(cls, p, color) \
 int L_##cls##_get##color(lua_State *l) { \
-    cls **o = luaL_checkudata(l, 1, #cls); \
-    if (!*o) return 0; \
-    lua_pushinteger(l, (*o)->color.r); \
-    lua_pushinteger(l, (*o)->color.g); \
-    lua_pushinteger(l, (*o)->color.b); \
-    lua_pushinteger(l, (*o)->color.a); \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    lua_pushinteger(l, (p*o).color.r); \
+    lua_pushinteger(l, (p*o).color.g); \
+    lua_pushinteger(l, (p*o).color.b); \
+    lua_pushinteger(l, (p*o).color.a); \
     return 4; \
 }
 
-#define class_setter_Color(cls, color) \
+#define class_setter_Color(cls, p, color) \
 int L_##cls##_set##color(lua_State *l) { \
-    cls **o = luaL_checkudata(l, 1, #cls); \
-    if (!*o) return 0; \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
     if (lua_isnumber(l, 2)) { \
         int c = lua_tointeger(l, 2); \
-        (*o)->color.r = c < 0 ? 0 : c > 255 ? 255 : c; \
+        (p*o).color.r = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 3)) { \
         int c = lua_tointeger(l, 3); \
-        (*o)->color.g = c < 0 ? 0 : c > 255 ? 255 : c; \
+        (p*o).color.g = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 4)) { \
         int c = lua_tointeger(l, 4); \
-        (*o)->color.b = c < 0 ? 0 : c > 255 ? 255 : c; \
+        (p*o).color.b = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     if (lua_isnumber(l, 5)) { \
         int c = lua_tointeger(l, 5); \
-        (*o)->color.a = c < 0 ? 0 : c > 255 ? 255 : c; \
+        (p*o).color.a = c < 0 ? 0 : c > 255 ? 255 : c; \
     }\
     return 0; \
 }
 
-#define class_getter_and_setter_Color(cls, color) \
-    class_getter_Color(cls, color) \
-    class_setter_Color(cls, color)
+#define class_getter_and_setter_Color(cls, p, color) \
+    class_getter_Color(cls, p, color) \
+    class_setter_Color(cls, p, color)
 
 #define class_method_reg(cls, f) { .name = #f, .func = L_##cls##_##f}
 #define class_getter_reg(cls, field) class_method_reg(cls, __get##field)
