@@ -2,16 +2,16 @@
 #define CD425245_A2F7_4AB2_ADAB_E5F9A1924686
 
 #define class_func_0_0(cls, p, name, f) \
-int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o); return 0; }
+int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o); return 0; }
 #define class_func_1_0(cls, p, name, f, at) \
-int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2)); return 0; }
+int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2)); return 0; }
 #define class_func_2_0(cls, p, name, f, at, at2) \
-int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2), luaL_check##at2(l, 3)); return 0; }
+int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2), luaL_check##at2(l, 3)); return 0; }
 
 #define class_func_0_1(cls, p, name, f, rt) \
-int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o)); return 1; }
+int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o)); return 1; }
 #define class_func_1_1(cls, p, name, f, at, rt) \
-int L_##cls##_##name(lua_State *l) { cls p *o = luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; }
+int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; }
 
 #define class_index(cls) \
 int L_##cls##___index(lua_State *l) { \
@@ -41,7 +41,7 @@ int L_##cls##___index(lua_State *l) { \
 #define class_ctor_1(cls, p, f, successful, at) int L_##f(lua_State *l) { \
     cls p o = f(lua_to##at(l, 1)); \
     if (successful(o)) { \
-        cls p*od = lua_newuserdata(l, sizeof(cls p)); \
+        cls p*od = (cls p*)lua_newuserdata(l, sizeof(cls p)); \
         *od = o; \
         luaL_setmetatable(l, #cls); \
         return 1; \
@@ -72,28 +72,28 @@ int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
 
 #define class_gc(cls, p, free) \
 int L_##cls##___gc(lua_State *l) { \
-    cls p*o = luaL_testudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_testudata(l, 1, #cls); \
     if (o) { free(*o); } \
     return 0; \
 }
 
 #define class_getterf(cls, p, fieldtype, field, getField) \
 int L_##cls##___get##field(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (o) lua_push##fieldtype(l, getField(*o)); \
     return 1; \
 }
 
 #define class_getter(cls, p, fieldtype, field) \
 int L_##cls##___get##field(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (o) lua_push##fieldtype(l, (p*o).field); \
     return 1; \
 }
 
 #define class_setterf(cls, p, fieldtype, field, setField) \
 int L_##cls##___set##field(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (!lua_is##fieldtype(l, 2)) \
         fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
@@ -104,7 +104,7 @@ int L_##cls##___set##field(lua_State *l) { \
 
 #define class_setter(cls, p, fieldtype, field) \
 int L_##cls##___set##field(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (!lua_is##fieldtype(l, 2)) \
         fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
@@ -115,7 +115,7 @@ int L_##cls##___set##field(lua_State *l) { \
 
 #define class_setter_clamped(cls, p, field, min, max) \
 int L_##cls##___set##field(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (!lua_isnumber(l, 2)) \
         fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
@@ -132,7 +132,7 @@ int L_##cls##___set##field(lua_State *l) { \
 
 #define class_getter_Vector2(cls, p, vector2) \
 int L_##cls##_get##vector2(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     lua_pushnumber(l, (p*o).vector2.x); \
     lua_pushnumber(l, (p*o).vector2.y); \
@@ -141,7 +141,7 @@ int L_##cls##_get##vector2(lua_State *l) { \
 
 #define class_setter_Vector2(cls, p, vector2) \
 int L_##cls##_set##vector2(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (lua_isnumber(l, 2)) (p*o).vector2.x = lua_tonumber(l, 2); \
     if (lua_isnumber(l, 3)) (p*o).vector2.y = lua_tonumber(l, 3); \
@@ -154,7 +154,7 @@ int L_##cls##_set##vector2(lua_State *l) { \
 
 #define class_getter_Color(cls, p, color) \
 int L_##cls##_get##color(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     lua_pushinteger(l, (p*o).color.r); \
     lua_pushinteger(l, (p*o).color.g); \
@@ -165,7 +165,7 @@ int L_##cls##_get##color(lua_State *l) { \
 
 #define class_setter_Color(cls, p, color) \
 int L_##cls##_set##color(lua_State *l) { \
-    cls p*o = luaL_checkudata(l, 1, #cls); \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (lua_isnumber(l, 2)) { \
         lua_Number c = lua_tonumber(l, 2); \
