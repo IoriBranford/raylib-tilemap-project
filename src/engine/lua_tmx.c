@@ -68,6 +68,7 @@ class_func_1_ud(tmx_map, *, find_layer_by_name,
     tmx_layer, *, )
 
 class_index_and_newindex(tmx_layer)
+class_getter(tmx_layer, *, integer, id)
 class_getter(tmx_layer, *, string, class_type)
 class_getter(tmx_layer, *, number, type)
 tmx_class_properties_getter(tmx_layer)
@@ -90,6 +91,7 @@ int L_tmx_layer___getobjects(lua_State *l) {
 
 class_index_and_newindex(tmx_object)
 class_getter(tmx_object, *, string, type)
+class_getter(tmx_object, *, integer, id)
 class_getter(tmx_object, *, number, x)
 class_getter(tmx_object, *, number, y)
 class_getter(tmx_object, *, number, width)
@@ -121,6 +123,35 @@ int L_tmx_object_new_sprite(lua_State *l) {
     return 1;
 }
 
+int L_tmx_object_get_tile(lua_State *l) {
+    tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
+    tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
+    tmx_tile *tile = GetTMXObjectTile(*o, *m);
+    if (!tile)
+        return 0;
+    class_newuserdata(l, tmx_tile, tile);
+    return 1;
+}
+
+class_index_and_newindex(tmx_tile)
+class_getter(tmx_tile, *, integer, id)
+class_getter(tmx_tile, *, string, type)
+class_getter(tmx_tile, *, number, width)
+class_getter(tmx_tile, *, number, height)
+tmx_class_properties_getter(tmx_tile)
+tmx_class_property_getter(tmx_tile)
+
+int L_tmx_tile___getcollision(lua_State *l) {
+    tmx_tile **o = luaL_checkudata(l, 1, "tmx_tile");
+    lua_newtable(l);
+    tmx_object *col = (**o).collision;
+    for (int i = 1; col; ++i, col = col->next) {
+        class_newuserdata(l, tmx_object, col);
+        lua_rawseti(l, -2, i);
+    }
+    return 1;
+}
+
 int luaopen_tmx(lua_State *l) {
     lua_getglobal(l, "_G");
     luaL_Reg globalFuncs[] = {
@@ -135,6 +166,7 @@ int luaopen_tmx(lua_State *l) {
         class_method_reg(tmx_layer, __index),
         class_method_reg(tmx_layer, __newindex),
         class_method_reg(tmx_layer, get_property),
+        class_getter_reg(tmx_layer, id),
         class_getter_reg(tmx_layer, class_type),
         class_getter_reg(tmx_layer, type),
         class_getter_reg(tmx_layer, objects),
@@ -144,13 +176,31 @@ int luaopen_tmx(lua_State *l) {
     luaL_register(l, NULL, tmx_layer_r);
     lua_pop(l, 1);
 
+    luaL_newmetatable(l, "tmx_tile");
+    luaL_Reg tmx_tile_r[] = {
+        class_method_reg(tmx_tile, __index),
+        class_method_reg(tmx_tile, __newindex),
+        class_method_reg(tmx_tile, get_property),
+        class_getter_reg(tmx_tile, id),
+        class_getter_reg(tmx_tile, type),
+        class_getter_reg(tmx_tile, width),
+        class_getter_reg(tmx_tile, height),
+        class_getter_reg(tmx_tile, collision),
+        class_getter_reg(tmx_tile, properties),
+        {0}
+    };
+    luaL_register(l, NULL, tmx_tile_r);
+    lua_pop(l, 1);
+
     luaL_newmetatable(l, "tmx_object");
     luaL_Reg tmx_object_r[] = {
         class_method_reg(tmx_object, __index),
         class_method_reg(tmx_object, __newindex),
         class_method_reg(tmx_object, get_property),
+        class_method_reg(tmx_object, get_tile),
         class_method_reg(tmx_object, new_body),
         class_method_reg(tmx_object, new_sprite),
+        class_getter_reg(tmx_object, id),
         class_getter_reg(tmx_object, type),
         class_getter_reg(tmx_object, x),
         class_getter_reg(tmx_object, y),
