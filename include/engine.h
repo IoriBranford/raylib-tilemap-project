@@ -5,6 +5,7 @@
 #include <engine/gfx2d.h>
 #include <engine/lua.h>
 #include <engine/tasks.h>
+#include <engine/physics.h>
 
 typedef struct Phase {
     void (*update)();
