@@ -39,6 +39,12 @@ int L_##cls##___getproperties(lua_State *l) { \
     tmx_property_foreach((*o)->properties, L_put_property_in_table, l); \
     return 1; \
 }
+#define tmx_class_property_getter(cls) \
+int L_##cls##_get_property(lua_State *l) { \
+    cls **o = luaL_checkudata(l, 1, #cls); \
+    L_push_property(l, tmx_get_property((**o).properties, luaL_checkstring(l, 2))); \
+    return 1; \
+}
 
 class_ctor_1(tmx_map, *, LoadMap, , string)
 class_gc(tmx_map, *, UnloadMap)
