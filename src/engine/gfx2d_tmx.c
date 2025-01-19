@@ -401,6 +401,7 @@ void DrawSprite_TileLayer(Sprite *spr) {
 }
 
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
+    if (layer->type != L_LAYER) return NULL;
     Sprite *spr = NewSprite();
     if (spr) {
         Rectangle rect = {0};
@@ -417,4 +418,19 @@ Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
         spr->layer.map = map;
     }
     return spr;
+}
+
+Sprite* NewImageLayerSprite(tmx_layer *layer) {
+    if (layer->type != L_IMAGE) return NULL;
+    Texture2D* texture = layer->content.image->resource_image;
+    return NewTextureSprite(
+        texture,
+        (Rectangle){0},
+        (Rectangle){
+            layer->offsetx, layer->offsety,
+            texture->width, texture->height
+        },
+        (Vector2){0},
+        0,
+        tmx2rl_Color(layer->tintcolor));
 }

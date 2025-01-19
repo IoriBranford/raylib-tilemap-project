@@ -146,6 +146,25 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
     return spr;
 }
 
+Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
+    Sprite *spr = NewSprite();
+    if (spr) {
+        spr->active = true;
+        spr->behavior.type = SPRITETYPE_TEXTURE;
+        spr->behavior.update = NULL;
+        spr->behavior.draw = DrawSprite_Texture;
+        spr->rect = rect;
+        spr->origin = origin;
+        spr->rotationDeg = rotationDeg;
+        spr->color = color;
+        spr->texture.texture = &texture;
+        if (source.width == 0 && source.height == 0)
+            source = (Rectangle){ 0, 0, texture->width, texture->height};
+        spr->texture.source = source;
+    }
+    return spr;
+}
+
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
     Sprite *spr = NewSprite();
     if (spr) {
