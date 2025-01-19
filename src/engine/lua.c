@@ -188,6 +188,8 @@ int luaopen_physics(lua_State *l);
 int luaopen_raylib(lua_State *l);
 int luaopen_tmx(lua_State *l);
 
+l_func_2_0(ResetLuaEngine, string, integer)
+
 void InitLua() {
     if (lua)
         CloseLua();
@@ -203,5 +205,13 @@ void InitLua() {
     lua_pushstring(lua, "path");
     lua_pushstring(lua, "lua" LUA_DIRSEP "?.lua");
     lua_settable(lua, -3);
+    lua_pop(lua, 1);
+
+    luaL_Reg reg[] = {
+        l_func_reg(ResetLuaEngine),
+        {0}
+    };
+    lua_getglobal(lua, "_G");
+    luaL_register(lua, NULL, reg);
     lua_pop(lua, 1);
 }

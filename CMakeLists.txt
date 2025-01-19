@@ -41,7 +41,7 @@ add_executable(game
     src/game/confetti_tmx.c
     src/engine/physics.c
     src/engine/physics_tmx.c
-    src/game/main.c)
+    src/game/lua_main.c)
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static ${LUALIBS})
