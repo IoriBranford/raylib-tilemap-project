@@ -97,6 +97,16 @@ int L_##cls##___get##field(lua_State *l) { \
     return 1; \
 }
 
+#define class_getter_ud(cls, p, field, rcls, rp) \
+int L_##cls##___get##field(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    rcls rp*rod = lua_newuserdata(l, sizeof(rcls rp)); \
+    *rod = (p*o).field; \
+    luaL_setmetatable(l, #rcls); \
+    return 1; \
+}
+
 #define class_getter(cls, p, fieldtype, field) \
 int L_##cls##___get##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
