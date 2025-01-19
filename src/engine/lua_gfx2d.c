@@ -66,6 +66,8 @@ class_getter_and_setter_Vector2(Sprite, *, size)
 class_getter_and_setter_Vector2(Sprite, *, origin)
 class_getter_and_setter_Color(Sprite, *, color)
 class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
+class_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
+class_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
 
 class_func_1_ud(Sprite, *, __settilenamed,
     SetSpriteNamedTileFromCurrentTileset, string,
@@ -109,6 +111,8 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_and_setter_multi_reg(Sprite, origin),
         class_setter_reg(Sprite, tilenamed),
         class_setter_reg(Sprite, tilenamedifnew),
+        class_setter_reg(Sprite, tileflipx),
+        class_setter_reg(Sprite, tileflipy),
         {0}
     };
     luaL_register(l, NULL, instanceMethods);
