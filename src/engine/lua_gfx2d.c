@@ -45,6 +45,7 @@ class_gc(Sprite, *, ReleaseSprite)
 class_getter(Sprite, *, boolean, active)
 class_getter_and_setter(Sprite, *, number, x)
 class_getter_and_setter(Sprite, *, number, y)
+class_getter_and_setter(Sprite, *, number, z)
 class_getter_and_setter(Sprite, *, number, width)
 class_getter_and_setter(Sprite, *, number, height)
 class_getter_and_setter(Sprite, *, number, rotationDeg)
@@ -88,6 +89,7 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_reg(Sprite, nearcamera),
         class_getter_and_setter_reg(Sprite, x),
         class_getter_and_setter_reg(Sprite, y),
+        class_getter_and_setter_reg(Sprite, z),
         class_getter_and_setter_reg(Sprite, width),
         class_getter_and_setter_reg(Sprite, height),
         class_getter_and_setter_reg(Sprite, rotationDeg),
