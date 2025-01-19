@@ -254,7 +254,7 @@ void DrawSprite_TileLayer(Sprite *spr) {
 
     Rectangle source;
     Vector2 position = spr->position;
-    Rectangle rect = { position.x, position.y + rowh, colw, rowh };
+    position.y += rowh;
     Vector2 origin = { 0, 0 }, size = { 0, 0 };
     Color color = tmx2rl_Color(layer->tintcolor);
 
@@ -283,14 +283,18 @@ void DrawSprite_TileLayer(Sprite *spr) {
                 }
             }
 
-            rect.width = tile->width;
-            rect.height = tile->height;
+            Vector2 origin = { tile->width / 2, tile->height / 2 };
+            Rectangle rect = {
+                position.x + origin.x + tile->tileset->x_offset,
+                position.y - origin.y + tile->tileset->y_offset,
+                tile->width,
+                tile->height
+            };
             Vector2 flip = {
                 (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1,
                 (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1
             };
             GetTileSource(&source, tile, flip);
-            GetTileOrigin(&origin, tile, size);
 
             Texture *texture = GetTileImage(tile);
             DrawTexturePro(*texture, source, rect, origin, 0, color);
@@ -300,10 +304,10 @@ void DrawSprite_TileLayer(Sprite *spr) {
         if (col >= cols) {
             col = 0;
             ++row;
-            rect.x = position.x;
-            rect.y += rowh;
+            position.x = spr->position.x;
+            position.y += rowh;
         } else {
-            rect.x += colw;
+            position.x += colw;
         }
     }
 }

@@ -1,6 +1,6 @@
 #include <engine/lua.h>
 #include <util/lua_class.h>
-#include <game/physics.h>
+#include <engine/physics.h>
 
 int L_physics_body(lua_State *l) {
     cpFloat mass = luaL_optnumber(l, 1, 1);

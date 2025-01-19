@@ -29,6 +29,7 @@ add_executable(game
     src/engine/gfx2d_text.c
     src/engine/gfx2d_tmx.c
     src/engine/lua.c
+    src/engine/lua_engine.c
     src/engine/lua_gfx2d.c
     src/engine/lua_physics.c
     src/engine/lua_raylib.c
@@ -38,9 +39,9 @@ add_executable(game
     src/game/game.c
     src/game/confetti.c
     src/game/confetti_tmx.c
-    src/game/physics.c
-    src/game/physics_tmx.c
-    src/game/main.c)
+    src/engine/physics.c
+    src/engine/physics_tmx.c
+    src/game/lua_main.c)
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(game raylib tmx raylib_aseprite chipmunk_static ${LUALIBS})

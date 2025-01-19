@@ -1,7 +1,7 @@
 #include <tmx.h>
 #include <engine/assets.h>
 #include <engine/gfx2d.h>
-#include <game/physics.h>
+#include <engine/physics.h>
 #include <engine/lua.h>
 #include <util/lua_class.h>
 
