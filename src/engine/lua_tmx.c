@@ -5,9 +5,10 @@
 #include <engine/lua.h>
 #include <util/lua_class.h>
 
-void L_put_property_in_table(tmx_property *property, void *userdata) {
-    lua_State *l = userdata;
-    if (property->type == PT_INT)
+void L_push_property(lua_State *l, tmx_property *property) {
+    if (!property)
+        lua_pushnil(l);
+    else if (property->type == PT_INT)
         lua_pushinteger(l, property->value.integer);
     else if (property->type == PT_FLOAT)
         lua_pushnumber(l, property->value.decimal);
@@ -23,6 +24,11 @@ void L_put_property_in_table(tmx_property *property, void *userdata) {
         lua_pushinteger(l, property->value.object_id);
     else
         lua_pushnil(l);
+}
+
+void L_put_property_in_table(tmx_property *property, void *userdata) {
+    lua_State *l = userdata;
+    L_push_property(l, property);
     lua_setfield(l, -2, property->name);
 }
 
