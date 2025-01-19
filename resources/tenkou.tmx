@@ -38,7 +38,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup draworder="index" id="2" name="Object Layer 1">
+ <objectgroup draworder="index" id="2" name="startObjects">
   <object id="2" gid="10" x="120" y="208" width="64" height="64"/>
   <object id="1" gid="1" x="120" y="194" width="16" height="16" rotation="272.905"/>
   <object id="3" gid="1" x="120" y="194" width="16" height="16" rotation="313.993"/>

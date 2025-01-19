@@ -11,7 +11,7 @@ int main() {
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic screen manager");
     InitAudioDevice();
 
-    ResetLuaEngine("main", 0);
+    ResetLuaEngine("gameplay.main", 0);
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateLuaEngine, 0, 1);
