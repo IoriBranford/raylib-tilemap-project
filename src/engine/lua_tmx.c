@@ -79,9 +79,8 @@ int L_tmx_layer___getobjects(lua_State *l) {
         lua_newtable(l);
         tmx_object *o = layer->content.objgr->head;
         for (int i = 1; o; ++i, o = o->next) {
-            lua_pushinteger(l, i);
             class_newuserdata(l, tmx_object, o);
-            lua_settable(l, -3);
+            lua_rawseti(l, -2, i);
         }
         return 1;
     }
