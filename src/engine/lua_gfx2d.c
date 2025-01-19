@@ -53,6 +53,7 @@ int L_Sprite_camera(lua_State *l) {
     class_newuserdata(l, Sprite, sprite);
     return 1;
 }
+
 int L_Sprite_cameraend(lua_State *l) {
     Camera2D camera = {.zoom = 0};
     Sprite *cameraSprite = NewSpriteCamera(camera, WHITE);
@@ -97,6 +98,22 @@ class_func_1_ud(Sprite, *, __settilenamedifnew,
     SetSpriteNamedTileFromCurrentTilesetIfNew, string,
     tmx_tile, *, )
 
+int L_Sprite___getcameraZoom(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_CAMERA)
+        return 0;
+    lua_pushnumber(l, (**o).cameraZoom);
+    return 1;
+}
+
+int L_Sprite___setcameraZoom(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_CAMERA)
+        return 0;
+    (**o).cameraZoom = luaL_checknumber(l, 2);
+    return 0;
+}
+
 int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
         class_method_reg(Sprite, rectangle),
@@ -127,6 +144,7 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_and_setter_reg(Sprite, blue),
         class_getter_and_setter_reg(Sprite, alpha),
         class_getter_and_setter_reg(Sprite, animSpeedMS),
+        class_getter_and_setter_reg(Sprite, cameraZoom),
         class_getter_reg(Sprite, animTimer),
         class_getter_and_setter_multi_reg(Sprite, position),
         class_getter_and_setter_multi_reg(Sprite, size),
