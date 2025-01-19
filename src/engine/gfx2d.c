@@ -71,7 +71,7 @@ void InitSprites(unsigned n) {
     if (sprites)
         CloseSprites();
     sprites = NewSpritePool(n);
-    pool_foreachall(sprites, InitEmptySprite);
+    memset(sprites->objects, 0, sizeof(Sprite)*sprites->nObjects);
     currentCamera = (Camera2D){0};
     currentCamera.zoom = 1;
 }
