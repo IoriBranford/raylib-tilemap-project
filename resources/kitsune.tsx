@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.11" tiledversion="1.11.1" name="kitsune" tilewidth="64" tileheight="64" tilecount="273" columns="13" objectalignment="bottom">
+<tileset version="1.10" tiledversion="1.11.1" name="kitsune" tilewidth="64" tileheight="64" tilecount="273" columns="13" objectalignment="bottom">
  <tileoffset x="0" y="4"/>
+ <properties>
+  <property name="tile_fly0" type="int" value="44"/>
+  <property name="tile_fly1" type="int" value="31"/>
+  <property name="tile_fly2" type="int" value="18"/>
+  <property name="tile_fly3" type="int" value="5"/>
+  <property name="tile_stand0" type="int" value="143"/>
+  <property name="tile_stand1" type="int" value="130"/>
+  <property name="tile_stand2" type="int" value="117"/>
+  <property name="tile_stand3" type="int" value="104"/>
+  <property name="tile_walk0" type="int" value="144"/>
+  <property name="tile_walk1" type="int" value="131"/>
+  <property name="tile_walk2" type="int" value="118"/>
+  <property name="tile_walk3" type="int" value="105"/>
+ </properties>
  <image source="kitsune.png" width="832" height="1344"/>
  <tile id="0">
   <objectgroup draworder="index" id="2">
