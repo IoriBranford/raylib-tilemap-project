@@ -5,6 +5,7 @@ static bool running = true;
 static bool resetting = false;
 static char *mainScript = NULL;
 static int mainScriptPriority = 0;
+static int mainScriptRef = LUA_REFNIL;
 
 void ResetLuaEngine(const char *nextMainScript, int priority) {
     resetting = true;
@@ -16,6 +17,13 @@ void ResetLuaEngine(const char *nextMainScript, int priority) {
             MemFree(mainScript);
         mainScript = NULL;
     }
+    UnrefLuaTask(mainScriptRef);
+    mainScriptRef = LUA_REFNIL;
+}
+
+bool IsMainTaskDone() {
+    Task *mainScriptTask = GetLuaTask(mainScriptRef);
+    return !mainScriptTask || IsTaskDone(mainScriptTask);
 }
 
 void UpdateLuaEngine() {
@@ -32,7 +40,7 @@ void UpdateLuaEngine() {
             InitSprites(2048);
             InitTasks(2048);
             InitLua();
-            RunLua(mainScript, mainScriptPriority, NULL);
+            mainScriptRef = RunLua(mainScript, mainScriptPriority, NULL);
             MemFree(mainScript);
             mainScript = NULL;
         } else {
@@ -54,6 +62,10 @@ void UpdateLuaEngine() {
     SortSprites(SpriteZYXSort);
 
     UpdateLua();
+    if (IsMainTaskDone()) {
+        ResetLuaEngine(NULL, 0);
+        return;
+    }
     //----------------------------------------------------------------------------------
 
     // Draw
