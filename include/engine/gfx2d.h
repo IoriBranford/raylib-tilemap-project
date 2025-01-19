@@ -124,10 +124,11 @@ void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
 tmx_tile* GetSpriteTile(Sprite *spr);
 tmx_tileset* GetSpriteTileset(Sprite *spr);
 tmx_tile* GetTilesetNamedTile(tmx_tileset *tileset, const char *name);
-void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
-void SetSpriteTileIfNew(Sprite *spr, tmx_tile *tile, Vector2 flip);
-tmx_tile* SetSpriteNamedTileFromCurrentTileset(Sprite *spr, const char *name, Vector2 flip);
-tmx_tile* SetSpriteNamedTileFromCurrentTilesetIfNew(Sprite *spr, const char *name, Vector2 flip);
+void SetSpriteTile(Sprite *g, tmx_tile *tile);
+void SetSpriteTileFlip(Sprite *spr, Vector2 flip);
+void SetSpriteTileIfNew(Sprite *spr, tmx_tile *tile);
+tmx_tile* SetSpriteNamedTileFromCurrentTileset(Sprite *spr, const char *name);
+tmx_tile* SetSpriteNamedTileFromCurrentTilesetIfNew(Sprite *spr, const char *name);
 
 bool IsNearCamera2D(Vector2 position, Camera2D Camera);
 bool IsSpriteNearCamera(Sprite *sprite);
