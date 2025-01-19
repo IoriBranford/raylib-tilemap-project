@@ -64,7 +64,7 @@ void UpdateLuaEngine() {
     UpdateLua();
     if (IsMainTaskDone()) {
         if (!resetting)
-            ResetLuaEngine(NULL, 0);
+            StopLuaEngine();
         return;
     }
     //----------------------------------------------------------------------------------
@@ -83,5 +83,5 @@ bool IsLuaEngineRunning() {
 }
 
 void StopLuaEngine() {
-    running = false;
+    ResetLuaEngine(NULL, 0);
 }
