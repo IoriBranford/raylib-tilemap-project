@@ -113,10 +113,12 @@ size_t NumSpritesActive();
 size_t NumSpritesFree();
 
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
+Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
+Sprite* NewImageLayerSprite(tmx_layer *layer);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
 
 tmx_tile* GetTMXObjectTile(tmx_object *o, tmx_map *map);
