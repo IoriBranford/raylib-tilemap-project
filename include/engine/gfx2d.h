@@ -117,10 +117,20 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
-void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
-void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
-tmx_tile* GetTMXObjectTile(tmx_object *o, tmx_map *map);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
+
+tmx_tile* GetTMXObjectTile(tmx_object *o, tmx_map *map);
+void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
+tmx_tile* GetSpriteTile(Sprite *spr);
+tmx_tileset* GetSpriteTileset(Sprite *spr);
+tmx_tile* GetTilesetNamedTile(tmx_tileset *tileset, const char *name);
+void SetSpriteTile(Sprite *g, tmx_tile *tile);
+void SetSpriteTileFlipX(Sprite *spr, float flip);
+void SetSpriteTileFlipY(Sprite *spr, float flip);
+void SetSpriteTileFlip(Sprite *spr, Vector2 flip);
+void SetSpriteTileIfNew(Sprite *spr, tmx_tile *tile);
+tmx_tile* SetSpriteNamedTileFromCurrentTileset(Sprite *spr, const char *name);
+tmx_tile* SetSpriteNamedTileFromCurrentTilesetIfNew(Sprite *spr, const char *name);
 
 bool IsNearCamera2D(Vector2 position, Camera2D Camera);
 bool IsSpriteNearCamera(Sprite *sprite);

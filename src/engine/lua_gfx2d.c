@@ -65,12 +65,16 @@ class_getter_and_setter_Vector2(Sprite, *, position)
 class_getter_and_setter_Vector2(Sprite, *, size)
 class_getter_and_setter_Vector2(Sprite, *, origin)
 class_getter_and_setter_Color(Sprite, *, color)
+class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
+class_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
+class_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
 
-int L_Sprite___getnearcamera(lua_State *l) {
-    Sprite **o = luaL_checkudata(l, 1, "Sprite");
-    lua_pushboolean(l, IsSpriteNearCamera(*o));
-    return 1;
-}
+class_func_1_ud(Sprite, *, __settilenamed,
+    SetSpriteNamedTileFromCurrentTileset, string,
+    tmx_tile, *, )
+class_func_1_ud(Sprite, *, __settilenamedifnew,
+    SetSpriteNamedTileFromCurrentTilesetIfNew, string,
+    tmx_tile, *, )
 
 int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
@@ -105,6 +109,10 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_and_setter_multi_reg(Sprite, size),
         class_getter_and_setter_multi_reg(Sprite, color),
         class_getter_and_setter_multi_reg(Sprite, origin),
+        class_setter_reg(Sprite, tilenamed),
+        class_setter_reg(Sprite, tilenamedifnew),
+        class_setter_reg(Sprite, tileflipx),
+        class_setter_reg(Sprite, tileflipy),
         {0}
     };
     luaL_register(l, NULL, instanceMethods);

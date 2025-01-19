@@ -54,18 +54,94 @@ void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
     if (destSize.y) origin->y *= destSize.y / tileset->tile_height;
 }
 
-void SetSpriteTile(Sprite *spr, tmx_tile *tile, Vector2 flip) {
+tmx_tile* GetSpriteTile(Sprite *spr) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    return spr->tile.tile;
+}
+
+tmx_tileset* GetSpriteTileset(Sprite *spr) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    return spr->tile.tile->tileset;
+}
+
+tmx_tile* GetTilesetNamedTile(tmx_tileset *tileset, const char *name) {
+    tmx_property *prop = tmx_get_property(tileset->properties, name);
+    if (!prop || prop->type != PT_INT)
+        return NULL;
+    int tid = prop->value.integer;
+    if (tid < 0 || tid >= tileset->tilecount)
+        return NULL;
+    return tileset->tiles + tid;
+}
+
+void SetSpriteTile(Sprite *spr, tmx_tile *tile) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return;
+
     Texture *image = GetTileImage(tile);
     if (image == NULL)
         return;
 
     spr->tile.tile = tile;
     spr->tile.texture = image;
+    Vector2 flip = {spr->tile.source.width, spr->tile.source.height};
     GetTileSource(&spr->tile.source, tile, flip);
     GetTileOrigin(&spr->origin, tile, spr->size);
 
     spr->tile.frame = 0;
     spr->animTimer = 0;
+}
+
+void SetSpriteTileFlipX(Sprite *spr, float flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return;
+    spr->tile.source.width = fabsf(spr->tile.source.width);
+    if (flip < 0)
+        spr->tile.source.width *= -1;
+}
+
+void SetSpriteTileFlipY(Sprite *spr, float flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return;
+    spr->tile.source.height = fabsf(spr->tile.source.height);
+    if (flip < 0)
+        spr->tile.source.height *= -1;
+}
+
+void SetSpriteTileFlip(Sprite *spr, Vector2 flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return;
+    spr->tile.source.width = fabsf(spr->tile.source.width);
+    if (flip.x < 0)
+        spr->tile.source.width *= -1;
+    spr->tile.source.height = fabsf(spr->tile.source.height);
+    if (flip.y < 0)
+        spr->tile.source.height *= -1;
+}
+
+void SetSpriteTileIfNew(Sprite *spr, tmx_tile *tile) {
+    if (tile != spr->tile.tile)
+        SetSpriteTile(spr, tile);
+}
+
+tmx_tile* SetSpriteNamedTileFromCurrentTileset(Sprite *spr, const char *name) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    tmx_tile *tile = GetTilesetNamedTile(spr->tile.tile->tileset, name);
+    if (tile)
+        SetSpriteTile(spr, tile);
+    return tile;
+}
+
+tmx_tile* SetSpriteNamedTileFromCurrentTilesetIfNew(Sprite *spr, const char *name) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    tmx_tile *tile = GetTilesetNamedTile(spr->tile.tile->tileset, name);
+    if (tile && tile != spr->tile.tile)
+        SetSpriteTile(spr, tile);
+    return tile;
 }
 
 void UpdateSprite_Tile(Sprite *spr) {
@@ -106,9 +182,10 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
         spr->behavior.draw = DrawSprite_Tile;
         spr->animSpeedMS = 1000;
         Vector2 flip = {rect.width, rect.height};
-        rect.width = abs(rect.width);
-        rect.height = abs(rect.height);
-        SetSpriteTile(spr, tile, flip);
+        rect.width = fabsf(rect.width);
+        rect.height = fabsf(rect.height);
+        SetSpriteTile(spr, tile);
+        SetSpriteTileFlip(spr, flip);
     }
     return spr;
 }
