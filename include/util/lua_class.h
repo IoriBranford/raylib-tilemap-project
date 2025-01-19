@@ -13,6 +13,19 @@ int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #c
 #define class_func_1_1(cls, p, name, f, at, rt) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; }
 
+#define class_func_1_ud(cls, p, name, f, at, rcls, rp, isValid) \
+int L_##cls##_##name(lua_State *l) { \
+    cls p*o = luaL_checkudata(l, 1, #cls); \
+    rcls rp ro = f(*o, luaL_check##at(l, 2)); \
+    if (isValid(ro)) { \
+        rcls rp*rod = lua_newuserdata(l, sizeof(rcls rp)); \
+        *rod = ro; \
+        luaL_setmetatable(l, #rcls); \
+        return 1; \
+    } \
+    return 0; \
+}
+
 #define class_index(cls) \
 int L_##cls##___index(lua_State *l) { \
     luaL_checkudata(l, 1, #cls);  /* [ map, k ] */ \
