@@ -40,6 +40,27 @@ int L_Sprite_rectangle(lua_State *l) {
     return 1;
 }
 
+int L_Sprite_camera(lua_State *l) {
+    Camera2D camera = {
+        .target = {luaL_optnumber(l, 1, 0), luaL_optnumber(l, 2, 0)},
+        .offset = {luaL_optnumber(l, 3, 0), luaL_optnumber(l, 4, 0)},
+        .rotation = luaL_optnumber(l, 5, 0),
+        .zoom = luaL_optnumber(l, 6, 1)
+    };
+    Color color = GetColor(luaL_optnumber(l, 7, UINT32_MAX));
+    Sprite *sprite = NewSpriteCamera(camera, color);
+    sprite->z = -10000000;
+    class_newuserdata(l, Sprite, sprite);
+    return 1;
+}
+int L_Sprite_cameraend(lua_State *l) {
+    Camera2D camera = {.zoom = 0};
+    Sprite *cameraSprite = NewSpriteCamera(camera, WHITE);
+    cameraSprite->z = 10000000;
+    class_newuserdata(l, Sprite, cameraSprite);
+    return 1;
+}
+
 class_index_and_newindex(Sprite)
 class_gc(Sprite, *, ReleaseSprite)
 class_getter(Sprite, *, boolean, active)
@@ -79,6 +100,8 @@ class_func_1_ud(Sprite, *, __settilenamedifnew,
 int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
         class_method_reg(Sprite, rectangle),
+        class_method_reg(Sprite, camera),
+        class_method_reg(Sprite, cameraend),
         {0}
     };
     luaL_register(l, "sprite", staticMethods);
