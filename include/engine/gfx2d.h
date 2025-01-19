@@ -119,6 +119,7 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
 void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
 void SetSpriteTile(Sprite *g, tmx_tile *tile, Vector2 flip);
+tmx_tile* GetTMXObjectTile(tmx_object *o, tmx_map *map);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
 
 bool IsNearCamera2D(Vector2 position, Camera2D Camera);
