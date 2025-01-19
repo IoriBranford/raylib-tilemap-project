@@ -54,7 +54,32 @@ void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize) {
     if (destSize.y) origin->y *= destSize.y / tileset->tile_height;
 }
 
+tmx_tile* GetSpriteTile(Sprite *spr) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    return spr->tile.tile;
+}
+
+tmx_tileset* GetSpriteTileset(Sprite *spr) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    return spr->tile.tile->tileset;
+}
+
+tmx_tile* GetTilesetNamedTile(tmx_tileset *tileset, const char *name) {
+    tmx_property *prop = tmx_get_property(tileset->properties, name);
+    if (!prop || prop->type != PT_INT)
+        return NULL;
+    int tid = prop->value.integer;
+    if (tid < 0 || tid >= tileset->tilecount)
+        return NULL;
+    return tileset->tiles + tid;
+}
+
 void SetSpriteTile(Sprite *spr, tmx_tile *tile, Vector2 flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return;
+
     Texture *image = GetTileImage(tile);
     if (image == NULL)
         return;
@@ -66,6 +91,29 @@ void SetSpriteTile(Sprite *spr, tmx_tile *tile, Vector2 flip) {
 
     spr->tile.frame = 0;
     spr->animTimer = 0;
+}
+
+void SetSpriteTileIfNew(Sprite *spr, tmx_tile *tile, Vector2 flip) {
+    if (tile != spr->tile.tile)
+        SetSpriteTile(spr, tile, flip);
+}
+
+tmx_tile* SetSpriteNamedTileFromCurrentTileset(Sprite *spr, const char *name, Vector2 flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    tmx_tile *tile = GetTilesetNamedTile(spr->tile.tile->tileset, name);
+    if (tile)
+        SetSpriteTile(spr, tile, flip);
+    return tile;
+}
+
+tmx_tile* SetSpriteNamedTileFromCurrentTilesetIfNew(Sprite *spr, const char *name, Vector2 flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return NULL;
+    tmx_tile *tile = GetTilesetNamedTile(spr->tile.tile->tileset, name);
+    if (tile && tile != spr->tile.tile)
+        SetSpriteTile(spr, tile, flip);
+    return tile;
 }
 
 void UpdateSprite_Tile(Sprite *spr) {
