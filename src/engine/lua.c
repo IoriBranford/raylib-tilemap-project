@@ -73,6 +73,8 @@ int RunLua(const char *luaFile, int priority, const char *argf, ...) {
     }
 
     int result = lua_pcall(lua, argc, 1, 0);
+    if (result > LUA_YIELD)
+        fprintf(stderr, "LUA: %s", lua_tostring(lua, -1));
     int taskRef = luaL_testudata(lua, -1, "Task") ?
         luaL_ref(lua, LUA_REGISTRYINDEX) : LUA_REFNIL;
     lua_pop(lua, lua_gettop(lua));
