@@ -67,6 +67,13 @@ class_getter_and_setter_Vector2(Sprite, *, origin)
 class_getter_and_setter_Color(Sprite, *, color)
 class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
 
+class_func_1_ud(Sprite, *, __settilenamed,
+    SetSpriteNamedTileFromCurrentTileset, string,
+    tmx_tile, *, )
+class_func_1_ud(Sprite, *, __settilenamedifnew,
+    SetSpriteNamedTileFromCurrentTilesetIfNew, string,
+    tmx_tile, *, )
+
 int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
         class_method_reg(Sprite, rectangle),
@@ -100,6 +107,8 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_and_setter_multi_reg(Sprite, size),
         class_getter_and_setter_multi_reg(Sprite, color),
         class_getter_and_setter_multi_reg(Sprite, origin),
+        class_setter_reg(Sprite, tilenamed),
+        class_setter_reg(Sprite, tilenamedifnew),
         {0}
     };
     luaL_register(l, NULL, instanceMethods);
