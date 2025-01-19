@@ -94,6 +94,22 @@ void SetSpriteTile(Sprite *spr, tmx_tile *tile) {
     spr->animTimer = 0;
 }
 
+void SetSpriteTileFlipX(Sprite *spr, float flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return;
+    spr->tile.source.width = fabsf(spr->tile.source.width);
+    if (flip < 0)
+        spr->tile.source.width *= -1;
+}
+
+void SetSpriteTileFlipY(Sprite *spr, float flip) {
+    if (spr->behavior.type != SPRITETYPE_TILE)
+        return;
+    spr->tile.source.height = fabsf(spr->tile.source.height);
+    if (flip < 0)
+        spr->tile.source.height *= -1;
+}
+
 void SetSpriteTileFlip(Sprite *spr, Vector2 flip) {
     if (spr->behavior.type != SPRITETYPE_TILE)
         return;

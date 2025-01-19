@@ -125,6 +125,8 @@ tmx_tile* GetSpriteTile(Sprite *spr);
 tmx_tileset* GetSpriteTileset(Sprite *spr);
 tmx_tile* GetTilesetNamedTile(tmx_tileset *tileset, const char *name);
 void SetSpriteTile(Sprite *g, tmx_tile *tile);
+void SetSpriteTileFlipX(Sprite *spr, float flip);
+void SetSpriteTileFlipY(Sprite *spr, float flip);
 void SetSpriteTileFlip(Sprite *spr, Vector2 flip);
 void SetSpriteTileIfNew(Sprite *spr, tmx_tile *tile);
 tmx_tile* SetSpriteNamedTileFromCurrentTileset(Sprite *spr, const char *name);
