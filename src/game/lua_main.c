@@ -21,8 +21,7 @@ int main() {
     while (IsLuaEngineRunning()) {
         if (WindowShouldClose())    // Detect window close button or ESC key
             StopLuaEngine();
-        else
-            UpdateLuaEngine();
+        UpdateLuaEngine();
     }
 #endif
     // De-Initialization
