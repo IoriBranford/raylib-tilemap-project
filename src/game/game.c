@@ -72,7 +72,7 @@ void InitLayers(tmx_layer *head, tmx_map *map) {
 
 void Task_SpawnConfetti(void *p) {
     if (framesCounter == 0) {
-        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map->tiles);
+        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map);
     }
     ++framesCounter;
     framesCounter %= FRAMES_PER_CONFETTI;
