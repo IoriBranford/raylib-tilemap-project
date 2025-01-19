@@ -149,6 +149,26 @@ Sprite* NewShapeSprite(tmx_shape *shape, float thick, bool closed, Vector2 posit
     return spr;
 }
 
+tmx_tile* GetTMXObjectTile(tmx_object *o, tmx_map *map) {
+    if (o->obj_type != OT_TILE)
+        return NULL;
+    int gid = o->content.gid;
+    tmx_tile *tile = NULL;
+    if (gid) {
+        int i = gid & TMX_FLIP_BITS_REMOVAL;
+        tile = map->tiles[i];
+    } else {
+        tmx_template *tmpl = o->template_ref;
+        if (tmpl && tmpl->tileset_ref) {
+            gid = tmpl->object->content.gid;
+            int i = gid & TMX_FLIP_BITS_REMOVAL;
+            tile = tmpl->tileset_ref->tileset->tiles
+                + i - tmpl->tileset_ref->firstgid;
+        }
+    }
+    return tile;
+}
+
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color) {
     Rectangle rect = {
         .x = o->x, .y = o->y,
@@ -167,16 +187,7 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color) {
 
     if (o->obj_type == OT_TILE) {
         int gid = o->content.gid;
-        tmx_tile *tile = NULL;
-        if (gid) {
-            int i = gid & TMX_FLIP_BITS_REMOVAL;
-            tile = map->tiles[i];
-        } else if (tmpl && tmpl->tileset_ref) {
-            gid = tmplObj->content.gid;
-            int i = gid & TMX_FLIP_BITS_REMOVAL;
-            tile = tmpl->tileset_ref->tileset->tiles
-                + i - tmpl->tileset_ref->firstgid;
-        }
+        tmx_tile *tile = GetTMXObjectTile(o, map);
         assert(tile);
 
         rect.width *= (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1;
