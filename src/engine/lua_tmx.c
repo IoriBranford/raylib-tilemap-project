@@ -89,6 +89,79 @@ int L_tmx_layer___getobjects(lua_State *l) {
     return 0;
 }
 
+int L_tmx_layer_new_sprites(lua_State *l) {
+    tmx_layer **layer = (tmx_layer **)luaL_checkudata(l, 1, "tmx_layer");
+    tmx_map **m = (tmx_map **)luaL_checkudata(l, 2, "tmx_map");
+    lua_Number z = luaL_optnumber(l, 3, 0);
+    lua_Number dz = luaL_optnumber(l, 4, 1);
+    switch ((*layer)->type) {
+        case L_IMAGE: {
+            Sprite *spr = NewImageLayerSprite(*layer);
+            spr->z = z;
+            class_newuserdata(l, Sprite, spr);
+        } break;
+        case L_LAYER: {
+            Sprite *spr = NewTileLayerSprite(*layer, *m);
+            spr->z = z;
+            class_newuserdata(l, Sprite, spr);
+        } break;
+        case L_OBJGR: {
+            lua_newtable(l);
+            tmx_object *o = (*layer)->content.objgr->head;
+            Color tint = tmx2rl_Color((*layer)->tintcolor);
+            for (int i = 1; o; ++i, o = o->next) {
+                Sprite *spr = NewTMXObjectSprite(o, *m, tint);
+                if (!spr) continue;
+                spr->z = z;
+                class_newuserdata(l, Sprite, spr);
+                lua_rawseti(l, -2, i);
+            }
+        } break;
+        case L_GROUP: {
+            tmx_layer *sublayer = (*layer)->content.group_head;
+            if (!sublayer)
+                return 0;
+
+            int n = 0;
+            for (; sublayer; sublayer = sublayer->next) ++n;
+            dz = dz/n;
+
+            lua_newtable(l);
+            sublayer = (*layer)->content.group_head;
+            for (int i = 1; sublayer; ++i, sublayer = sublayer->next) {
+                lua_pushcfunction(l, L_tmx_layer_new_sprites);
+                class_newuserdata(l, tmx_layer, sublayer);
+                lua_pushvalue(l, 2);
+                lua_pushnumber(l, z);
+                lua_pushnumber(l, dz);
+                z += dz;
+                lua_pcall(l, 4, 1, 0);
+                lua_rawseti(l, -2, i);
+            }
+        } break;
+    }
+    return 1;
+}
+
+int L_tmx_map_new_sprites(lua_State *l) {
+    tmx_map **m = (tmx_map **)luaL_checkudata(l, 1, "tmx_map");
+    lua_Number z = luaL_optnumber(l, 2, 0);
+
+    lua_newtable(l);
+    tmx_layer *layer = (**m).ly_head;
+    for (int i = 1; layer; ++i, layer = layer->next) {
+        lua_pushcfunction(l, L_tmx_layer_new_sprites);
+        class_newuserdata(l, tmx_layer, layer);
+        lua_pushvalue(l, 1);
+        lua_pushnumber(l, z);
+        lua_pushnumber(l, 1);
+        z += 1;
+        lua_pcall(l, 4, 1, 0);
+        lua_rawseti(l, -2, i);
+    }
+    return 1;
+}
+
 class_index_and_newindex(tmx_object)
 class_getter(tmx_object, *, string, type)
 class_getter(tmx_object, *, integer, id)
@@ -166,6 +239,7 @@ int luaopen_tmx(lua_State *l) {
         class_method_reg(tmx_layer, __index),
         class_method_reg(tmx_layer, __newindex),
         class_method_reg(tmx_layer, get_property),
+        class_method_reg(tmx_layer, new_sprites),
         class_getter_reg(tmx_layer, id),
         class_getter_reg(tmx_layer, class_type),
         class_getter_reg(tmx_layer, type),
@@ -221,6 +295,7 @@ int luaopen_tmx(lua_State *l) {
         class_method_reg(tmx_map, find_object_by_id),
         class_method_reg(tmx_map, find_layer_by_id),
         class_method_reg(tmx_map, find_layer_by_name),
+        class_method_reg(tmx_map, new_sprites),
         class_getter_reg(tmx_map, class_type),
         class_getter_reg(tmx_map, width),
         class_getter_reg(tmx_map, height),

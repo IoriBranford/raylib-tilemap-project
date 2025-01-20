@@ -12,7 +12,6 @@ return function(obj, map)
     body:setVelocity(0, 4)
     body.Angle = rotationRad
     body.AngularVelocity = math.pi/16
-    body:NewCircleShape(width/2)
 
     local spr = obj:new_sprite(map, red, green, blue)
     body:UpdateSprite(spr)
