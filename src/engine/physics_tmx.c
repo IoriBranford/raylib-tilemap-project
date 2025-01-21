@@ -206,6 +206,7 @@ void DrawTMXTileCollisionShape(tmx_object *obj, Vector2 offset, Color color) {
 }
 
 void DrawTMXTileCollisionShapes(tmx_tile *tile, Vector2 position, float rotationDeg, Color color) {
+    if (!tile->collision) return;
     Vector2 origin = {0, 0};
     GetTileOrigin(&origin, tile, VECTOR2(0, 0));
     rlPushMatrix();
