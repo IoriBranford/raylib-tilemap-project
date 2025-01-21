@@ -93,10 +93,10 @@ class_getterf_and_setterf(cpBody, *, number, AngularVelocity, cpBodyGetAngularVe
 class_getterf_and_setterf(cpBody, *, number, Torque, cpBodyGetTorque, cpBodySetTorque)
 class_getterf_and_setterf(cpBody, *, number, Mass, cpBodyGetMass, cpBodySetMass)
 class_getterf_and_setterf(cpBody, *, number, Moment, cpBodyGetMoment, cpBodySetMoment)
-class_getterf_and_setterf_vec2(cpBody, *, Position, cpBodyGetPosition, cpBodySetPosition, cpVect)
-class_getterf_and_setterf_vec2(cpBody, *, CenterOfGravity, cpBodyGetCenterOfGravity, cpBodySetCenterOfGravity, cpVect)
-class_getterf_and_setterf_vec2(cpBody, *, Velocity, cpBodyGetVelocity, cpBodySetVelocity, cpVect)
-class_getterf_and_setterf_vec2(cpBody, *, Force, cpBodyGetForce, cpBodySetForce, cpVect)
+class_getterf_and_setterf_vec2(cpBody, *, cpVect, Position, cpBodyGetPosition, cpBodySetPosition)
+class_getterf_and_setterf_vec2(cpBody, *, cpVect, CenterOfGravity, cpBodyGetCenterOfGravity, cpBodySetCenterOfGravity)
+class_getterf_and_setterf_vec2(cpBody, *, cpVect, Velocity, cpBodyGetVelocity, cpBodySetVelocity)
+class_getterf_and_setterf_vec2(cpBody, *, cpVect, Force, cpBodyGetForce, cpBodySetForce)
 
 int L_cpBody_NewCircleShape(lua_State *l) {
     cpBody **body = luaL_checkudata(l, 1, "cpBody");

@@ -166,7 +166,7 @@ int L_##cls##_get##vector2(lua_State *l) { \
     return 2; \
 }
 
-#define class_getterf_vec2(cls, p, field, f, v2type) \
+#define class_getterf_vec2(cls, p, v2type, field, f) \
 int L_##cls##_get##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
@@ -185,7 +185,7 @@ int L_##cls##_set##vector2(lua_State *l) { \
     return 0; \
 }
 
-#define class_setterf_vec2(cls, p, field, f, v2type) \
+#define class_setterf_vec2(cls, p, v2type, field, f) \
 int L_##cls##_set##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
@@ -210,9 +210,9 @@ int L_##cls##_set##field(lua_State *l) { \
     class_getter_Vector2(cls, p, vector2) \
     class_setter_Vector2(cls, p, vector2)
 
-#define class_getterf_and_setterf_vec2(cls, p, field, getf, setf, v2type) \
-    class_getterf_vec2(cls, p, field, getf, v2type) \
-    class_setterf_vec2(cls, p, field, setf, v2type)
+#define class_getterf_and_setterf_vec2(cls, p, v2type, field, getf, setf) \
+    class_getterf_vec2(cls, p, v2type, field, getf) \
+    class_setterf_vec2(cls, p, v2type, field, setf)
 
 #define class_getter_Color(cls, p, color) \
 int L_##cls##_get##color(lua_State *l) { \
