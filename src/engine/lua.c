@@ -1,5 +1,4 @@
-#include <engine/tasks.h>
-#include <engine/lua.h>
+#include <engine.h>
 #include <util/lua_class.h>
 #include <stdlib.h>
 #include <assert.h>
