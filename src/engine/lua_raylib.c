@@ -1,5 +1,5 @@
 #include <engine/lua.h>
-#include <util/lua_class.h>
+#include <engine/lua_class.h>
 #include <raylib.h>
 
 // Cursor-related functions

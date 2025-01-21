@@ -1,5 +1,5 @@
 #include <engine.h>
-#include <util/lua_class.h>
+#include <engine/lua_class.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <stdarg.h>

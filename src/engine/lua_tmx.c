@@ -3,7 +3,7 @@
 #include <engine/gfx2d.h>
 #include <engine/physics.h>
 #include <engine/lua.h>
-#include <util/lua_class.h>
+#include <engine/lua_class.h>
 
 void L_push_property(lua_State *l, tmx_property *property) {
     if (!property)
