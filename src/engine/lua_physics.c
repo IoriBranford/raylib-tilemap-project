@@ -186,29 +186,23 @@ int L_cpShape_RemoveFromSpace(lua_State *l) {
     return 0;
 }
 
-int luaopen_cpShape(lua_State *l) {
-    luaL_newmetatable(l, "cpShape");
-    luaL_Reg r[] = {
-        class_method_reg(cpShape, __index),
-        class_method_reg(cpShape, __newindex),
-        class_method_reg(cpShape, __gc),
-        class_getter_and_setter_reg(cpShape, Body),
-        class_getter_and_setter_reg(cpShape, Mass),
-        class_getter_and_setter_reg(cpShape, Density),
-        class_getter_reg(cpShape, Moment),
-        class_getter_reg(cpShape, Area),
-        class_getter_reg(cpShape, CenterOfGravity),
-        class_getter_and_setter_reg(cpShape, Sensor),
-        class_getter_and_setter_reg(cpShape, Elasticity),
-        class_getter_and_setter_reg(cpShape, Friction),
-        class_getter_and_setter_reg(cpShape, SurfaceVelocity),
-        class_getter_and_setter_reg(cpShape, Filter),
-        class_method_reg(cpShape, RemoveFromSpace),
-        {0}
-    };
-    luaL_register(l, NULL, r);
-    return 0;
-}
+class_luaopen(cpShape,
+    class_method_reg(cpShape, __index),
+    class_method_reg(cpShape, __newindex),
+    class_method_reg(cpShape, __gc),
+    class_getter_and_setter_reg(cpShape, Body),
+    class_getter_and_setter_reg(cpShape, Mass),
+    class_getter_and_setter_reg(cpShape, Density),
+    class_getter_reg(cpShape, Moment),
+    class_getter_reg(cpShape, Area),
+    class_getter_reg(cpShape, CenterOfGravity),
+    class_getter_and_setter_reg(cpShape, Sensor),
+    class_getter_and_setter_reg(cpShape, Elasticity),
+    class_getter_and_setter_reg(cpShape, Friction),
+    class_getter_and_setter_reg(cpShape, SurfaceVelocity),
+    class_getter_and_setter_reg(cpShape, Filter),
+    class_method_reg(cpShape, RemoveFromSpace)
+)
 
 int luaopen_physics(lua_State *l) {
     luaL_Reg staticMethods[] = {
