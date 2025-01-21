@@ -153,12 +153,26 @@ int L_##cls##___set##field(lua_State *l) { \
     class_getter(cls, p, fieldtype, field) \
     class_setter(cls, p, fieldtype, field)
 
+#define class_getterf_and_setterf(cls, p, fieldtype, field, getf, setf) \
+    class_getterf(cls, p, fieldtype, field, getf) \
+    class_setterf(cls, p, fieldtype, field, setf)
+
 #define class_getter_Vector2(cls, p, vector2) \
 int L_##cls##_get##vector2(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     lua_pushnumber(l, (p*o).vector2.x); \
     lua_pushnumber(l, (p*o).vector2.y); \
+    return 2; \
+}
+
+#define class_getterf_vec2(cls, p, field, f, v2type) \
+int L_##cls##_get##field(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    v2type v = f(*o); \
+    lua_pushnumber(l, v.x); \
+    lua_pushnumber(l, v.y); \
     return 2; \
 }
 
@@ -171,9 +185,34 @@ int L_##cls##_set##vector2(lua_State *l) { \
     return 0; \
 }
 
+#define class_setterf_vec2(cls, p, field, f, v2type) \
+int L_##cls##_set##field(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    int isnum[2] = {lua_isnumber(l, 2), lua_isnumber(l, 3)}; \
+    if (!isnum[0] && !isnum[1]) \
+        return 0; \
+    if (isnum[0] && isnum[1]) { \
+        f(*o, (v2type){lua_tonumber(l, 2), lua_tonumber(l, 3)}); \
+        return 0; \
+    } \
+    lua_pushcfunction(l, L_##cls##_get##field); \
+    lua_pushvalue(l, 1); \
+    lua_pcall(l, 1, 2, 0); \
+    if (isnum[0]) \
+        f(*o, (v2type){lua_tonumber(l, 2), lua_tonumber(l, -1)}); \
+    else \
+        f(*o, (v2type){lua_tonumber(l, -2), lua_tonumber(l, 3)}); \
+    return 0; \
+}
+
 #define class_getter_and_setter_Vector2(cls, p, vector2) \
     class_getter_Vector2(cls, p, vector2) \
     class_setter_Vector2(cls, p, vector2)
+
+#define class_getterf_and_setterf_vec2(cls, p, field, getf, setf, v2type) \
+    class_getterf_vec2(cls, p, field, getf, v2type) \
+    class_setterf_vec2(cls, p, field, setf, v2type)
 
 #define class_getter_Color(cls, p, color) \
 int L_##cls##_get##color(lua_State *l) { \
