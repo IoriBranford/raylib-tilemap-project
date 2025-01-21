@@ -31,7 +31,7 @@ int L_##f(lua_State *l) { \
 
 #define l_func_reg(f) {.name = #f, .func = L_##f}
 
-#define l_funcs_luaopen(grp, ...) \
+#define l_global_funcs_luaopen(grp, ...) \
 int luaopen_##grp(lua_State *l) { \
     lua_getglobal(l, "_G"); \
     luaL_Reg r[] = { __VA_ARGS__, {0} }; \

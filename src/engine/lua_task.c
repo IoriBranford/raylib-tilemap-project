@@ -89,6 +89,19 @@ class_index_and_newindex(Task)
 class_getter_and_setter(Task, *, number, priority)
 class_getter(Task, *, number, sleeping)
 
+class_luaopen(Task,
+    class_method_reg(Task, __index),
+    class_method_reg(Task, __newindex),
+    class_method_reg(Task, __gc),
+    class_getter_reg(Task, priority),
+    class_setter_reg(Task, priority),
+    class_getter_reg(Task, done),
+    class_getter_reg(Task, sleeping),
+    class_method_reg(Task, results),
+    class_method_reg(Task, sleep),
+    class_method_reg(Task, end)
+)
+
 int luaopen_task(lua_State *l) {
     luaL_Reg task_r[] = {
         class_method_reg(Task, run),
@@ -97,22 +110,7 @@ int luaopen_task(lua_State *l) {
     luaL_register(l, "task", task_r);
     lua_pop(l, 1);
 
-    luaL_newmetatable(l, "Task");
-    luaL_Reg Task_r[] = {
-        class_method_reg(Task, __index),
-        class_method_reg(Task, __newindex),
-        class_method_reg(Task, __gc),
-        class_getter_reg(Task, priority),
-        class_setter_reg(Task, priority),
-        class_getter_reg(Task, done),
-        class_getter_reg(Task, sleeping),
-        class_method_reg(Task, results),
-        class_method_reg(Task, sleep),
-        class_method_reg(Task, end),
-        {0}
-    };
-    luaL_register(l, NULL, Task_r);
-    lua_pop(l, 1);
+    lua_cpcall(l, luaopen_Task, NULL);
 
     return 0;
 }

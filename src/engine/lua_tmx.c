@@ -215,87 +215,72 @@ int L_tmx_tile_getcollision(lua_State *l) {
     return 1;
 }
 
+l_global_funcs_luaopen(tmx_g, 
+    l_func_reg(LoadMap)
+)
+
+class_luaopen(tmx_map,
+    class_method_reg(tmx_map, __index),
+    class_method_reg(tmx_map, __newindex),
+    class_method_reg(tmx_map, __gc),
+    class_method_reg(tmx_map, get_property),
+    class_method_reg(tmx_map, find_object_by_id),
+    class_method_reg(tmx_map, find_layer_by_id),
+    class_method_reg(tmx_map, find_layer_by_name),
+    class_method_reg(tmx_map, new_sprites),
+    class_getter_reg(tmx_map, class_type),
+    class_getter_reg(tmx_map, width),
+    class_getter_reg(tmx_map, height),
+    class_getter_reg(tmx_map, tile_width),
+    class_getter_reg(tmx_map, tile_height),
+    class_getter_reg(tmx_map, properties)
+)
+
+class_luaopen(tmx_layer,
+    class_method_reg(tmx_layer, __index),
+    class_method_reg(tmx_layer, __newindex),
+    class_method_reg(tmx_layer, get_property),
+    class_method_reg(tmx_layer, new_sprites),
+    class_getter_reg(tmx_layer, id),
+    class_getter_reg(tmx_layer, class_type),
+    class_getter_reg(tmx_layer, type),
+    class_getter_reg(tmx_layer, objects),
+    class_getter_reg(tmx_layer, properties)
+)
+
+class_luaopen(tmx_tile,
+    class_method_reg(tmx_tile, __index),
+    class_method_reg(tmx_tile, __newindex),
+    class_method_reg(tmx_tile, get_property),
+    class_getter_reg(tmx_tile, id),
+    class_getter_reg(tmx_tile, type),
+    class_getter_reg(tmx_tile, width),
+    class_getter_reg(tmx_tile, height),
+    class_getter_reg(tmx_tile, collision),
+    class_getter_reg(tmx_tile, properties)
+)
+
+class_luaopen(tmx_object,
+    class_method_reg(tmx_object, __index),
+    class_method_reg(tmx_object, __newindex),
+    class_method_reg(tmx_object, get_property),
+    class_method_reg(tmx_object, get_tile),
+    class_method_reg(tmx_object, new_body),
+    class_method_reg(tmx_object, new_sprite),
+    class_getter_reg(tmx_object, id),
+    class_getter_reg(tmx_object, type),
+    class_getter_reg(tmx_object, x),
+    class_getter_reg(tmx_object, y),
+    class_getter_reg(tmx_object, width),
+    class_getter_reg(tmx_object, height),
+    class_getter_reg(tmx_object, properties)
+)
+
 int luaopen_tmx(lua_State *l) {
-    lua_getglobal(l, "_G");
-    luaL_Reg globalFuncs[] = {
-        l_func_reg(LoadMap),
-        {0}
-    };
-    luaL_register(l, NULL, globalFuncs);
-    lua_pop(l, 1);
-
-    luaL_newmetatable(l, "tmx_layer");
-    luaL_Reg tmx_layer_r[] = {
-        class_method_reg(tmx_layer, __index),
-        class_method_reg(tmx_layer, __newindex),
-        class_method_reg(tmx_layer, get_property),
-        class_method_reg(tmx_layer, new_sprites),
-        class_getter_reg(tmx_layer, id),
-        class_getter_reg(tmx_layer, class_type),
-        class_getter_reg(tmx_layer, type),
-        class_getter_reg(tmx_layer, objects),
-        class_getter_reg(tmx_layer, properties),
-        {0}
-    };
-    luaL_register(l, NULL, tmx_layer_r);
-    lua_pop(l, 1);
-
-    luaL_newmetatable(l, "tmx_tile");
-    luaL_Reg tmx_tile_r[] = {
-        class_method_reg(tmx_tile, __index),
-        class_method_reg(tmx_tile, __newindex),
-        class_method_reg(tmx_tile, get_property),
-        class_getter_reg(tmx_tile, id),
-        class_getter_reg(tmx_tile, type),
-        class_getter_reg(tmx_tile, width),
-        class_getter_reg(tmx_tile, height),
-        class_getter_reg(tmx_tile, collision),
-        class_getter_reg(tmx_tile, properties),
-        {0}
-    };
-    luaL_register(l, NULL, tmx_tile_r);
-    lua_pop(l, 1);
-
-    luaL_newmetatable(l, "tmx_object");
-    luaL_Reg tmx_object_r[] = {
-        class_method_reg(tmx_object, __index),
-        class_method_reg(tmx_object, __newindex),
-        class_method_reg(tmx_object, get_property),
-        class_method_reg(tmx_object, get_tile),
-        class_method_reg(tmx_object, new_body),
-        class_method_reg(tmx_object, new_sprite),
-        class_getter_reg(tmx_object, id),
-        class_getter_reg(tmx_object, type),
-        class_getter_reg(tmx_object, x),
-        class_getter_reg(tmx_object, y),
-        class_getter_reg(tmx_object, width),
-        class_getter_reg(tmx_object, height),
-        class_getter_reg(tmx_object, properties),
-        {0}
-    };
-    luaL_register(l, NULL, tmx_object_r);
-    lua_pop(l, 1);
-
-    luaL_newmetatable(l, "tmx_map");
-    luaL_Reg tmx_map_r[] = {
-        class_method_reg(tmx_map, __index),
-        class_method_reg(tmx_map, __newindex),
-        class_method_reg(tmx_map, __gc),
-        class_method_reg(tmx_map, get_property),
-        class_method_reg(tmx_map, find_object_by_id),
-        class_method_reg(tmx_map, find_layer_by_id),
-        class_method_reg(tmx_map, find_layer_by_name),
-        class_method_reg(tmx_map, new_sprites),
-        class_getter_reg(tmx_map, class_type),
-        class_getter_reg(tmx_map, width),
-        class_getter_reg(tmx_map, height),
-        class_getter_reg(tmx_map, tile_width),
-        class_getter_reg(tmx_map, tile_height),
-        class_getter_reg(tmx_map, properties),
-        {0}
-    };
-    luaL_register(l, NULL, tmx_map_r);
-    lua_pop(l, 1);
-
+    lua_cpcall(l, luaopen_tmx_g, NULL);
+    lua_cpcall(l, luaopen_tmx_layer, NULL);
+    lua_cpcall(l, luaopen_tmx_tile, NULL);
+    lua_cpcall(l, luaopen_tmx_object, NULL);
+    lua_cpcall(l, luaopen_tmx_map, NULL);
     return 0;
 }

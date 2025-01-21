@@ -144,6 +144,25 @@ int L_cpBody_RemoveFromSpace(lua_State *l) {
     return 0;
 }
 
+class_luaopen(cpBody,
+    class_method_reg(cpBody, __index),
+    class_method_reg(cpBody, __newindex),
+    class_method_reg(cpBody, __gc),
+    class_method_reg(cpBody, NewCircleShape),
+    class_method_reg(cpBody, UpdateSprite),
+    class_method_reg(cpBody, EachArbiter),
+    class_method_reg(cpBody, RemoveFromSpace),
+    class_getter_and_setter_reg(cpBody, Angle),
+    class_getter_and_setter_reg(cpBody, AngularVelocity),
+    class_getter_and_setter_reg(cpBody, Torque),
+    class_getter_and_setter_reg(cpBody, Mass),
+    class_getter_and_setter_reg(cpBody, Moment),
+    class_getter_and_setter_reg(cpBody, Position),
+    class_getter_and_setter_reg(cpBody, CenterOfGravity),
+    class_getter_and_setter_reg(cpBody, Velocity),
+    class_getter_and_setter_reg(cpBody, Force)
+)
+
 class_index_and_newindex(cpShape)
 
 class_gc(cpShape, *, ReleaseOrphanedShape)
@@ -170,10 +189,10 @@ int L_cpShape_getFilter(lua_State *l) {
 int L_cpShape_setFilter(lua_State *l) {
     cpShape **shape = luaL_checkudata(l, 1, "cpShape");
     cpShapeFilter filter = cpShapeGetFilter(*shape);
-    if (lua_isinteger(l, 2)) filter.group = lua_tointeger(l, 2);
-    if (lua_isinteger(l, 3)) filter.categories = lua_tointeger(l, 3);
-    if (lua_isinteger(l, 4)) filter.mask = lua_tointeger(l, 4);
-    cpShapeSetFilter(shape, filter);
+    if (lua_isnumber(l, 2)) filter.group = floor(lua_tonumber(l, 2));
+    if (lua_isnumber(l, 3)) filter.categories = floor(lua_tonumber(l, 3));
+    if (lua_isnumber(l, 4)) filter.mask = floor(lua_tonumber(l, 4));
+    cpShapeSetFilter(*shape, filter);
     return 0;
 }
 
@@ -214,29 +233,7 @@ int luaopen_physics(lua_State *l) {
     luaL_register(l, "physics", staticMethods);
     lua_pop(l, 1);
 
-    luaL_newmetatable(l, "cpBody");
-    luaL_Reg bodyMethods[] = {
-        class_method_reg(cpBody, __index),
-        class_method_reg(cpBody, __newindex),
-        class_method_reg(cpBody, __gc),
-        class_method_reg(cpBody, NewCircleShape),
-        class_method_reg(cpBody, UpdateSprite),
-        class_method_reg(cpBody, EachArbiter),
-        class_method_reg(cpBody, RemoveFromSpace),
-        class_getter_and_setter_reg(cpBody, Angle),
-        class_getter_and_setter_reg(cpBody, AngularVelocity),
-        class_getter_and_setter_reg(cpBody, Torque),
-        class_getter_and_setter_reg(cpBody, Mass),
-        class_getter_and_setter_reg(cpBody, Moment),
-        class_getter_and_setter_reg(cpBody, Position),
-        class_getter_and_setter_reg(cpBody, CenterOfGravity),
-        class_getter_and_setter_reg(cpBody, Velocity),
-        class_getter_and_setter_reg(cpBody, Force),
-        {0}
-    };
-    luaL_register(l, NULL, bodyMethods);
-    lua_pop(l, 1);
-
+    lua_cpcall(l, luaopen_cpBody, NULL);
     lua_cpcall(l, luaopen_cpShape, NULL);
 
     return 0;

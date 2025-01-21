@@ -98,6 +98,37 @@ int L_Sprite_setcameraZoom(lua_State *l) {
     return 0;
 }
 
+class_luaopen(Sprite,
+    class_method_reg(Sprite, __index),
+    class_method_reg(Sprite, __newindex),
+    class_method_reg(Sprite, __gc),
+    class_getter_reg(Sprite, active),
+    class_getter_reg(Sprite, nearcamera),
+    class_getter_and_setter_reg(Sprite, x),
+    class_getter_and_setter_reg(Sprite, y),
+    class_getter_and_setter_reg(Sprite, z),
+    class_getter_and_setter_reg(Sprite, width),
+    class_getter_and_setter_reg(Sprite, height),
+    class_getter_and_setter_reg(Sprite, rotationDeg),
+    class_getter_and_setter_reg(Sprite, originX),
+    class_getter_and_setter_reg(Sprite, originY),
+    class_getter_and_setter_reg(Sprite, red),
+    class_getter_and_setter_reg(Sprite, green),
+    class_getter_and_setter_reg(Sprite, blue),
+    class_getter_and_setter_reg(Sprite, alpha),
+    class_getter_and_setter_reg(Sprite, animSpeedMS),
+    class_getter_and_setter_reg(Sprite, cameraZoom),
+    class_getter_reg(Sprite, animTimer),
+    class_getter_and_setter_reg(Sprite, position),
+    class_getter_and_setter_reg(Sprite, size),
+    class_getter_and_setter_reg(Sprite, color),
+    class_getter_and_setter_reg(Sprite, origin),
+    class_setter_reg(Sprite, tilenamed),
+    class_setter_reg(Sprite, tilenamedifnew),
+    class_setter_reg(Sprite, tileflipx),
+    class_setter_reg(Sprite, tileflipy)
+)
+
 int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
         class_method_reg(Sprite, rectangle),
@@ -108,40 +139,7 @@ int luaopen_gfx2d(lua_State *l) {
     luaL_register(l, "sprite", staticMethods);
     lua_pop(l, 1);
 
-    luaL_newmetatable(l, "Sprite");
-    luaL_Reg instanceMethods[] = {
-        class_method_reg(Sprite, __index),
-        class_method_reg(Sprite, __newindex),
-        class_method_reg(Sprite, __gc),
-        class_getter_reg(Sprite, active),
-        class_getter_reg(Sprite, nearcamera),
-        class_getter_and_setter_reg(Sprite, x),
-        class_getter_and_setter_reg(Sprite, y),
-        class_getter_and_setter_reg(Sprite, z),
-        class_getter_and_setter_reg(Sprite, width),
-        class_getter_and_setter_reg(Sprite, height),
-        class_getter_and_setter_reg(Sprite, rotationDeg),
-        class_getter_and_setter_reg(Sprite, originX),
-        class_getter_and_setter_reg(Sprite, originY),
-        class_getter_and_setter_reg(Sprite, red),
-        class_getter_and_setter_reg(Sprite, green),
-        class_getter_and_setter_reg(Sprite, blue),
-        class_getter_and_setter_reg(Sprite, alpha),
-        class_getter_and_setter_reg(Sprite, animSpeedMS),
-        class_getter_and_setter_reg(Sprite, cameraZoom),
-        class_getter_reg(Sprite, animTimer),
-        class_getter_and_setter_reg(Sprite, position),
-        class_getter_and_setter_reg(Sprite, size),
-        class_getter_and_setter_reg(Sprite, color),
-        class_getter_and_setter_reg(Sprite, origin),
-        class_setter_reg(Sprite, tilenamed),
-        class_setter_reg(Sprite, tilenamedifnew),
-        class_setter_reg(Sprite, tileflipx),
-        class_setter_reg(Sprite, tileflipy),
-        {0}
-    };
-    luaL_register(l, NULL, instanceMethods);
-    lua_pop(l, 1);
+    lua_cpcall(l, luaopen_Sprite, NULL);
 
     return 0;
 }

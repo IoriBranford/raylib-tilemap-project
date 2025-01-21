@@ -188,6 +188,10 @@ int luaopen_tmx(lua_State *l);
 
 l_func_2_0(ResetLuaEngine, string, integer)
 
+l_global_funcs_luaopen(engine,
+    l_func_reg(ResetLuaEngine)
+)
+
 void InitLua() {
     if (lua)
         CloseLua();
@@ -198,18 +202,11 @@ void InitLua() {
     lua_cpcall(lua, luaopen_physics, NULL);
     lua_cpcall(lua, luaopen_raylib, NULL);
     lua_cpcall(lua, luaopen_tmx, NULL);
+    lua_cpcall(lua, luaopen_engine, NULL);
 
     lua_getglobal(lua, "package");
     lua_pushstring(lua, "path");
     lua_pushstring(lua, "lua" LUA_DIRSEP "?.lua");
     lua_settable(lua, -3);
-    lua_pop(lua, 1);
-
-    luaL_Reg reg[] = {
-        l_func_reg(ResetLuaEngine),
-        {0}
-    };
-    lua_getglobal(lua, "_G");
-    luaL_register(lua, NULL, reg);
     lua_pop(lua, 1);
 }
