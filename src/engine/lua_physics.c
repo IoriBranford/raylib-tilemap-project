@@ -184,10 +184,10 @@ int luaopen_physics(lua_State *l) {
         class_getter_and_setter_reg(cpBody, Torque),
         class_getter_and_setter_reg(cpBody, Mass),
         class_getter_and_setter_reg(cpBody, Moment),
-        class_getter_and_setter_multi_reg(cpBody, Position),
-        class_getter_and_setter_multi_reg(cpBody, CenterOfGravity),
-        class_getter_and_setter_multi_reg(cpBody, Velocity),
-        class_getter_and_setter_multi_reg(cpBody, Force),
+        class_getter_and_setter_reg(cpBody, Position),
+        class_getter_and_setter_reg(cpBody, CenterOfGravity),
+        class_getter_and_setter_reg(cpBody, Velocity),
+        class_getter_and_setter_reg(cpBody, Force),
         {0}
     };
     luaL_register(l, NULL, bodyMethods);

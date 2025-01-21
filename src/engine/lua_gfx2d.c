@@ -91,14 +91,14 @@ class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
 class_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
 class_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
 
-class_func_1_ud(Sprite, *, __settilenamed,
+class_func_1_ud(Sprite, *, settilenamed,
     SetSpriteNamedTileFromCurrentTileset, string,
     tmx_tile, *, )
-class_func_1_ud(Sprite, *, __settilenamedifnew,
+class_func_1_ud(Sprite, *, settilenamedifnew,
     SetSpriteNamedTileFromCurrentTilesetIfNew, string,
     tmx_tile, *, )
 
-int L_Sprite___getcameraZoom(lua_State *l) {
+int L_Sprite_getcameraZoom(lua_State *l) {
     Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
     if ((**o).behavior.type != SPRITETYPE_CAMERA)
         return 0;
@@ -106,7 +106,7 @@ int L_Sprite___getcameraZoom(lua_State *l) {
     return 1;
 }
 
-int L_Sprite___setcameraZoom(lua_State *l) {
+int L_Sprite_setcameraZoom(lua_State *l) {
     Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
     if ((**o).behavior.type != SPRITETYPE_CAMERA)
         return 0;
@@ -146,10 +146,10 @@ int luaopen_gfx2d(lua_State *l) {
         class_getter_and_setter_reg(Sprite, animSpeedMS),
         class_getter_and_setter_reg(Sprite, cameraZoom),
         class_getter_reg(Sprite, animTimer),
-        class_getter_and_setter_multi_reg(Sprite, position),
-        class_getter_and_setter_multi_reg(Sprite, size),
-        class_getter_and_setter_multi_reg(Sprite, color),
-        class_getter_and_setter_multi_reg(Sprite, origin),
+        class_getter_and_setter_reg(Sprite, position),
+        class_getter_and_setter_reg(Sprite, size),
+        class_getter_and_setter_reg(Sprite, color),
+        class_getter_and_setter_reg(Sprite, origin),
         class_setter_reg(Sprite, tilenamed),
         class_setter_reg(Sprite, tilenamedifnew),
         class_setter_reg(Sprite, tileflipx),

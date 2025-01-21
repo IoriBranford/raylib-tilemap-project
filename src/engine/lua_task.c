@@ -77,11 +77,7 @@ int L_Task_end(lua_State *l) {
     return PushTaskResults(l, *ud);
 }
 
-int L_Task___getdone(lua_State *l) {
-    Task **ud = luaL_checkudata(l, 1, "Task");
-    lua_pushboolean(l, IsTaskDone(*ud));
-    return 1;
-}
+class_getterf(Task, *, boolean, done, IsTaskDone)
 
 int L_Task_sleep(lua_State *l) {
     Task **ud = luaL_checkudata(l, 1, "Task");

@@ -37,14 +37,14 @@ int L_##cls##___index(lua_State *l) { \
         return 1; \
     lua_pop(l, 2); /* [ map, k ] */\
     /* find getter */\
-    lua_pushstring(l, "__get");  /* [ map, k, "__get" ] */\
-    lua_pushvalue(l, 2);  /* [ map, k, "__get", k ] */\
-    lua_concat(l, 2);   /* [ map, k, "__getk" ] */\
+    lua_pushstring(l, "get");  /* [ map, k, "get" ] */\
+    lua_pushvalue(l, 2);  /* [ map, k, "get", k ] */\
+    lua_concat(l, 2);   /* [ map, k, "getk" ] */\
     const char *name = lua_tostring(l, -1);\
     lua_pop(l, 1);   /* [ map, k ] */\
     luaL_getmetafield(l, 1, name);\
-    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, __getk ] */\
-        lua_pushvalue(l, 1);   /* [ map, k, __getk, map ] */\
+    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, getk ] */\
+        lua_pushvalue(l, 1);   /* [ map, k, getk, map ] */\
         if (lua_pcall(l, 1, 1, 0) != LUA_OK) lua_error(l); /* [ map, k, v ] */\
         return 1;\
     } \
@@ -76,15 +76,15 @@ int L_##cls##___index(lua_State *l) { \
 #define class_newindex(cls) \
 int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
     luaL_checkudata(l, 1, #cls);\
-    lua_pushstring(l, "__set");  /* [ map, k, v, "__set" ] */\
-    lua_pushvalue(l, 2);  /* [ map, k, v, "__set", k ] */\
-    lua_concat(l, 2);  /* [ map, k, v, "__setk" ] */\
+    lua_pushstring(l, "set");  /* [ map, k, v, "set" ] */\
+    lua_pushvalue(l, 2);  /* [ map, k, v, "set", k ] */\
+    lua_concat(l, 2);  /* [ map, k, v, "setk" ] */\
     const char *name = lua_tostring(l, -1);\
     lua_pop(l, 1);   /* [ map, k, v ] */\
     luaL_getmetafield(l, 1, name);\
-    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, v, __setk ] */\
-        lua_pushvalue(l, 1);   /* [ map, k, v, __setk, map ] */\
-        lua_pushvalue(l, 3);   /* [ map, k, v, __setk, map, v ] */\
+    if (lua_iscfunction(l, -1) || lua_isfunction(l, -1)) {  /* [ map, k, v, setk ] */\
+        lua_pushvalue(l, 1);   /* [ map, k, v, setk, map ] */\
+        lua_pushvalue(l, 3);   /* [ map, k, v, setk, map, v ] */\
         if (lua_pcall(l, 2, 0, 0) != LUA_OK) lua_error(l); /* [ map, k, v ] */\
     }\
     return 0;\
@@ -102,14 +102,14 @@ int L_##cls##___gc(lua_State *l) { \
 }
 
 #define class_getterf(cls, p, fieldtype, field, getField) \
-int L_##cls##___get##field(lua_State *l) { \
+int L_##cls##_get##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (o) lua_push##fieldtype(l, getField(*o)); \
     return 1; \
 }
 
-#define class_getter_ud(cls, p, field, rcls, rp) \
-int L_##cls##___get##field(lua_State *l) { \
+#define class_getter_ud(cls, p, rcls, rp, field) \
+int L_##cls##_get##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     rcls rp*rod = lua_newuserdata(l, sizeof(rcls rp)); \
@@ -118,8 +118,8 @@ int L_##cls##___get##field(lua_State *l) { \
     return 1; \
 }
 
-#define class_getterf_ud(cls, p, field, f, rcls, rp) \
-int L_##cls##___get##field(lua_State *l) { \
+#define class_getterf_ud(cls, p, rcls, rp, field, f) \
+int L_##cls##_get##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     rcls rp*rod = lua_newuserdata(l, sizeof(rcls rp)); \
@@ -129,14 +129,14 @@ int L_##cls##___get##field(lua_State *l) { \
 }
 
 #define class_getter(cls, p, fieldtype, field) \
-int L_##cls##___get##field(lua_State *l) { \
+int L_##cls##_get##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (o) lua_push##fieldtype(l, (p*o).field); \
     return 1; \
 }
 
 #define class_setterf(cls, p, fieldtype, field, setField) \
-int L_##cls##___set##field(lua_State *l) { \
+int L_##cls##_set##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (!lua_is##fieldtype(l, 2)) \
@@ -147,7 +147,7 @@ int L_##cls##___set##field(lua_State *l) { \
 }
 
 #define class_setter(cls, p, fieldtype, field) \
-int L_##cls##___set##field(lua_State *l) { \
+int L_##cls##_set##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (!lua_is##fieldtype(l, 2)) \
@@ -158,7 +158,7 @@ int L_##cls##___set##field(lua_State *l) { \
 }
 
 #define class_setter_clamped(cls, p, field, min, max) \
-int L_##cls##___set##field(lua_State *l) { \
+int L_##cls##_set##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
     if (!lua_isnumber(l, 2)) \
@@ -274,8 +274,8 @@ int L_##cls##_set##color(lua_State *l) { \
     class_setter_Color(cls, p, color)
 
 #define class_method_reg(cls, f) { .name = #f, .func = L_##cls##_##f}
-#define class_getter_reg(cls, field) class_method_reg(cls, __get##field)
-#define class_setter_reg(cls, field) class_method_reg(cls, __set##field)
+#define class_getter_reg(cls, field) class_method_reg(cls, get##field)
+#define class_setter_reg(cls, field) class_method_reg(cls, set##field)
 #define class_getter_and_setter_reg(cls, field) \
     class_getter_reg(cls, field),\
     class_setter_reg(cls, field)
@@ -285,11 +285,5 @@ int L_##cls##_set##color(lua_State *l) { \
     *od = o; \
     luaL_setmetatable(l, #cls); \
 }
-
-#define class_getter_multi_reg(cls, field) class_method_reg(cls, get##field)
-#define class_setter_multi_reg(cls, field) class_method_reg(cls, set##field)
-#define class_getter_and_setter_multi_reg(cls, field) \
-    class_getter_multi_reg(cls, field),\
-    class_setter_multi_reg(cls, field)
 
 #endif /* CD425245_A2F7_4AB2_ADAB_E5F9A1924686 */
