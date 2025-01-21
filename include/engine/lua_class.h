@@ -251,33 +251,15 @@ int L_##cls##_set##field(lua_State *l) { \
 int L_##cls##_get##color(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
-    lua_pushinteger(l, (p*o).color.r); \
-    lua_pushinteger(l, (p*o).color.g); \
-    lua_pushinteger(l, (p*o).color.b); \
-    lua_pushinteger(l, (p*o).color.a); \
-    return 4; \
+    lua_pushinteger(l, (uint32_t)ColorToInt((p*o).color)); \
+    return 1; \
 }
 
 #define class_setter_Color(cls, p, color) \
 int L_##cls##_set##color(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     if (!o) return 0; \
-    if (lua_isnumber(l, 2)) { \
-        lua_Number c = lua_tonumber(l, 2); \
-        (p*o).color.r = c < 0 ? 0 : c > 255 ? 255 : c; \
-    }\
-    if (lua_isnumber(l, 3)) { \
-        lua_Number c = lua_tonumber(l, 3); \
-        (p*o).color.g = c < 0 ? 0 : c > 255 ? 255 : c; \
-    }\
-    if (lua_isnumber(l, 4)) { \
-        lua_Number c = lua_tonumber(l, 4); \
-        (p*o).color.b = c < 0 ? 0 : c > 255 ? 255 : c; \
-    }\
-    if (lua_isnumber(l, 5)) { \
-        lua_Number c = lua_tonumber(l, 5); \
-        (p*o).color.a = c < 0 ? 0 : c > 255 ? 255 : c; \
-    }\
+    (p*o).color = L_toColor(l, 2); \
     return 0; \
 }
 

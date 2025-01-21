@@ -5,18 +5,6 @@ int L_Sprite_rectangle(lua_State *l) {
     if (!NumSpritesFree())
         return 0;
 
-    lua_Number r = luaL_optnumber(l, 8, 255);
-    lua_Number g = luaL_optnumber(l, 9, 255);
-    lua_Number b = luaL_optnumber(l, 10, 255);
-    lua_Number a = luaL_optnumber(l, 11, 255);
-
-    Color color = {
-        .r = r < 0 ? 0 : r > 255 ? 255 : r,
-        .g = g < 0 ? 0 : g > 255 ? 255 : g,
-        .b = b < 0 ? 0 : b > 255 ? 255 : b,
-        .a = a < 0 ? 0 : a > 255 ? 255 : a
-    };
-
     Sprite *s = NewRectangleSprite(
         (Rectangle){
             .x = luaL_optnumber(l, 1, 0),
@@ -24,15 +12,12 @@ int L_Sprite_rectangle(lua_State *l) {
             .width = luaL_optnumber(l, 3, 1),
             .height = luaL_optnumber(l, 4, 1)
         },
-
         (Vector2) {
             .x = luaL_optnumber(l, 5, 0),
             .y = luaL_optnumber(l, 6, 0)
         },
-
         luaL_optnumber(l, 7, 0),
-
-        color
+        L_toColor(l, 8)
     );
 
     class_newuserdata(l, Sprite, s);
@@ -46,7 +31,7 @@ int L_Sprite_camera(lua_State *l) {
         .rotation = luaL_optnumber(l, 5, 0),
         .zoom = luaL_optnumber(l, 6, 1)
     };
-    Color color = GetColor(luaL_optnumber(l, 7, UINT32_MAX));
+    Color color = L_toColor(l, 7);
     Sprite *sprite = NewSpriteCamera(camera, color);
     sprite->z = -10000000;
     class_newuserdata(l, Sprite, sprite);

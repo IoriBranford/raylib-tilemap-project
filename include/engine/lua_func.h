@@ -14,11 +14,8 @@
 #define l_func_3_Color(f, at1, at2, at3) \
 int L_##f(lua_State *l) { \
     Color c = f(luaL_check##at1(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3)); \
-    lua_pushnumber(l, c.r); \
-    lua_pushnumber(l, c.g); \
-    lua_pushnumber(l, c.b); \
-    lua_pushnumber(l, c.a); \
-    return 4; \
+    lua_pushinteger(l, (uint32_t)ColorToInt(c)); \
+    return 1; \
 }
 
 #define l_func_1_ud(f, at, ud, isValid) int L_##f(lua_State *l) { \

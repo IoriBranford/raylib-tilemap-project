@@ -73,7 +73,7 @@ l_func_1_0(SetMouseCursor, integer)
 // Color/pixel related functions
 l_func_3_Color(ColorFromHSV, number, number, number)
 
-int L_IntToRGBA(lua_State *l)
+int L_ColorToRGBA(lua_State *l)
 {
     Color c = L_toColor(l, 1);
     lua_pushinteger(l, c.r);
@@ -83,7 +83,7 @@ int L_IntToRGBA(lua_State *l)
     return 4;
 };
 
-int L_RGBAToInt(lua_State *l)
+int L_RGBAToColor(lua_State *l)
 {
     lua_Number r = ceil(luaL_optnumber(l, 1, 255));
     lua_Number g = ceil(luaL_optnumber(l, 2, 255));
@@ -345,8 +345,8 @@ int luaopen_raylib(lua_State *l) {
 
         // Color/pixel related functions
         l_func_reg(ColorFromHSV),
-        l_func_reg(IntToRGBA),
-        l_func_reg(RGBAToInt),
+        l_func_reg(ColorToRGBA),
+        l_func_reg(RGBAToColor),
 
         // Wave/Sound loading/unloading functions
         l_func_reg(LoadSound),

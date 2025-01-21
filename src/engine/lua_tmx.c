@@ -16,7 +16,7 @@ void L_push_property(lua_State *l, tmx_property *property) {
     else if (property->type == PT_STRING)
         lua_pushstring(l, property->value.string);
     else if (property->type == PT_COLOR)
-        lua_pushinteger(l, property->value.color);
+        lua_pushinteger(l, tmx2rl_ColorUint(property->value.color));
     else if (property->type == PT_FILE)
         lua_pushstring(l, property->value.string);
     else if (property->type == PT_OBJECT)
@@ -181,16 +181,7 @@ int L_tmx_object_new_body(lua_State *l) {
 int L_tmx_object_new_sprite(lua_State *l) {
     tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
     tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
-    lua_Number r = luaL_optnumber(l, 3, 255);
-    lua_Number g = luaL_optnumber(l, 4, 255);
-    lua_Number b = luaL_optnumber(l, 5, 255);
-    lua_Number a = luaL_optnumber(l, 6, 255);
-    Color color = {
-        r < 0 ? 0 : r > 255 ? 255 : r,
-        g < 0 ? 0 : g > 255 ? 255 : g,
-        b < 0 ? 0 : b > 255 ? 255 : b,
-        a < 0 ? 0 : a > 255 ? 255 : a,
-    };
+    Color color = L_toColor(l, 3);
     class_newuserdata(l, Sprite, NewTMXObjectSprite(*o, *m, color));
     return 1;
 }
