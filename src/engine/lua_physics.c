@@ -87,59 +87,16 @@ int L_physics_polyshape(lua_State *l) {
     return 1;
 }
 
-#define cp_getter(cls, fieldtype, field) \
-int L_##cls##___get##field(lua_State *l) { \
-    cls **ud = luaL_checkudata(l, 1, #cls); \
-    lua_push##fieldtype(l, cls##Get##field(*ud)); \
-    return 1; \
-}
-
-#define cp_setter(cls, fieldtype, field) \
-int L_##cls##___set##field(lua_State *l) { \
-    cls **ud = luaL_checkudata(l, 1, #cls); \
-    if (!*ud) return 0; \
-    if (!lua_is##fieldtype(l, 2)) \
-        fprintf(stderr, "WARN: converted %s to %s when setting %s.%s\n", \
-            luaL_typename(l, 2), #fieldtype, #cls, #field); \
-    cls##Set##field(*ud, lua_to##fieldtype(l, 2)); \
-    return 0; \
-}
-
-#define cp_getter_and_setter(cls, fieldtype, field) \
-    cp_getter(cls, fieldtype, field) \
-    cp_setter(cls, fieldtype, field)
-
-#define cp_getter_vect(cls, field) \
-int L_##cls##_get##field(lua_State *l) { \
-    cls **ud = luaL_checkudata(l, 1, #cls); \
-    cpVect v = cls##Get##field(*ud); \
-    lua_pushnumber(l, v.x); \
-    lua_pushnumber(l, v.y); \
-    return 2; \
-}
-
-#define cp_setter_vect(cls, field) \
-int L_##cls##_set##field(lua_State *l) { \
-    cls **ud = luaL_checkudata(l, 1, #cls); \
-    cpVect v = { luaL_checknumber(l, 2), luaL_checknumber(l, 3) }; \
-    cls##Set##field(*ud, v); \
-    return 0; \
-}
-
-#define cp_getter_and_setter_vect(cls, field) \
-    cp_getter_vect(cls, field) \
-    cp_setter_vect(cls, field)
-
 class_index_and_newindex(cpBody)
-cp_getter_and_setter(cpBody, number, Angle)
-cp_getter_and_setter(cpBody, number, AngularVelocity)
-cp_getter_and_setter(cpBody, number, Torque)
-cp_getter_and_setter(cpBody, number, Mass)
-cp_getter_and_setter(cpBody, number, Moment)
-cp_getter_and_setter_vect(cpBody, Position)
-cp_getter_and_setter_vect(cpBody, CenterOfGravity)
-cp_getter_and_setter_vect(cpBody, Velocity)
-cp_getter_and_setter_vect(cpBody, Force)
+class_getterf_and_setterf(cpBody, *, number, Angle, cpBodyGetAngle, cpBodySetAngle)
+class_getterf_and_setterf(cpBody, *, number, AngularVelocity, cpBodyGetAngularVelocity, cpBodySetAngularVelocity)
+class_getterf_and_setterf(cpBody, *, number, Torque, cpBodyGetTorque, cpBodySetTorque)
+class_getterf_and_setterf(cpBody, *, number, Mass, cpBodyGetMass, cpBodySetMass)
+class_getterf_and_setterf(cpBody, *, number, Moment, cpBodyGetMoment, cpBodySetMoment)
+class_getterf_and_setterf_vec2(cpBody, *, Position, cpBodyGetPosition, cpBodySetPosition, cpVect)
+class_getterf_and_setterf_vec2(cpBody, *, CenterOfGravity, cpBodyGetCenterOfGravity, cpBodySetCenterOfGravity, cpVect)
+class_getterf_and_setterf_vec2(cpBody, *, Velocity, cpBodyGetVelocity, cpBodySetVelocity, cpVect)
+class_getterf_and_setterf_vec2(cpBody, *, Force, cpBodyGetForce, cpBodySetForce, cpVect)
 
 int L_cpBody_NewCircleShape(lua_State *l) {
     cpBody **body = luaL_checkudata(l, 1, "cpBody");
@@ -200,7 +157,7 @@ int L_cpShape_RemoveFromSpace(lua_State *l) {
     return 0;
 }
 
-cp_getter_and_setter(cpShape, boolean, Sensor)
+class_getterf_and_setterf(cpShape, *, boolean, Sensor, cpShapeGetSensor, cpShapeSetSensor)
 
 int luaopen_physics(lua_State *l) {
     luaL_Reg staticMethods[] = {
