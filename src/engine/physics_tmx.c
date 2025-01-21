@@ -7,7 +7,7 @@
 const cpFloat SHAPE_BEVEL = 1;
 const cpFloat POINT_RADIUS = .5;
 
-cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset) {
+cpBody* GiveBodyTMXObjectShapes(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset) {
     tmx_property *collidable = tmx_get_property(obj->properties, "collidable");
     if (!collidable || !collidable->value.boolean)
         return body;
@@ -71,14 +71,83 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
 
             Vector2 origin = {0,0};
             GetTileOrigin(&origin, tile, VECTOR2(0, 0));
+            cpVect tileTL = {offset.x - origin.x, offset.y - origin.y};
 
             for (tmx_object *col = tile->collision; col; col = col->next) {
-                cpVect offset = {col->x-origin.x, col->y-origin.y};
-                GiveBodyTMXShape(body, col, maptiles, offset);
+                cpVect colPos = { tileTL.x + col->x, tileTL.y + col->y };
+                GiveBodyTMXObjectShapes(body, col, maptiles, colPos);
             }
         } break;
     }
 
+    return body;
+}
+
+cpBody* GiveBodyTMXLayerShapes(cpBody *body, tmx_layer *layer, tmx_map *map, cpVect offset) {
+    switch (layer->type) {
+        case L_GROUP: {
+            for (tmx_layer *l = layer->content.group_head; l; l = l->next) {
+                cpVect layerPos = {offset.x + l->offsetx, offset.y + l->offsety};
+                GiveBodyTMXLayerShapes(body, l, map, layerPos);
+            }
+        } break;
+        case L_OBJGR: {
+            for (tmx_object *o = layer->content.objgr->head; o; o = o->next) {
+                cpVect objPos = {offset.x + o->x, offset.y + o->y};
+                GiveBodyTMXObjectShapes(body, o, map->tiles, objPos);
+            }
+        } break;
+        case L_LAYER: {
+            uint32_t *gids = layer->content.gids;
+            tmx_tile **mapTiles = map->tiles;
+            
+            unsigned cols = map->width;
+            unsigned rows = map->height;
+            unsigned colw = map->tile_width;
+            unsigned rowh = map->tile_height;
+            unsigned n = cols * rows;
+
+            unsigned col = 0, row = 0;
+            cpVect tileBL = offset;
+            tileBL.y += rowh;
+
+            for (unsigned i = 0; i < n; ++i) {
+                uint32_t gid = *gids++;
+                uint32_t tileId = gid & TMX_FLIP_BITS_REMOVAL;
+
+                if (tileId) {
+                    tmx_tile *tile = mapTiles[tileId];
+
+                    // TODO support flipped tile shapes when needed
+                    // cpVect tileOrigin = { tile->width / 2, tile->height / 2 };
+                    // cpVect flip = {
+                    //     (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1,
+                    //     (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1
+                    // };
+
+                    cpVect tileTL = {
+                        tileBL.x + tile->tileset->x_offset,
+                        tileBL.y - tile->height + tile->tileset->y_offset
+                    };
+
+                    for (tmx_object *col = tile->collision; col; col = col->next) {
+                        cpVect colPos = { tileTL.x + col->x, tileTL.y + col->y };
+                        GiveBodyTMXObjectShapes(body, col, mapTiles, colPos);
+                    }
+                }
+
+                ++col;
+                if (col >= cols) {
+                    col = 0;
+                    ++row;
+                    tileBL.x = offset.x;
+                    tileBL.y += rowh;
+                } else {
+                    tileBL.x += colw;
+                }
+            }
+        } break;
+    }
     return body;
 }
 
@@ -137,6 +206,7 @@ void DrawTMXTileCollisionShape(tmx_object *obj, Vector2 offset, Color color) {
 }
 
 void DrawTMXTileCollisionShapes(tmx_tile *tile, Vector2 position, float rotationDeg, Color color) {
+    if (!tile->collision) return;
     Vector2 origin = {0, 0};
     GetTileOrigin(&origin, tile, VECTOR2(0, 0));
     rlPushMatrix();
@@ -147,4 +217,76 @@ void DrawTMXTileCollisionShapes(tmx_tile *tile, Vector2 position, float rotation
         DrawTMXTileCollisionShape(col, offset, color);
     }
     rlPopMatrix();
+}
+
+void DrawTMXLayerCollisionShapes(tmx_layer *layer, tmx_map *map, Vector2 position, Color color) {
+    switch (layer->type) {
+        case L_GROUP: {
+            for (tmx_layer *l = layer->content.group_head; l; l = l->next) {
+                Vector2 layerPos = {position.x + l->offsetx, position.y + l->offsety};
+                DrawTMXLayerCollisionShapes(l, map, layerPos, color);
+            }
+        } break;
+        case L_OBJGR: {
+            for (tmx_object *o = layer->content.objgr->head; o; o = o->next) {
+                Vector2 objPos = {position.x + o->x, position.y + o->y};
+                if (o->obj_type == OT_TILE) {
+                    tmx_tile *tile = map->tiles[o->content.gid & TMX_FLIP_BITS_REMOVAL];
+                    DrawTMXTileCollisionShapes(tile, objPos, o->rotation, color);
+                } else {
+                    DrawTMXTileCollisionShape(o, objPos, color);
+                }
+            }
+        } break;
+        case L_LAYER: {
+            uint32_t *gids = layer->content.gids;
+            tmx_tile **mapTiles = map->tiles;
+            
+            unsigned cols = map->width;
+            unsigned rows = map->height;
+            unsigned colw = map->tile_width;
+            unsigned rowh = map->tile_height;
+            unsigned n = cols * rows;
+
+            unsigned col = 0, row = 0;
+            Vector2 tileBL = position;
+            tileBL.y += rowh;
+
+            for (unsigned i = 0; i < n; ++i) {
+                uint32_t gid = *gids++;
+                uint32_t tileId = gid & TMX_FLIP_BITS_REMOVAL;
+
+                if (tileId) {
+                    tmx_tile *tile = mapTiles[tileId];
+
+                    // TODO support flipped tile shapes when needed
+                    // cpVect tileOrigin = { tile->width / 2, tile->height / 2 };
+                    // cpVect flip = {
+                    //     (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1,
+                    //     (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1
+                    // };
+
+                    Vector2 tileTL = {
+                        tileBL.x + tile->tileset->x_offset,
+                        tileBL.y - tile->height + tile->tileset->y_offset
+                    };
+
+                    for (tmx_object *col = tile->collision; col; col = col->next) {
+                        Vector2 colPos = { tileTL.x + col->x, tileTL.y + col->y };
+                        DrawTMXTileCollisionShape(col, colPos, color);
+                    }
+                }
+
+                ++col;
+                if (col >= cols) {
+                    col = 0;
+                    ++row;
+                    tileBL.x = position.x;
+                    tileBL.y += rowh;
+                } else {
+                    tileBL.x += colw;
+                }
+            }
+        } break;
+    }
 }
