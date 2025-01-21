@@ -51,6 +51,17 @@ int L_##cls##___index(lua_State *l) { \
     return 0; \
 }
 
+#define class_ctor_0(cls, p, f, successful) int L_##f(lua_State *l) { \
+    cls p o = f(); \
+    if (successful(o)) { \
+        cls p*od = (cls p*)lua_newuserdata(l, sizeof(cls p)); \
+        *od = o; \
+        luaL_setmetatable(l, #cls); \
+        return 1; \
+    } \
+    return 0; \
+}
+
 #define class_ctor_1(cls, p, f, successful, at) int L_##f(lua_State *l) { \
     cls p o = f(lua_to##at(l, 1)); \
     if (successful(o)) { \
@@ -103,6 +114,16 @@ int L_##cls##___get##field(lua_State *l) { \
     if (!o) return 0; \
     rcls rp*rod = lua_newuserdata(l, sizeof(rcls rp)); \
     *rod = (p*o).field; \
+    luaL_setmetatable(l, #rcls); \
+    return 1; \
+}
+
+#define class_getterf_ud(cls, p, field, f, rcls, rp) \
+int L_##cls##___get##field(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    rcls rp*rod = lua_newuserdata(l, sizeof(rcls rp)); \
+    *rod = f(*o); \
     luaL_setmetatable(l, #rcls); \
     return 1; \
 }
