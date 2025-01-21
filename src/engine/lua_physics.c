@@ -134,7 +134,7 @@ int L_cpBody_EachArbiter(lua_State *l) {
     return 0;
 }
 
-class_gc(cpBody, *, ReleaseBody)
+class_gc(cpBody, *, ReleaseOrphanedBody)
 
 int L_cpBody_RemoveFromSpace(lua_State *l) {
     cpBody **ud = luaL_checkudata(l, 1, "cpBody");
