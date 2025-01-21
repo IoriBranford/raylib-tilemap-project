@@ -1,6 +1,8 @@
 #ifndef CD425245_A2F7_4AB2_ADAB_E5F9A1924686
 #define CD425245_A2F7_4AB2_ADAB_E5F9A1924686
 
+#include "lua_doc.h"
+
 #define class_func_0_0(cls, p, name, f) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o); return 0; }
 #define class_func_1_0(cls, p, name, f, at) \
@@ -279,6 +281,7 @@ int luaopen_##cls(lua_State *l) { \
     luaL_newmetatable(l, #cls); \
     luaL_Reg r[] = { __VA_ARGS__, {0} }; \
     luaL_register(l, NULL, r); \
+    L_docclassfuncs_reg(l, #cls, r); \
     return 0; \
 }
 

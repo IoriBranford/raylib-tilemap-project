@@ -197,16 +197,19 @@ void InitLua() {
         CloseLua();
     lua = luaL_newstate();
     luaL_openlibs(lua);
+
+    lua_getglobal(lua, "package");
+    lua_pushstring(lua, "path");
+    lua_pushstring(lua, "lua" LUA_DIRSEP "?.lua;lua" LUA_DIRSEP "?/init.lua");
+    lua_settable(lua, -3);
+    lua_pop(lua, 1);
+
+    L_doc_load(lua);
     lua_cpcall(lua, luaopen_task, NULL);
     lua_cpcall(lua, luaopen_gfx2d, NULL);
     lua_cpcall(lua, luaopen_physics, NULL);
     lua_cpcall(lua, luaopen_raylib, NULL);
     lua_cpcall(lua, luaopen_tmx, NULL);
     lua_cpcall(lua, luaopen_engine, NULL);
-
-    lua_getglobal(lua, "package");
-    lua_pushstring(lua, "path");
-    lua_pushstring(lua, "lua" LUA_DIRSEP "?.lua");
-    lua_settable(lua, -3);
-    lua_pop(lua, 1);
+    L_doc_save(lua);
 }

@@ -1,6 +1,8 @@
 #ifndef AF748BAB_8CD4_4319_906B_B206A59C10F9
 #define AF748BAB_8CD4_4319_906B_B206A59C10F9
 
+#include "lua_doc.h"
+
 #define l_func_0_0(f) int L_##f(lua_State *l) { f(); return 0; }
 #define l_func_1_0(f, at) int L_##f(lua_State *l) { f(luaL_check##at(l, 1)); return 0; }
 #define l_func_2_0(f, at, at2) int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2)); return 0; }
@@ -36,6 +38,7 @@ int luaopen_##grp(lua_State *l) { \
     lua_getglobal(l, "_G"); \
     luaL_Reg r[] = { __VA_ARGS__, {0} }; \
     luaL_register(l, NULL, r); \
+    L_docfuncs_reg(l, r); \
     return 0; \
 }
 
