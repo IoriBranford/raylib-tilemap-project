@@ -1,5 +1,6 @@
 #include <engine/lua.h>
 #include <raylib.h>
+#include <math.h>
 
 uint32_t L_toColorInt(lua_State *l, int i) {
     lua_Integer color = luaL_optinteger(l, i, UINT32_MAX);
@@ -71,6 +72,31 @@ l_func_1_0(SetMouseCursor, integer)
 
 // Color/pixel related functions
 l_func_3_Color(ColorFromHSV, number, number, number)
+
+int L_IntToRGBA(lua_State *l)
+{
+    Color c = L_toColor(l, 1);
+    lua_pushinteger(l, c.r);
+    lua_pushinteger(l, c.g);
+    lua_pushinteger(l, c.b);
+    lua_pushinteger(l, c.a);
+    return 4;
+};
+
+int L_RGBAToInt(lua_State *l)
+{
+    lua_Number r = ceil(luaL_optnumber(l, 1, 255));
+    lua_Number g = ceil(luaL_optnumber(l, 2, 255));
+    lua_Number b = ceil(luaL_optnumber(l, 3, 255));
+    lua_Number a = ceil(luaL_optnumber(l, 4, 255));
+    lua_pushinteger(l, (uint32_t)ColorToInt((Color){
+        .r = (unsigned char)(r < 0 ? 0 : r > 255 ? 255 : r),
+        .g = (unsigned char)(g < 0 ? 0 : g > 255 ? 255 : g),
+        .b = (unsigned char)(b < 0 ? 0 : b > 255 ? 255 : b),
+        .a = (unsigned char)(a < 0 ? 0 : a > 255 ? 255 : a),
+    }));
+    return 1;
+};
 
 // Wave/Sound loading/unloading functions
 class_ctor_1(Sound, , LoadSound, IsSoundValid, string)
@@ -319,6 +345,8 @@ int luaopen_raylib(lua_State *l) {
 
         // Color/pixel related functions
         l_func_reg(ColorFromHSV),
+        l_func_reg(IntToRGBA),
+        l_func_reg(RGBAToInt),
 
         // Wave/Sound loading/unloading functions
         l_func_reg(LoadSound),
