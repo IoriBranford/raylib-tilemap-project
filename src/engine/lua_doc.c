@@ -3,7 +3,7 @@
 #include <engine/lua.h>
 
 void L_doc(lua_State *l) {
-    lua_getglobal(l, "doc");
+    lua_getglobal(l, "api");
 }
 
 void L_doc_funcs(lua_State *l) {
@@ -109,7 +109,7 @@ int L_doc_load(lua_State *l) {
         lua_newtable(l);
     }
     lua_pushvalue(l, -1);
-    lua_setglobal(l, "doc");
+    lua_setglobal(l, "api");
     return 1;
 }
 
