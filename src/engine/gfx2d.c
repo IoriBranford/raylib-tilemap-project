@@ -157,7 +157,7 @@ Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, V
         spr->origin = origin;
         spr->rotationDeg = rotationDeg;
         spr->color = color;
-        spr->texture.texture = &texture;
+        spr->texture.texture = texture;
         if (source.width == 0 && source.height == 0)
             source = (Rectangle){ 0, 0, texture->width, texture->height};
         spr->texture.source = source;
