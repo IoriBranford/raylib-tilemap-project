@@ -292,6 +292,14 @@ int L_##cls##_set##color(lua_State *l) { \
     class_getter_reg(cls, field),\
     class_setter_reg(cls, field)
 
+#define class_luaopen(cls, ...) \
+int luaopen_##cls(lua_State *l) { \
+    luaL_newmetatable(l, #cls); \
+    luaL_Reg r[] = { __VA_ARGS__, {0} }; \
+    luaL_register(l, NULL, r); \
+    return 0; \
+}
+
 #define class_newuserdata(l, cls, o) { \
     cls **od = lua_newuserdata(l, sizeof(cls*)); \
     *od = o; \
