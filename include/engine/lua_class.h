@@ -146,6 +146,14 @@ int L_##cls##_set##field(lua_State *l) { \
     return 0; \
 }
 
+#define class_setterf_ud(cls, p, acls, ap, field, f) \
+int L_##cls##_set##field(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    acls ap*a = (acls ap*)luaL_checkudata(l, 2, #acls); \
+    f(*o, *a); \
+    return 0; \
+}
+
 #define class_setter(cls, p, fieldtype, field) \
 int L_##cls##_set##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
@@ -177,6 +185,10 @@ int L_##cls##_set##field(lua_State *l) { \
 #define class_getterf_and_setterf(cls, p, fieldtype, field, getf, setf) \
     class_getterf(cls, p, fieldtype, field, getf) \
     class_setterf(cls, p, fieldtype, field, setf)
+
+#define class_getterf_and_setterf_ud(cls, p, cls2, p2, field, getf, setf) \
+    class_getterf_ud(cls, p, cls2, p2, field, getf) \
+    class_setterf_ud(cls, p, cls2, p2, field, setf)
 
 #define class_getter_Vector2(cls, p, vector2) \
 int L_##cls##_get##vector2(lua_State *l) { \
