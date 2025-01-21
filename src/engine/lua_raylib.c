@@ -1,6 +1,17 @@
 #include <engine/lua.h>
 #include <raylib.h>
 
+uint32_t L_toColorInt(lua_State *l, int i) {
+    lua_Integer color = luaL_optinteger(l, i, UINT32_MAX);
+    if (color < 0) return 0;
+    if (color > UINT32_MAX) return UINT32_MAX;
+    return (uint32_t)color;
+}
+
+Color L_toColor(lua_State *l, int i) {
+    return GetColor(L_toColorInt(l, i));
+}
+
 // Cursor-related functions
 l_func_0_0(ShowCursor)
 l_func_0_0(HideCursor)
