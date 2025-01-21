@@ -83,6 +83,74 @@ cpBody* GiveBodyTMXObjectShapes(cpBody *body, tmx_object *obj, tmx_tile **maptil
     return body;
 }
 
+cpBody* GiveBodyTMXLayerShapes(cpBody *body, tmx_layer *layer, tmx_map *map, cpVect offset) {
+    switch (layer->type) {
+        case L_GROUP: {
+            for (tmx_layer *l = layer->content.group_head; l; l = l->next) {
+                cpVect layerPos = {offset.x + l->offsetx, offset.y + l->offsety};
+                GiveBodyTMXLayerShapes(body, l, map, layerPos);
+            }
+        } break;
+        case L_OBJGR: {
+            for (tmx_object *o = layer->content.objgr->head; o; o = o->next) {
+                cpVect objPos = {offset.x + o->x, offset.y + o->y};
+                GiveBodyTMXObjectShapes(body, o, map->tiles, objPos);
+            }
+        } break;
+        case L_LAYER: {
+            uint32_t *gids = layer->content.gids;
+            tmx_tile **mapTiles = map->tiles;
+            
+            unsigned cols = map->width;
+            unsigned rows = map->height;
+            unsigned colw = map->tile_width;
+            unsigned rowh = map->tile_height;
+            unsigned n = cols * rows;
+
+            unsigned col = 0, row = 0;
+            cpVect tileBL = offset;
+            tileBL.y += rowh;
+
+            for (unsigned i = 0; i < n; ++i) {
+                uint32_t gid = *gids++;
+                uint32_t tileId = gid & TMX_FLIP_BITS_REMOVAL;
+
+                if (tileId) {
+                    tmx_tile *tile = mapTiles[tileId];
+
+                    // TODO support flipped tile shapes when needed
+                    // cpVect tileOrigin = { tile->width / 2, tile->height / 2 };
+                    // cpVect flip = {
+                    //     (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1,
+                    //     (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1
+                    // };
+
+                    cpVect tileTL = {
+                        tileBL.x + tile->tileset->x_offset,
+                        tileBL.y - tile->height + tile->tileset->y_offset
+                    };
+
+                    for (tmx_object *col = tile->collision; col; col = col->next) {
+                        cpVect colPos = { tileTL.x + col->x, tileTL.y + col->y };
+                        GiveBodyTMXObjectShapes(body, col, mapTiles, colPos);
+                    }
+                }
+
+                ++col;
+                if (col >= cols) {
+                    col = 0;
+                    ++row;
+                    tileBL.x = offset.x;
+                    tileBL.y += rowh;
+                } else {
+                    tileBL.x += colw;
+                }
+            }
+        } break;
+    }
+    return body;
+}
+
 void DrawTMXTileCollisionShape(tmx_object *obj, Vector2 offset, Color color) {
     tmx_property *collidable = tmx_get_property(obj->properties, "collidable");
     if (!collidable || !collidable->value.boolean)
