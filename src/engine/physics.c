@@ -115,6 +115,18 @@ cpBody* NewTMXObjectBody(tmx_object *obj, tmx_map *map) {
     return body;
 }
 
+cpBody* GiveSpaceBodyTMXObjectShapes(tmx_object *obj, tmx_map *map) {
+    cpBody *body = cpSpaceGetStaticBody(space);
+    GiveBodyTMXObjectShapes(body, obj, map->tiles, cpv(obj->x, obj->y));
+    return body;
+}
+
+cpBody* GiveSpaceBodyTMXLayerShapes(tmx_layer *layer, tmx_map *map) {
+    cpBody *body = cpSpaceGetStaticBody(space);
+    GiveBodyTMXLayerShapes(body, layer, map, cpv(layer->offsetx, layer->offsety));
+    return body;
+}
+
 cpCircleShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy) {
     cpCircleShape *circle = cpCircleShapeNew(body, radius, cpv(ox, oy));
     cpSpaceAddShape(space, circle);
