@@ -31,6 +31,17 @@ int L_##f(lua_State *l) { \
 
 #define l_func_reg(f) {.name = #f, .func = L_##f}
 
-#define l_global_enum(l, e) { lua_pushinteger(l, e); lua_setglobal(l, #e); }
+#define l_funcs_luaopen(grp, ...) \
+int luaopen_##grp(lua_State *l) { \
+    lua_getglobal(l, "_G"); \
+    luaL_Reg r[] = { __VA_ARGS__, {0} }; \
+    luaL_register(l, NULL, r); \
+    return 0; \
+}
+
+#define l_global_enum(l, e) { \
+    lua_pushinteger(l, e); \
+    lua_setglobal(l, #e); \
+}
 
 #endif /* AF748BAB_8CD4_4319_906B_B206A59C10F9 */
