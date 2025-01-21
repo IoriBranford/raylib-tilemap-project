@@ -1,5 +1,4 @@
 #include <engine/lua.h>
-#include <engine/lua_class.h>
 #include <engine/physics.h>
 
 int L_physics_body(lua_State *l) {

@@ -1,5 +1,4 @@
 #include <engine/lua.h>
-#include <engine/lua_class.h>
 #include "gfx2d.h"
 
 int L_Sprite_rectangle(lua_State *l) {

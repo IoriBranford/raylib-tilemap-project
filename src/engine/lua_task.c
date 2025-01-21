@@ -1,6 +1,5 @@
 #include <engine/lua.h>
 #include <engine/tasks.h>
-#include <engine/lua_class.h>
 
 void Task_ResumeLuaThread(Task *t);
 void ReleaseLuaTask(Task *task);

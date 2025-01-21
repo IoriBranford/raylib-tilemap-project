@@ -5,6 +5,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include "lua_func.h"
+#include "lua_class.h"
 
 #if LUA_VERSION_RELEASE_NUM >= 504
 #define LUA54
