@@ -12,6 +12,8 @@ cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad);
 cpBody* NewTMXObjectBody(tmx_object *obj, tmx_map *map);
 cpBody* GiveBodyTMXObjectShapes(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset);
 cpBody* GiveBodyTMXLayerShapes(cpBody *body, tmx_layer *layer, tmx_map *map, cpVect offset);
+cpBody* GiveSpaceBodyTMXObjectShapes(tmx_object *obj, tmx_map *map);
+cpBody* GiveSpaceBodyTMXLayerShapes(tmx_layer *layer, tmx_map *map);
 void ReleaseBody(cpBody *body);
 void ReleaseOrphanedShape(cpShape *shape);
 
