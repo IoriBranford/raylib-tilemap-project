@@ -7,7 +7,7 @@
 const cpFloat SHAPE_BEVEL = 1;
 const cpFloat POINT_RADIUS = .5;
 
-cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset) {
+cpBody* GiveBodyTMXObjectShapes(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset) {
     tmx_property *collidable = tmx_get_property(obj->properties, "collidable");
     if (!collidable || !collidable->value.boolean)
         return body;
@@ -71,10 +71,11 @@ cpBody* GiveBodyTMXShape(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpV
 
             Vector2 origin = {0,0};
             GetTileOrigin(&origin, tile, VECTOR2(0, 0));
+            cpVect tileTL = {offset.x - origin.x, offset.y - origin.y};
 
             for (tmx_object *col = tile->collision; col; col = col->next) {
-                cpVect offset = {col->x-origin.x, col->y-origin.y};
-                GiveBodyTMXShape(body, col, maptiles, offset);
+                cpVect colPos = { tileTL.x + col->x, tileTL.y + col->y };
+                GiveBodyTMXObjectShapes(body, col, maptiles, colPos);
             }
         } break;
     }
