@@ -239,9 +239,18 @@ void UpdateInputActionState(ActionState *state, void *userdata, const char *inSt
     char inType = *inString;
     switch (inType) {
         case 'K': {
-            KeyboardKey k = (KeyboardKey)hashtable_get(keyEnum, inString);
-            if (k)
-                ActionStateUpdate(state, IsKeyDown(k));
+            char negKey[32] = "KEY_", posKey[32] = "KEY_";
+            int nTokens = sscanf(inString, "KAXIS_-%27[^+]+%27s", negKey + 4, posKey + 4);
+            if (nTokens == 2) {
+                KeyboardKey nk = (KeyboardKey)hashtable_get(keyEnum, negKey);
+                KeyboardKey pk = (KeyboardKey)hashtable_get(keyEnum, posKey);
+                if (nk && pk)
+                    ActionStateUpdate(state, IsKeyDown(pk) - IsKeyDown(nk));
+            } else {
+                KeyboardKey k = (KeyboardKey)hashtable_get(keyEnum, inString);
+                if (k)
+                    ActionStateUpdate(state, IsKeyDown(k));
+            }
         } break;
         case 'P': {
             int padIndex;
