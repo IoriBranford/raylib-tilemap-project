@@ -15,7 +15,9 @@ cpBody* GiveBodyTMXLayerShapes(cpBody *body, tmx_layer *layer, tmx_map *map, cpV
 cpBody* GiveSpaceBodyTMXObjectShapes(tmx_object *obj, tmx_map *map);
 cpBody* GiveSpaceBodyTMXLayerShapes(tmx_layer *layer, tmx_map *map);
 void ReleaseBody(cpBody *body);
+void ReleaseOrphanedBody(cpBody *body);
 void ReleaseOrphanedShape(cpShape *shape);
+void ReleaseSpace(cpSpace *sp);
 
 cpCircleShape* AddBodyCircle(cpBody *body, cpFloat radius, cpFloat ox, cpFloat oy);
 cpPolyShape* AddBodyRectangle(cpBody *body, cpFloat w, cpFloat h, cpFloat ox, cpFloat oy);

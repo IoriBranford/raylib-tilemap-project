@@ -13,4 +13,8 @@ static inline Color tmx2rl_Color(uint32_t color) {
 	return *((Color*)&res);
 }
 
+static inline uint32_t tmx2rl_ColorUint(uint32_t color) {
+	return (uint32_t)ColorToInt(tmx2rl_Color(color));
+}
+
 #endif /* E636567A_1B4D_4313_95E2_7D36D6E3E464 */

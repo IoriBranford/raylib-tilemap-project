@@ -28,7 +28,9 @@ add_executable(game
     src/engine/gfx2d.c
     src/engine/gfx2d_text.c
     src/engine/gfx2d_tmx.c
+    src/engine/input.c
     src/engine/lua.c
+    src/engine/lua_doc.c
     src/engine/lua_engine.c
     src/engine/lua_gfx2d.c
     src/engine/lua_physics.c

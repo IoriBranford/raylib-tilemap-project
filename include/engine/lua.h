@@ -4,7 +4,10 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <raylib.h>
+#include <stdint.h>
 #include "lua_func.h"
+#include "lua_class.h"
 
 #if LUA_VERSION_RELEASE_NUM >= 504
 #define LUA54
@@ -61,5 +64,8 @@ const char* LuaResultFieldString(int taskRef, int ti, const char *k);
 void* LuaResultFieldUserdata(int taskRef, int ti, const char *k, const char *udType);
 
 void UnrefLuaTask(int ref);
+
+uint32_t L_toColorInt(lua_State *l, int i);
+Color L_toColor(lua_State *l, int i);
 
 #endif /* F368B866_5240_4102_BE90_898768165E85 */

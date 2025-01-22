@@ -1,6 +1,4 @@
-#include <engine/tasks.h>
-#include <engine/lua.h>
-#include <util/lua_class.h>
+#include <engine.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <stdarg.h>
@@ -190,28 +188,28 @@ int luaopen_tmx(lua_State *l);
 
 l_func_2_0(ResetLuaEngine, string, integer)
 
+l_global_funcs_luaopen(engine,
+    l_func_reg(ResetLuaEngine)
+)
+
 void InitLua() {
     if (lua)
         CloseLua();
     lua = luaL_newstate();
     luaL_openlibs(lua);
+
+    lua_getglobal(lua, "package");
+    lua_pushstring(lua, "path");
+    lua_pushstring(lua, "lua" LUA_DIRSEP "?.lua;lua" LUA_DIRSEP "?/init.lua");
+    lua_settable(lua, -3);
+    lua_pop(lua, 1);
+
+    L_doc_load(lua);
     lua_cpcall(lua, luaopen_task, NULL);
     lua_cpcall(lua, luaopen_gfx2d, NULL);
     lua_cpcall(lua, luaopen_physics, NULL);
     lua_cpcall(lua, luaopen_raylib, NULL);
     lua_cpcall(lua, luaopen_tmx, NULL);
-
-    lua_getglobal(lua, "package");
-    lua_pushstring(lua, "path");
-    lua_pushstring(lua, "lua" LUA_DIRSEP "?.lua");
-    lua_settable(lua, -3);
-    lua_pop(lua, 1);
-
-    luaL_Reg reg[] = {
-        l_func_reg(ResetLuaEngine),
-        {0}
-    };
-    lua_getglobal(lua, "_G");
-    luaL_register(lua, NULL, reg);
-    lua_pop(lua, 1);
+    lua_cpcall(lua, luaopen_engine, NULL);
+    L_doc_save(lua);
 }

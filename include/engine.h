@@ -3,6 +3,7 @@
 
 #include <engine/assets.h>
 #include <engine/gfx2d.h>
+#include <engine/input.h>
 #include <engine/lua.h>
 #include <engine/tasks.h>
 #include <engine/physics.h>

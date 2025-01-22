@@ -5,7 +5,7 @@ return function(obj, map)
     local width = obj.width
     local rotationRad = math.random() * math.pi / 2
     local hueDeg = math.random(0, 5) * 60
-    local red, green, blue = ColorFromHSV(hueDeg, 1, 1)
+    local color = ColorFromHSV(hueDeg, 1, 1)
 
     local body = obj:new_body(map)
     body:setPosition(x, y)
@@ -13,7 +13,7 @@ return function(obj, map)
     body.Angle = rotationRad
     body.AngularVelocity = math.pi/16
 
-    local spr = obj:new_sprite(map, red, green, blue)
+    local spr = obj:new_sprite(map, color)
     body:UpdateSprite(spr)
 
     local timer = 0
@@ -36,13 +36,13 @@ return function(obj, map)
         spr.width = w
         spr.originX = w/2
 
-        local r, g, b, a = spr:getcolor()
+        local r, g, b, a = ColorToRGBA(spr.color)
         local sat = (sin + 1) * 128
         if sat < 1 then sat = 1 end
         if r ~= 0 then r = sat end
         if g ~= 0 then g = sat end
         if b ~= 0 then b = sat end
-        spr:setcolor(r, g, b, a)
+        spr.color = RGBAToColor(r, g, b, a)
     end
 
     body:RemoveFromSpace()

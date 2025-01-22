@@ -34,8 +34,10 @@ void UpdateLuaEngine() {
         ClosePhysics();
         CloseSprites();
         CloseTasks();
+        CloseInput();
 
         if (mainScript) {
+            InitInput();
             InitPhysics();
             InitSprites(2048);
             InitTasks(2048);
@@ -50,6 +52,7 @@ void UpdateLuaEngine() {
     }
     // Update
     //----------------------------------------------------------------------------------
+    UpdateInput();
     UpdatePhysics();
     UpdateSprites();
 

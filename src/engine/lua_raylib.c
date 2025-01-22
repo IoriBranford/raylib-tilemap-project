@@ -1,6 +1,17 @@
 #include <engine/lua.h>
-#include <util/lua_class.h>
 #include <raylib.h>
+#include <math.h>
+
+uint32_t L_toColorInt(lua_State *l, int i) {
+    lua_Integer color = luaL_optinteger(l, i, UINT32_MAX);
+    if (color < 0) return 0;
+    if (color > UINT32_MAX) return UINT32_MAX;
+    return (uint32_t)color;
+}
+
+Color L_toColor(lua_State *l, int i) {
+    return GetColor(L_toColorInt(l, i));
+}
 
 // Cursor-related functions
 l_func_0_0(ShowCursor)
@@ -62,6 +73,31 @@ l_func_1_0(SetMouseCursor, integer)
 // Color/pixel related functions
 l_func_3_Color(ColorFromHSV, number, number, number)
 
+int L_ColorToRGBA(lua_State *l)
+{
+    Color c = L_toColor(l, 1);
+    lua_pushinteger(l, c.r);
+    lua_pushinteger(l, c.g);
+    lua_pushinteger(l, c.b);
+    lua_pushinteger(l, c.a);
+    return 4;
+};
+
+int L_RGBAToColor(lua_State *l)
+{
+    lua_Number r = ceil(luaL_optnumber(l, 1, 255));
+    lua_Number g = ceil(luaL_optnumber(l, 2, 255));
+    lua_Number b = ceil(luaL_optnumber(l, 3, 255));
+    lua_Number a = ceil(luaL_optnumber(l, 4, 255));
+    lua_pushinteger(l, (uint32_t)ColorToInt((Color){
+        .r = (unsigned char)(r < 0 ? 0 : r > 255 ? 255 : r),
+        .g = (unsigned char)(g < 0 ? 0 : g > 255 ? 255 : g),
+        .b = (unsigned char)(b < 0 ? 0 : b > 255 ? 255 : b),
+        .a = (unsigned char)(a < 0 ? 0 : a > 255 ? 255 : a),
+    }));
+    return 1;
+};
+
 // Wave/Sound loading/unloading functions
 class_ctor_1(Sound, , LoadSound, IsSoundValid, string)
 class_index_and_newindex(Sound)
@@ -76,6 +112,87 @@ class_getterf(Sound, , boolean, Playing, IsSoundPlaying)
 class_setterf(Sound, , number, Volume, SetSoundVolume)
 class_setterf(Sound, , number, Pitch, SetSoundPitch)
 class_setterf(Sound, , number, Pan, SetSoundPan)
+
+l_global_funcs_luaopen(raylib_g,
+    // Cursor-related functions
+    l_func_reg(ShowCursor),
+    l_func_reg(HideCursor),
+    l_func_reg(IsCursorHidden),
+    l_func_reg(EnableCursor),
+    l_func_reg(DisableCursor),
+    l_func_reg(IsCursorOnScreen),
+
+    // Timing-related functions
+    l_func_reg(SetTargetFPS),
+    l_func_reg(GetFrameTime),
+    l_func_reg(GetTime),
+    l_func_reg(GetFPS),
+
+    // Misc. functions
+    l_func_reg(TakeScreenshot),
+    l_func_reg(OpenURL),
+
+    // Input-related functions: keyboard
+    l_func_reg(IsKeyPressed),
+    l_func_reg(IsKeyPressedRepeat),
+    l_func_reg(IsKeyDown),
+    l_func_reg(IsKeyReleased),
+    l_func_reg(IsKeyUp),
+    l_func_reg(GetKeyPressed),
+    l_func_reg(GetCharPressed),
+    l_func_reg(SetExitKey),
+
+    // Input-related functions: gamepads
+    l_func_reg(IsGamepadAvailable),
+    l_func_reg(GetGamepadName),
+    l_func_reg(IsGamepadButtonPressed),
+    l_func_reg(IsGamepadButtonPressed),
+    l_func_reg(IsGamepadButtonDown),
+    l_func_reg(IsGamepadButtonReleased),
+    l_func_reg(IsGamepadButtonUp),
+    l_func_reg(GetGamepadButtonPressed),
+    l_func_reg(GetGamepadAxisCount),
+    l_func_reg(GetGamepadAxisMovement),
+    l_func_reg(SetGamepadMappings),
+    l_func_reg(SetGamepadVibration),
+
+    // Input-related functions: mouse
+    l_func_reg(IsMouseButtonPressed),
+    l_func_reg(IsMouseButtonDown),
+    l_func_reg(IsMouseButtonReleased),
+    l_func_reg(IsMouseButtonUp),
+    l_func_reg(GetMouseX),
+    l_func_reg(GetMouseY),
+    l_func_reg(GetMousePosition),
+    l_func_reg(GetMouseDelta),
+    l_func_reg(SetMousePosition),
+    l_func_reg(SetMouseOffset),
+    l_func_reg(SetMouseScale),
+    l_func_reg(GetMouseWheelMove),
+    l_func_reg(GetMouseWheelMoveV),
+    l_func_reg(SetMouseCursor),
+
+    // Color/pixel related functions
+    l_func_reg(ColorFromHSV),
+    l_func_reg(ColorToRGBA),
+    l_func_reg(RGBAToColor),
+
+    // Wave/Sound loading/unloading functions
+    l_func_reg(LoadSound)
+)
+
+class_luaopen(Sound,
+    class_method_reg(Sound, __index),
+    class_method_reg(Sound, __newindex),
+    class_method_reg(Sound, __gc),
+    class_method_reg(Sound, Play),
+    class_method_reg(Sound, Stop),
+    class_method_reg(Sound, Pause),
+    class_method_reg(Sound, Resume),
+    class_getter_reg(Sound, Playing),
+    class_setter_reg(Sound, Volume),
+    class_setter_reg(Sound, Pitch),
+    class_setter_reg(Sound, Pan))
 
 int luaopen_raylib(lua_State *l) {
     l_global_enum(l, KEY_NULL            );
@@ -247,92 +364,6 @@ int luaopen_raylib(lua_State *l) {
     l_global_enum(l, GESTURE_PINCH_IN   );
     l_global_enum(l, GESTURE_PINCH_OUT  );
 
-    lua_getglobal(l, "_G");
-    luaL_Reg raylibFunctions[] = {
-        // Cursor-related functions
-        l_func_reg(ShowCursor),
-        l_func_reg(HideCursor),
-        l_func_reg(IsCursorHidden),
-        l_func_reg(EnableCursor),
-        l_func_reg(DisableCursor),
-        l_func_reg(IsCursorOnScreen),
-
-        // Timing-related functions
-        l_func_reg(SetTargetFPS),
-        l_func_reg(GetFrameTime),
-        l_func_reg(GetTime),
-        l_func_reg(GetFPS),
-
-        // Misc. functions
-        l_func_reg(TakeScreenshot),
-        l_func_reg(OpenURL),
-
-        // Input-related functions: keyboard
-        l_func_reg(IsKeyPressed),
-        l_func_reg(IsKeyPressedRepeat),
-        l_func_reg(IsKeyDown),
-        l_func_reg(IsKeyReleased),
-        l_func_reg(IsKeyUp),
-        l_func_reg(GetKeyPressed),
-        l_func_reg(GetCharPressed),
-        l_func_reg(SetExitKey),
-
-        // Input-related functions: gamepads
-        l_func_reg(IsGamepadAvailable),
-        l_func_reg(GetGamepadName),
-        l_func_reg(IsGamepadButtonPressed),
-        l_func_reg(IsGamepadButtonPressed),
-        l_func_reg(IsGamepadButtonDown),
-        l_func_reg(IsGamepadButtonReleased),
-        l_func_reg(IsGamepadButtonUp),
-        l_func_reg(GetGamepadButtonPressed),
-        l_func_reg(GetGamepadAxisCount),
-        l_func_reg(GetGamepadAxisMovement),
-        l_func_reg(SetGamepadMappings),
-        l_func_reg(SetGamepadVibration),
-
-        // Input-related functions: mouse
-        l_func_reg(IsMouseButtonPressed),
-        l_func_reg(IsMouseButtonDown),
-        l_func_reg(IsMouseButtonReleased),
-        l_func_reg(IsMouseButtonUp),
-        l_func_reg(GetMouseX),
-        l_func_reg(GetMouseY),
-        l_func_reg(GetMousePosition),
-        l_func_reg(GetMouseDelta),
-        l_func_reg(SetMousePosition),
-        l_func_reg(SetMouseOffset),
-        l_func_reg(SetMouseScale),
-        l_func_reg(GetMouseWheelMove),
-        l_func_reg(GetMouseWheelMoveV),
-        l_func_reg(SetMouseCursor),
-
-        // Color/pixel related functions
-        l_func_reg(ColorFromHSV),
-
-        // Wave/Sound loading/unloading functions
-        l_func_reg(LoadSound),
-        {0}
-    };
-    luaL_register(l, NULL, raylibFunctions);
-    lua_pop(l, 1);
-
-    luaL_newmetatable(l, "Sound");
-    luaL_Reg soundMethods[] = {
-        class_method_reg(Sound, __index),
-        class_method_reg(Sound, __newindex),
-        class_method_reg(Sound, __gc),
-        class_method_reg(Sound, Play),
-        class_method_reg(Sound, Stop),
-        class_method_reg(Sound, Pause),
-        class_method_reg(Sound, Resume),
-        class_getter_reg(Sound, Playing),
-        class_setter_reg(Sound, Volume),
-        class_setter_reg(Sound, Pitch),
-        class_setter_reg(Sound, Pan),
-        {0}
-    };
-    luaL_register(l, NULL, soundMethods);
-    lua_pop(l, 1);
-    return 0;
+    lua_cpcall(l, luaopen_raylib_g, NULL);
+    lua_cpcall(l, luaopen_Sound, NULL);
 }

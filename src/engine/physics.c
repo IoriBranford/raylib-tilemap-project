@@ -41,13 +41,17 @@ void ReleaseEachSpaceConstraint(cpSpace *sp, cpConstraint *constraint, void *_) 
         FreeSpaceConstraint(sp, constraint, NULL);
 }
 
-void ClosePhysics() {
+void ReleaseSpace(cpSpace *sp) {
     if (space) {
         cpSpaceEachBody(space, (cpSpaceBodyIteratorFunc)ReleaseEachSpaceBody, NULL);
         cpSpaceEachShape(space, (cpSpaceShapeIteratorFunc)ReleaseEachSpaceShape, NULL);
         cpSpaceEachConstraint(space, (cpSpaceConstraintIteratorFunc)ReleaseEachSpaceConstraint, NULL);
         cpSpaceFree(space);
     }
+}
+
+void ClosePhysics() {
+    ReleaseSpace(space);
     space = NULL;
 }
 
@@ -99,6 +103,11 @@ void ReleaseBody(cpBody *body) {
     } else {
         cpBodyFree(body);
     }
+}
+
+void ReleaseOrphanedBody(cpBody *body) {
+    if (!cpBodyGetSpace(body))
+        ReleaseBody(body);
 }
 
 void ReleaseOrphanedShape(cpShape *shape) {
