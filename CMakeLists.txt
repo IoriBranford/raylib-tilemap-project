@@ -18,6 +18,7 @@ add_executable(game
     src/engine/gfx2d.c
     src/engine/gfx2d_text.c
     src/engine/gfx2d_tmx.c
+    src/engine/input.c
     src/engine/tasks.c
     src/game/game.c
     src/game/confetti.c
