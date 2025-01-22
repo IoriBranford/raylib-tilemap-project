@@ -185,6 +185,7 @@ int luaopen_gfx2d(lua_State *l);
 int luaopen_physics(lua_State *l);
 int luaopen_raylib(lua_State *l);
 int luaopen_tmx(lua_State *l);
+int luaopen_input(lua_State *l);
 
 l_func_2_0(ResetLuaEngine, string, integer)
 
@@ -211,5 +212,6 @@ void InitLua() {
     lua_cpcall(lua, luaopen_raylib, NULL);
     lua_cpcall(lua, luaopen_tmx, NULL);
     lua_cpcall(lua, luaopen_engine, NULL);
+    lua_cpcall(lua, luaopen_input, NULL);
     L_doc_save(lua);
 }
