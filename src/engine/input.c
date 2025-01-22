@@ -3,9 +3,13 @@
 #include <stdio.h>
 #include <raylib.h>
 #include <stdlib.h>
+#include <math.h>
+
+static const float DEADZONE = 0;
 
 typedef struct {
     float position, lastPosition;
+    int numPositionInputs;
     int pressed, down, released;
 } ActionState;
 
@@ -182,6 +186,7 @@ ActionState* GetOrMakeActionState(const char *action) {
     ActionState *actionState = hashtable_get(actionStates, action);
     if (!actionState) {
         actionState = malloc(sizeof(ActionState));
+        *actionState = (ActionState){0};
         hashtable_set(actionStates, action, actionState, (hashtable_entry_deallocator)FreeActionState);
     }
     return actionState;
@@ -200,17 +205,43 @@ void MapInputsToActions_ht(void *newInputActions) {
     hashtable_foreach(newInputActions, (hashtable_foreach_functor)MapEachInputToAction, NULL);
 }
 
-void UpdateInputActionState(ActionState *actionState, void *userdata, const char *inString) {
+bool IsPositionDown(float position) {
+    return fabs(position) > DEADZONE;
+}
+
+void ActionStatePreUpdate(ActionState *state, void *_, const char *action) {
+    state->lastPosition = state->position;
+    state->position = 0;
+    state->numPositionInputs = 0;
+    state->pressed = state->down = state->released = false;
+}
+
+void ActionStateUpdate(ActionState *state, float inputPosition) {
+    if (IsPositionDown(inputPosition)) {
+        ++state->numPositionInputs;
+        state->position += inputPosition;
+        state->down = true;
+        if (!state->pressed)
+            state->pressed = !IsPositionDown(state->lastPosition);
+    } else {
+        if (!state->released)
+            state->released = IsPositionDown(state->lastPosition);
+    }
+}
+
+void ActionStatePostUpdate(ActionState *state, void *_, const char *action) {
+    if (state->numPositionInputs > 1)
+        state->position /= state->numPositionInputs;
+}
+
+void UpdateInputActionState(ActionState *state, void *userdata, const char *inString) {
     const char inName[32];
     char inType = *inString;
     switch (inType) {
         case 'K': {
             KeyboardKey k = (KeyboardKey)hashtable_get(keyEnum, inString);
-            if (k) {
-                actionState->pressed = IsKeyPressed(k);
-                actionState->down = IsKeyDown(k);
-                actionState->released = IsKeyReleased(k);
-            }
+            if (k)
+                ActionStateUpdate(state, IsKeyDown(k));
         } break;
         case 'P': {
             int padIndex;
@@ -223,18 +254,10 @@ void UpdateInputActionState(ActionState *actionState, void *userdata, const char
                 break;
             switch (*padInput) {
                 case 'A': {
-                    actionState->lastPosition = actionState->position;
-                    actionState->position = GetGamepadAxisMovement(padIndex, padInputIndex);
-                    actionState->down = actionState->position != 0;
-                    actionState->pressed = actionState->down && actionState->lastPosition == 0;
-                    actionState->released = !actionState->down && actionState->lastPosition != 0;
+                    ActionStateUpdate(state, GetGamepadAxisMovement(padIndex, padInputIndex));
                 } break;
                 case 'B': {
-                    actionState->lastPosition = actionState->position;
-                    actionState->position = actionState->down
-                        = IsGamepadButtonDown(padIndex, padInputIndex);
-                    actionState->pressed = IsGamepadButtonPressed(padIndex, padInputIndex);
-                    actionState->released = IsGamepadButtonReleased(padIndex, padInputIndex);
+                    ActionStateUpdate(state, IsGamepadButtonDown(padIndex, padInputIndex));
                 } break;
             }
 
@@ -249,7 +272,9 @@ void UpdateInputActionState(ActionState *actionState, void *userdata, const char
 }
 
 void UpdateInput() {
+    hashtable_foreach(actionStates, (hashtable_foreach_functor)ActionStatePreUpdate, NULL);
     hashtable_foreach(inputActionMap, (hashtable_foreach_functor)UpdateInputActionState, NULL);
+    hashtable_foreach(actionStates, (hashtable_foreach_functor)ActionStatePostUpdate, NULL);
 }
 
 ActionState *GetActionState(const char *action) {
