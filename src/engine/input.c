@@ -254,19 +254,31 @@ void UpdateInputActionState(ActionState *state, void *userdata, const char *inSt
         } break;
         case 'P': {
             int padIndex;
-            char padInput[32];
-            int nTokens = sscanf(inString, "P%d_%31s", &padIndex, padInput);
+            char padInput[64];
+            int nTokens = sscanf(inString, "P%d_%63s", &padIndex, padInput);
             if (nTokens < 2 || !IsGamepadAvailable(padIndex))
                 break;
-            uintptr_t padInputIndex = (uintptr_t)hashtable_get(padEnum, padInput);
-            if (!padInputIndex)
-                break;
+
             switch (*padInput) {
                 case 'A': {
-                    ActionStateUpdate(state, GetGamepadAxisMovement(padIndex, padInputIndex));
+                    GamepadAxis axis = (GamepadAxis)hashtable_get(padEnum, padInput);
+                    ActionStateUpdate(state, GetGamepadAxisMovement(padIndex, axis));
                 } break;
                 case 'B': {
-                    ActionStateUpdate(state, IsGamepadButtonDown(padIndex, padInputIndex));
+                    char negKey[32] = "BUTTON_", posKey[32] = "BUTTON_";
+                    int nTokens = sscanf(padInput, "BAXIS_-%24[^+]+%24s", negKey + 7, posKey + 7);
+                    if (nTokens == 2) {
+                        GamepadButton nk = (GamepadButton)hashtable_get(padEnum, negKey);
+                        GamepadButton pk = (GamepadButton)hashtable_get(padEnum, posKey);
+                        if (nk && pk)
+                            ActionStateUpdate(state,
+                                IsGamepadButtonDown(padIndex, pk)
+                                - IsGamepadButtonDown(padIndex, nk));
+                    } else {
+                        GamepadButton button = (GamepadButton)hashtable_get(padEnum, padInput);
+                        if (button)
+                            ActionStateUpdate(state, IsGamepadButtonDown(padIndex, button));
+                    }
                 } break;
             }
 
