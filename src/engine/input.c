@@ -4,6 +4,11 @@
 #include <raylib.h>
 #include <stdlib.h>
 
+typedef struct {
+    float position, lastPosition;
+    int pressed, down, released;
+} ActionState;
+
 void *inputActionMap;
 void *actionStates;
 void *keyEnum, *padEnum;
@@ -187,6 +192,14 @@ void MapInputToAction(const char *input, const char *action) {
     hashtable_set(inputActionMap, input, actionState, FreeInputAction);
 }
 
+void MapEachInputToAction(const char *action, void *_, const char *input) {
+    MapInputToAction(input, action);
+}
+
+void MapInputsToActions_ht(void *newInputActions) {
+    hashtable_foreach(newInputActions, (hashtable_foreach_functor)MapEachInputToAction, NULL);
+}
+
 void UpdateInputActionState(ActionState *actionState, void *userdata, const char *inString) {
     const char inName[32];
     char inType = *inString;
@@ -241,4 +254,24 @@ void UpdateInput() {
 
 ActionState *GetActionState(const char *action) {
     return hashtable_get(actionStates, action);
+}
+
+int IsActionPressed(const char *action) {
+    ActionState *state = GetActionState(action);
+    return state ? state->pressed : 0;
+}
+
+int IsActionDown(const char *action) {
+    ActionState *state = GetActionState(action);
+    return state ? state->down : 0;
+}
+
+int IsActionReleased(const char *action) {
+    ActionState *state = GetActionState(action);
+    return state ? state->released : 0;
+}
+
+float GetActionPosition(const char *action) {
+    ActionState *state = GetActionState(action);
+    return state ? state->position : 0;
 }
