@@ -213,25 +213,28 @@ void ActionStatePreUpdate(ActionState *state, void *_, const char *action) {
     state->lastPosition = state->position;
     state->position = 0;
     state->numPositionInputs = 0;
-    state->pressed = state->down = state->released = false;
 }
 
 void ActionStateUpdate(ActionState *state, float inputPosition) {
     if (IsPositionDown(inputPosition)) {
-        ++state->numPositionInputs;
         state->position += inputPosition;
-        state->down = true;
-        if (!state->pressed)
-            state->pressed = !IsPositionDown(state->lastPosition);
-    } else {
-        if (!state->released)
-            state->released = IsPositionDown(state->lastPosition);
+        ++state->numPositionInputs;
     }
 }
 
 void ActionStatePostUpdate(ActionState *state, void *_, const char *action) {
     if (state->numPositionInputs > 1)
         state->position /= state->numPositionInputs;
+
+    if (IsPositionDown(state->position)) {
+        state->down = true;
+        state->pressed = !IsPositionDown(state->lastPosition);
+        state->released = false;
+    } else {
+        state->down = false;
+        state->pressed = false;
+        state->released = IsPositionDown(state->lastPosition);
+    }
 }
 
 void UpdateInputActionState(ActionState *state, void *userdata, const char *inString) {
