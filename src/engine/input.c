@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <raylib.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 static const float DEADZONE = 0;
@@ -20,6 +21,10 @@ void *keyEnum, *padEnum;
 void FreeInputAction(void *val, const char *key) {
 }
 
+void FreeEnum(unsigned *e, const char *key) {
+    free(e);
+}
+
 void FreeActionState(ActionState *actionState, const char *key) {
     free(actionState);
 }
@@ -31,9 +36,19 @@ void CloseInput() {
     if (actionStates)
         free_hashtable(actionStates, (hashtable_entry_deallocator)FreeActionState);
     actionStates = NULL;
+    if (keyEnum)
+        free_hashtable(keyEnum, (hashtable_entry_deallocator)FreeEnum);
+    keyEnum = NULL;
+    if (padEnum)
+        free_hashtable(padEnum, (hashtable_entry_deallocator)FreeEnum);
+    padEnum = NULL;
 }
 
-#define addEnum(ht, prefix, e) hashtable_set(ht, #e, (void*)prefix##e, NULL);
+#define addEnum(ht, prefix, e) { \
+    unsigned *ep = malloc(sizeof(unsigned)); \
+    *ep = prefix##e; \
+    hashtable_set(ht, #e, ep, NULL); \
+}
 
 void InitInput() {
     if (inputActionMap || actionStates)
@@ -238,21 +253,20 @@ void ActionStatePostUpdate(ActionState *state, void *_, const char *action) {
 }
 
 void UpdateInputActionState(ActionState *state, void *userdata, const char *inString) {
-    const char inName[32];
     char inType = *inString;
     switch (inType) {
         case 'K': {
             char negKey[32] = "KEY_", posKey[32] = "KEY_";
             int nTokens = sscanf(inString, "KAXIS_-%27[^+]+%27s", negKey + 4, posKey + 4);
             if (nTokens == 2) {
-                KeyboardKey nk = (KeyboardKey)hashtable_get(keyEnum, negKey);
-                KeyboardKey pk = (KeyboardKey)hashtable_get(keyEnum, posKey);
+                unsigned *nk = (unsigned*)hashtable_get(keyEnum, negKey);
+                unsigned *pk = (unsigned*)hashtable_get(keyEnum, posKey);
                 if (nk && pk)
-                    ActionStateUpdate(state, IsKeyDown(pk) - IsKeyDown(nk));
+                    ActionStateUpdate(state, IsKeyDown(*pk) - IsKeyDown(*nk));
             } else {
-                KeyboardKey k = (KeyboardKey)hashtable_get(keyEnum, inString);
+                unsigned *k = (unsigned*)hashtable_get(keyEnum, inString);
                 if (k)
-                    ActionStateUpdate(state, IsKeyDown(k));
+                    ActionStateUpdate(state, IsKeyDown(*k));
             }
         } break;
         case 'P': {
@@ -264,23 +278,24 @@ void UpdateInputActionState(ActionState *state, void *userdata, const char *inSt
 
             switch (*padInput) {
                 case 'A': {
-                    GamepadAxis axis = (GamepadAxis)hashtable_get(padEnum, padInput);
-                    ActionStateUpdate(state, GetGamepadAxisMovement(padIndex, axis));
+                    unsigned* axis = (unsigned*)hashtable_get(padEnum, padInput);
+                    if (axis)
+                        ActionStateUpdate(state, GetGamepadAxisMovement(padIndex, *axis));
                 } break;
                 case 'B': {
                     char negKey[32] = "BUTTON_", posKey[32] = "BUTTON_";
                     int nTokens = sscanf(padInput, "BAXIS_-%24[^+]+%24s", negKey + 7, posKey + 7);
                     if (nTokens == 2) {
-                        GamepadButton nk = (GamepadButton)hashtable_get(padEnum, negKey);
-                        GamepadButton pk = (GamepadButton)hashtable_get(padEnum, posKey);
+                        unsigned *nk = (unsigned*)hashtable_get(padEnum, negKey);
+                        unsigned *pk = (unsigned*)hashtable_get(padEnum, posKey);
                         if (nk && pk)
                             ActionStateUpdate(state,
-                                IsGamepadButtonDown(padIndex, pk)
-                                - IsGamepadButtonDown(padIndex, nk));
+                                IsGamepadButtonDown(padIndex, *pk)
+                                - IsGamepadButtonDown(padIndex, *nk));
                     } else {
-                        GamepadButton button = (GamepadButton)hashtable_get(padEnum, padInput);
+                        unsigned *button = (unsigned*)hashtable_get(padEnum, padInput);
                         if (button)
-                            ActionStateUpdate(state, IsGamepadButtonDown(padIndex, button));
+                            ActionStateUpdate(state, IsGamepadButtonDown(padIndex, *button));
                     }
                 } break;
             }
