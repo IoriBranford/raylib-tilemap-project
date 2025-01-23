@@ -13,6 +13,58 @@ Color L_toColor(lua_State *l, int i) {
     return GetColor(L_toColorInt(l, i));
 }
 
+// Window-related functions TODO if needed
+// l_func_3_0(InitWindow, integer, integer, string) //(int width, int height, const char *title);  // Initialize window and OpenGL context
+// l_func_0_0(CloseWindow)                                     // Close window and unload OpenGL context
+// l_func_0_0(WindowShouldClose)                               // Check if application should close (KEY_ESCAPE pressed or windows close icon clicked)
+// l_func_0_0(IsWindowReady)                                   // Check if window has been initialized successfully
+// l_func_0_0(IsWindowFullscreen)                              // Check if window is currently fullscreen
+// l_func_0_0(IsWindowHidden)                                  // Check if window is currently hidden
+// l_func_0_0(IsWindowMinimized)                               // Check if window is currently minimized
+// l_func_0_0(IsWindowMaximized)                               // Check if window is currently maximized
+// l_func_0_0(IsWindowFocused)                                 // Check if window is currently focused
+// l_func_0_0(IsWindowResized)                                 // Check if window has been resized last frame
+// l_func_1_0(IsWindowState, integer)                      // Check if one specific window flag is enabled
+// l_func_1_0(SetWindowState, integer)                    // Set window configuration state using flags
+// l_func_1_0(ClearWindowState, integer)                  // Clear window configuration state flags
+// l_func_0_0(ToggleFullscreen)                                // Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
+// l_func_0_0(ToggleBorderlessWindowed)                        // Toggle window state: borderless windowed, resizes window to match monitor resolution
+// l_func_0_0(MaximizeWindow)                                  // Set window state: maximized, if resizable
+// l_func_0_0(MinimizeWindow)                                  // Set window state: minimized, if resizable
+// l_func_0_0(RestoreWindow)                                   // Set window state: not minimized/maximized
+// // TODO after Image class
+// // l_func_ud_0(SetWindowIcon, Image)                            // Set icon for window (single image, RGBA 32bit)
+// // l_func_ud1_0(SetWindowIcons, Image, integer)              // Set icon for window (multiple images, RGBA 32bit)
+// l_func_1_0(SetWindowTitle, string)                     // Set title for window
+// l_func_2_0(SetWindowPosition, integer, integer)                       // Set window position on screen
+// l_func_1_0(SetWindowMonitor, integer)                         // Set monitor for the current window
+// l_func_2_0(SetWindowMinSize, integer, integer)               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
+// l_func_2_0(SetWindowMaxSize, integer, integer)               // Set window maximum dimensions (for FLAG_WINDOW_RESIZABLE)
+// l_func_2_0(SetWindowSize, integer, integer)                  // Set window dimensions
+// l_func_1_0(SetWindowOpacity, number)                       // Set window opacity [0.0f..1.0f]
+// l_func_0_0(SetWindowFocused)                                // Set window focused
+// // RLAPI void *GetWindowHandle(void);                                // Get native window handle
+// l_func_0_1(GetScreenWidth, integer)                                   // Get current screen width
+// l_func_0_1(GetScreenHeight, integer)                                  // Get current screen height
+// l_func_0_1(GetRenderWidth, integer)                                   // Get current render width (it considers HiDPI)
+// l_func_0_1(GetRenderHeight, integer)                                  // Get current render height (it considers HiDPI)
+// l_func_0_1(GetMonitorCount, integer)                                  // Get number of connected monitors
+// l_func_0_1(GetCurrentMonitor, integer)                                // Get current monitor where window is placed
+// l_func_1_vec2(GetMonitorPosition, integer, Vector2);                    // Get specified monitor position
+// l_func_1_1(GetMonitorWidth, integer, integer)                           // Get specified monitor width (current video mode used by monitor)
+// l_func_1_1(GetMonitorHeight, integer, integer)                          // Get specified monitor height (current video mode used by monitor)
+// l_func_1_1(GetMonitorPhysicalWidth, integer, integer)                   // Get specified monitor physical width in millimetres
+// l_func_1_1(GetMonitorPhysicalHeight, integer, integer)                  // Get specified monitor physical height in millimetres
+// l_func_1_1(GetMonitorRefreshRate, integer, integer)                     // Get specified monitor refresh rate
+// l_func_0_vec2(GetWindowPosition, Vector2)                            // Get window position XY on monitor
+// l_func_0_vec2(GetWindowScaleDPI, Vector2)                            // Get window scale DPI factor
+// l_func_1_1(GetMonitorName, integer, string)                    // Get the human-readable, UTF-8 encoded name of the specified monitor
+// l_func_1_0(SetClipboardText, string)                    // Set clipboard text content
+// l_func_0_1(GetClipboardText, string)                         // Get clipboard text content
+// // RLAPI Image GetClipboardImage(void);                              // Get clipboard image content
+// // RLAPI void EnableEventWaiting(void);                              // Enable waiting for events on EndDrawing(), no automatic event polling
+// // RLAPI void DisableEventWaiting(void);                             // Disable waiting for events on EndDrawing(), automatic events polling
+
 // Cursor-related functions
 l_func_0_0(ShowCursor)
 l_func_0_0(HideCursor)
@@ -118,6 +170,25 @@ l_func_0_1(GetMouseWheelMove, number)
 l_func_0_vec2(GetMouseWheelMoveV, Vector2)
 l_func_1_0(SetMouseCursor, integer)
 
+// Input-related functions: touch TODO if needed
+// l_func_0_1(GetTouchX, integer)                                    // Get touch position X for touch point 0 (relative to screen size)
+// l_func_0_1(GetTouchY, integer)                                    // Get touch position Y for touch point 0 (relative to screen size)
+// l_func_1_vec2(GetTouchPosition, integer, Vector2)                    // Get touch position XY for a touch point index (relative to screen size)
+// l_func_1_1(GetTouchPointId, integer, integer)                         // Get touch point identifier for given index
+// l_func_0_1(GetTouchPointCount, integer)                           // Get number of touch points
+
+//------------------------------------------------------------------------------------
+// Gestures and Touch Handling Functions (Module: rgestures)
+//------------------------------------------------------------------------------------
+// RLAPI void SetGesturesEnabled(unsigned int flags);      // Enable a set of gestures using flags
+// RLAPI bool IsGestureDetected(unsigned int gesture);     // Check if a gesture have been detected
+// RLAPI int GetGestureDetected(void);                     // Get latest detected gesture
+// RLAPI float GetGestureHoldDuration(void);               // Get gesture hold time in seconds
+// RLAPI Vector2 GetGestureDragVector(void);               // Get gesture drag vector
+// RLAPI float GetGestureDragAngle(void);                  // Get gesture drag angle
+// RLAPI Vector2 GetGesturePinchVector(void);              // Get gesture pinch delta
+// RLAPI float GetGesturePinchAngle(void);                 // Get gesture pinch angle
+
 // Color/pixel related functions
 l_func_3_Color(ColorFromHSV, number, number, number)
 
@@ -145,6 +216,13 @@ int L_RGBAToColor(lua_State *l)
     }));
     return 1;
 };
+
+// Audio device management functions TODO as needed
+// // RLAPI void InitAudioDevice(void);                                     // Initialize audio device and context
+// // RLAPI void CloseAudioDevice(void);                                    // Close the audio device and context
+// l_func_0_1(IsAudioDeviceReady, boolean)                                  // Check if audio device has been initialized successfully
+// l_func_1_0(SetMasterVolume, number)                             // Set master volume (listener)
+// l_func_0_1(GetMasterVolume, number)                                    // Get master volume (listener)
 
 // Wave/Sound loading/unloading functions
 class_ctor_1(Sound, , LoadSound, IsSoundValid, string)
