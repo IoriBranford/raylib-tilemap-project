@@ -1,11 +1,11 @@
 #include <engine/input.h>
 #include <util/pool.h>
-#include <tmx_utils.h>
 #include <stdio.h>
 #include <raylib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <tmx_utils.h>
 
 static const float DEADZONE = 0;
 
