@@ -21,15 +21,63 @@ l_func_0_0(EnableCursor)
 l_func_0_0(DisableCursor)
 l_func_0_0(IsCursorOnScreen)
 
+// Drawing-related functions TODO?
+
+// VR stereo config functions for VR simulator TODO?
+
+// Shader management functions TODO?
+
+// Screen-space-related functions
+// TODO after Ray, Camera, Matrix classes
+// RLAPI Ray GetScreenToWorldRay(Vector2 position, Camera camera);                             // Get a ray trace from screen position (i.e mouse)
+// RLAPI Ray GetScreenToWorldRayEx(Vector2 position, Camera camera, int width, int height);    // Get a ray trace from screen position (i.e mouse) in a viewport
+// RLAPI Vector2 GetWorldToScreen(Vector3 position, Camera camera);                            // Get the screen space position for a 3d world space position
+// RLAPI Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height);   // Get size position for a 3d world space position
+// RLAPI Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera);                        // Get the screen space position for a 2d camera world space position
+// RLAPI Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera);                        // Get the world space position for a 2d camera screen space position
+// RLAPI Matrix GetCameraMatrix(Camera camera);                                                // Get camera transform matrix (view matrix)
+// RLAPI Matrix GetCameraMatrix2D(Camera2D camera);                                            // Get camera 2d transform matrix
+
 // Timing-related functions
 l_func_1_0(SetTargetFPS, integer)
 l_func_0_1(GetFrameTime, number)
 l_func_0_1(GetTime, number)
 l_func_0_1(GetFPS, integer)
 
+// Custom frame control functions probably will stay on C side
+
+// Random values generation functions
+l_func_1_0(SetRandomSeed, integer)                      // Set the seed for the random number generator
+l_func_2_1(GetRandomValue, integer, integer, integer)                       // Get a random value between min and max (both included)
+
+int L_GetRandomSequence(lua_State *l) {                // Load random values sequence, no values repeated
+    lua_Integer count = luaL_checkinteger(l, 1);
+    if (count <= 0) return 0;
+    int *seq = LoadRandomSequence(count, luaL_checkinteger(l, 2), luaL_checkinteger(l, 3));
+    lua_newtable(l);
+    int *n = seq;
+    for (int i = 1; i <= count; ++i, ++n) {
+        lua_pushinteger(l, *n);
+        lua_rawseti(l, -2, i);
+    }
+    UnloadRandomSequence(seq);
+    return 1;
+}
+
+// RLAPI void UnloadRandomSequence(int *sequence); unnecessary
+
 // Misc. functions
 l_func_1_0(TakeScreenshot, string)
+// RLAPI void SetConfigFlags(unsigned int flags); necessary?
 l_func_1_0(OpenURL, string)
+
+l_func_2_0(TraceLog, integer, string)         // Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
+l_func_1_0(SetTraceLogLevel, integer)                        // Set the current threshold (minimum) log level
+
+// Files management functions
+// File system functions
+// Compression/Encoding functionality
+// TODO as needed
 
 // Input-related functions: keyboard
 l_func_1_1(IsKeyPressed, integer, boolean)
@@ -145,9 +193,17 @@ l_global_funcs_luaopen(raylib_g,
     l_func_reg(GetTime),
     l_func_reg(GetFPS),
 
+    // Random values generation functions
+    l_func_reg(SetRandomSeed),
+    l_func_reg(GetRandomValue),
+    l_func_reg(GetRandomSequence),
+
     // Misc. functions
     l_func_reg(TakeScreenshot),
     l_func_reg(OpenURL),
+
+    l_func_reg(TraceLog),
+    l_func_reg(SetTraceLogLevel),
 
     // Input-related functions: keyboard
     l_func_reg(IsKeyPressed),
