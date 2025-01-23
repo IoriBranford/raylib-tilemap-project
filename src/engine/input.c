@@ -1,4 +1,5 @@
 #include <engine/input.h>
+#include <util/pool.h>
 #include <tmx_utils.h>
 #include <stdio.h>
 #include <raylib.h>
@@ -14,7 +15,40 @@ typedef struct {
     int pressed, down, released;
 } ActionState;
 
-void *inputActionMap;
+typedef enum {
+    INPUTTYPE_KEY,
+    INPUTTYPE_KEYAXIS,
+    INPUTTYPE_GAMEPAD_BUTTON,
+    INPUTTYPE_GAMEPAD_BUTTONAXIS,
+    INPUTTYPE_GAMEPAD_AXIS,
+} InputType;
+
+typedef struct {
+    InputType type;
+    ActionState *action;
+    union {
+        KeyboardKey key;
+
+        struct {
+            KeyboardKey negative, positive;
+        } keyAxis;
+
+        struct {
+            int index;
+            union {
+                GamepadButton button;
+                GamepadAxis axis;
+                struct {
+                    GamepadButton negative, positive;
+                } buttonAxis;
+            };
+        } gamepad;
+    };
+} Input;
+
+pool_type(Input, InputPool, NewInputPool)
+
+InputPool *inputs;
 void *actionStates;
 void *keyEnum, *padEnum;
 
@@ -30,9 +64,9 @@ void FreeActionState(ActionState *actionState, const char *key) {
 }
 
 void CloseInput() {
-    if (inputActionMap)
-        free_hashtable(inputActionMap, FreeInputAction);
-    inputActionMap = NULL;
+    if (inputs)
+        free_pool(inputs);
+    inputs = NULL;
     if (actionStates)
         free_hashtable(actionStates, (hashtable_entry_deallocator)FreeActionState);
     actionStates = NULL;
@@ -51,9 +85,9 @@ void CloseInput() {
 }
 
 void InitInput() {
-    if (inputActionMap || actionStates)
+    if (inputs || actionStates)
         CloseInput();
-    inputActionMap = mk_hashtable(64);
+    inputs = NewInputPool(256);
     actionStates = mk_hashtable(64);
     if (!keyEnum) {
         keyEnum = mk_hashtable(128);
@@ -207,9 +241,97 @@ ActionState* GetOrMakeActionState(const char *action) {
     return actionState;
 }
 
-void MapInputToAction(const char *input, const char *action) {
-    ActionState *actionState = GetOrMakeActionState(action);
-    hashtable_set(inputActionMap, input, actionState, FreeInputAction);
+void MapInputToAction(const char *inString, const char *action) {
+    if (!count_free_pool_objs(inputs)) {
+        return;
+    }
+    char inType = *inString;
+    switch (inType) {
+        case 'K': {
+            char negKey[32] = "KEY_", posKey[32] = "KEY_";
+            int nTokens = sscanf(inString, "KAXIS_-%27[^+]+%27s", negKey + 4, posKey + 4);
+            if (nTokens == 2) {
+                unsigned *nk = (unsigned*)hashtable_get(keyEnum, negKey);
+                unsigned *pk = (unsigned*)hashtable_get(keyEnum, posKey);
+                if (nk && pk) {
+                    Input *input = take_from_pool(inputs);
+                    *input = (Input){
+                        .action = GetOrMakeActionState(action),
+                        .type = INPUTTYPE_KEYAXIS,
+                        .keyAxis.negative = *nk,
+                        .keyAxis.positive = *pk
+                    };
+                }
+            } else {
+                unsigned *k = (unsigned*)hashtable_get(keyEnum, inString);
+                if (k) {
+                    Input *input = take_from_pool(inputs);
+                    *input = (Input){
+                        .action = GetOrMakeActionState(action),
+                        .type = INPUTTYPE_KEY,
+                        .key = *k
+                    };
+                }
+            }
+        } break;
+        case 'P': {
+            int padIndex;
+            char padInput[64];
+            int nTokens = sscanf(inString, "P%d_%63s", &padIndex, padInput);
+            if (nTokens < 2)
+                break;
+
+            switch (*padInput) {
+                case 'A': {
+                    unsigned* axis = (unsigned*)hashtable_get(padEnum, padInput);
+                    if (axis) {
+                        Input *input = take_from_pool(inputs);
+                        *input = (Input){
+                            .action = GetOrMakeActionState(action),
+                            .type = INPUTTYPE_GAMEPAD_AXIS,
+                            .gamepad.index = padIndex,
+                            .gamepad.axis = *axis
+                        };
+                    }
+                } break;
+                case 'B': {
+                    char negKey[32] = "BUTTON_", posKey[32] = "BUTTON_";
+                    int nTokens = sscanf(padInput, "BAXIS_-%24[^+]+%24s", negKey + 7, posKey + 7);
+                    if (nTokens == 2) {
+                        unsigned *nk = (unsigned*)hashtable_get(padEnum, negKey);
+                        unsigned *pk = (unsigned*)hashtable_get(padEnum, posKey);
+                        if (nk && pk) {
+                            Input *input = take_from_pool(inputs);
+                            *input = (Input){
+                                .action = GetOrMakeActionState(action),
+                                .type = INPUTTYPE_GAMEPAD_BUTTONAXIS,
+                                .gamepad.index = padIndex,
+                                .gamepad.buttonAxis.negative = *nk,
+                                .gamepad.buttonAxis.positive = *pk
+                            };
+                        }
+                    } else {
+                        unsigned *button = (unsigned*)hashtable_get(padEnum, padInput);
+                        if (button) {
+                            Input *input = take_from_pool(inputs);
+                            *input = (Input){
+                                .action = GetOrMakeActionState(action),
+                                .type = INPUTTYPE_GAMEPAD_BUTTON,
+                                .gamepad.index = padIndex,
+                                .gamepad.button = *button
+                            };
+                        }
+                    }
+                } break;
+            }
+        } break;
+
+        // TODO as needed
+        // case 'M': {
+        // } break;
+        // case 'T': {
+        // } break;
+    }
 }
 
 void MapEachInputToAction(const char *action, void *_, const char *input) {
@@ -252,67 +374,39 @@ void ActionStatePostUpdate(ActionState *state, void *_, const char *action) {
     }
 }
 
-void UpdateInputActionState(ActionState *state, void *userdata, const char *inString) {
-    char inType = *inString;
-    switch (inType) {
-        case 'K': {
-            char negKey[32] = "KEY_", posKey[32] = "KEY_";
-            int nTokens = sscanf(inString, "KAXIS_-%27[^+]+%27s", negKey + 4, posKey + 4);
-            if (nTokens == 2) {
-                unsigned *nk = (unsigned*)hashtable_get(keyEnum, negKey);
-                unsigned *pk = (unsigned*)hashtable_get(keyEnum, posKey);
-                if (nk && pk)
-                    ActionStateUpdate(state, IsKeyDown(*pk) - IsKeyDown(*nk));
-            } else {
-                unsigned *k = (unsigned*)hashtable_get(keyEnum, inString);
-                if (k)
-                    ActionStateUpdate(state, IsKeyDown(*k));
-            }
+void UpdateInputActionState(Input *input) {
+    ActionState *state = input->action;
+    switch (input->type) {
+        case INPUTTYPE_KEY: {
+            ActionStateUpdate(input->action, IsKeyDown(input->key));
         } break;
-        case 'P': {
-            int padIndex;
-            char padInput[64];
-            int nTokens = sscanf(inString, "P%d_%63s", &padIndex, padInput);
-            if (nTokens < 2 || !IsGamepadAvailable(padIndex))
-                break;
-
-            switch (*padInput) {
-                case 'A': {
-                    unsigned* axis = (unsigned*)hashtable_get(padEnum, padInput);
-                    if (axis)
-                        ActionStateUpdate(state, GetGamepadAxisMovement(padIndex, *axis));
-                } break;
-                case 'B': {
-                    char negKey[32] = "BUTTON_", posKey[32] = "BUTTON_";
-                    int nTokens = sscanf(padInput, "BAXIS_-%24[^+]+%24s", negKey + 7, posKey + 7);
-                    if (nTokens == 2) {
-                        unsigned *nk = (unsigned*)hashtable_get(padEnum, negKey);
-                        unsigned *pk = (unsigned*)hashtable_get(padEnum, posKey);
-                        if (nk && pk)
-                            ActionStateUpdate(state,
-                                IsGamepadButtonDown(padIndex, *pk)
-                                - IsGamepadButtonDown(padIndex, *nk));
-                    } else {
-                        unsigned *button = (unsigned*)hashtable_get(padEnum, padInput);
-                        if (button)
-                            ActionStateUpdate(state, IsGamepadButtonDown(padIndex, *button));
-                    }
-                } break;
-            }
-
+        case INPUTTYPE_KEYAXIS: {
+            KeyboardKey p = input->keyAxis.positive;
+            KeyboardKey n = input->keyAxis.negative;
+            ActionStateUpdate(input->action, IsKeyDown(p) - IsKeyDown(n));
         } break;
-
-        // TODO as needed
-        // case 'M': {
-        // } break;
-        // case 'T': {
-        // } break;
+        case INPUTTYPE_GAMEPAD_BUTTON: {
+            int i = input->gamepad.index;
+            GamepadButton b = input->gamepad.button;
+            ActionStateUpdate(input->action, IsGamepadButtonDown(i, b));
+        } break;
+        case INPUTTYPE_GAMEPAD_AXIS: {
+            int i = input->gamepad.index;
+            GamepadAxis a = input->gamepad.axis;
+            ActionStateUpdate(input->action, GetGamepadAxisMovement(i, a));
+        } break;
+        case INPUTTYPE_GAMEPAD_BUTTONAXIS: {
+            int i = input->gamepad.index;
+            GamepadButton p = input->gamepad.buttonAxis.positive;
+            GamepadButton n = input->gamepad.buttonAxis.negative;
+            ActionStateUpdate(input->action, IsGamepadButtonDown(i, p) - IsGamepadButtonDown(i, n));
+        } break;
     }
 }
 
 void UpdateInput() {
     hashtable_foreach(actionStates, (hashtable_foreach_functor)ActionStatePreUpdate, NULL);
-    hashtable_foreach(inputActionMap, (hashtable_foreach_functor)UpdateInputActionState, NULL);
+    pool_foreachactive(inputs, UpdateInputActionState);
     hashtable_foreach(actionStates, (hashtable_foreach_functor)ActionStatePostUpdate, NULL);
 }
 
