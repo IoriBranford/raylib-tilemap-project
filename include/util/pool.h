@@ -39,6 +39,8 @@ PT* ctor(size_t size) { \
     return pool; \
 }
 
+#define pool_type(T, PT, ctor) pool_typedef(T, PT) pool_ctor(T, PT, ctor)
+
 #define free_pool(pool) { \
     pool_free(pool->active); \
     pool_free(pool->objects); \
