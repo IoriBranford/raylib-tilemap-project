@@ -66,12 +66,12 @@ Color L_toColor(lua_State *l, int i) {
 // // RLAPI void DisableEventWaiting(void);                             // Disable waiting for events on EndDrawing(), automatic events polling
 
 // Cursor-related functions
-l_func_0_0(ShowCursor)
-l_func_0_0(HideCursor)
-l_func_0_0(IsCursorHidden)
-l_func_0_0(EnableCursor)
-l_func_0_0(DisableCursor)
-l_func_0_0(IsCursorOnScreen)
+l_func_0_0(ShowCursor, "")
+l_func_0_0(HideCursor, "")
+l_func_0_0(IsCursorHidden, "")
+l_func_0_0(EnableCursor, "")
+l_func_0_0(DisableCursor, "")
+l_func_0_0(IsCursorOnScreen, "")
 
 // Drawing-related functions TODO?
 
@@ -91,7 +91,10 @@ l_func_0_0(IsCursorOnScreen)
 // RLAPI Matrix GetCameraMatrix2D(Camera2D camera);                                            // Get camera 2d transform matrix
 
 // Timing-related functions
-l_func_1_0(SetTargetFPS, integer)
+
+l_func_1_0(SetTargetFPS, "Set target FPS (maximum)",
+    fps, integer, "The new target FPS", NULL)
+
 l_func_0_1(GetFrameTime, number)
 l_func_0_1(GetTime, number)
 l_func_0_1(GetFPS, integer)
@@ -99,7 +102,9 @@ l_func_0_1(GetFPS, integer)
 // Custom frame control functions probably will stay on C side
 
 // Random values generation functions
-l_func_1_0(SetRandomSeed, integer)                      // Set the seed for the random number generator
+l_func_1_0(SetRandomSeed, "Set the seed for the random number generator",
+    seed, integer, "The new random seed", NULL)
+
 l_func_2_1(GetRandomValue, integer, integer, integer)                       // Get a random value between min and max (both included)
 
 int L_GetRandomSequence(lua_State *l) {                // Load random values sequence, no values repeated
@@ -119,12 +124,16 @@ int L_GetRandomSequence(lua_State *l) {                // Load random values seq
 // RLAPI void UnloadRandomSequence(int *sequence); unnecessary
 
 // Misc. functions
-l_func_1_0(TakeScreenshot, string)
+l_func_1_0(TakeScreenshot, "Take a screenshot",
+    file, string, "Image file path", NULL)
+
 // RLAPI void SetConfigFlags(unsigned int flags); necessary?
-l_func_1_0(OpenURL, string)
+l_func_1_0(OpenURL, "Open URL with default system browser (if available)",
+    url, string, "The URL to open", NULL)
 
 l_func_2_0(TraceLog, integer, string)         // Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
-l_func_1_0(SetTraceLogLevel, integer)                        // Set the current threshold (minimum) log level
+l_func_1_0(SetTraceLogLevel, "Set the current threshold (minimum) log level",
+    level, integer, "A valid TraceLogLevel", NULL)                        // Set the current threshold (minimum) log level
 
 // Files management functions
 // File system functions

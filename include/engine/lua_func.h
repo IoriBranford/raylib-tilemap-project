@@ -3,8 +3,30 @@
 
 #include "lua_doc.h"
 
-#define l_func_0_0(f) int L_##f(lua_State *l) { f(); return 0; }
-#define l_func_1_0(f, at) int L_##f(lua_State *l) { f(luaL_check##at(l, 1)); return 0; }
+#define l_func_0_0(f, fdesc) \
+    int L_##f(lua_State *l) { f(); return 0; } \
+    int L_doc_##f(lua_State *l) { \
+        const FuncDoc d = { .name = #f, .desc = fdesc, .nArgs = 0, .nRets = 0 }; \
+        L_doc_func(l, &d); \
+        return 1; \
+    }
+
+#define l_func_1_0(f, fdesc, \
+                    a1, a1type, a1desc, a1default) \
+    int L_##f(lua_State *l) { f(luaL_check##a1type(l, 1)); return 0; } \
+    int L_doc_##f(lua_State *l) { \
+        const VarDoc args[] = { \
+            { .name = #a1, .type = #a1type, .desc = a1desc, .dflt = a1default } \
+        }; \
+        const FuncDoc d = { \
+            .name = #f, .desc = fdesc, \
+            .nArgs = sizeof(args) / sizeof(args[0]), .args = args, \
+            .nRets = 0 \
+        }; \
+        L_doc_func(l, &d); \
+        return 1;\
+    }
+
 #define l_func_2_0(f, at, at2) int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2)); return 0; }
 #define l_func_3_0(f, at, at2, at3) int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3)); return 0; }
 #define l_func_4_0(f, at, at2, at3, at4) int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3), luaL_check##at4(l, 4)); return 0; }

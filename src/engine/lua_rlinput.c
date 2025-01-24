@@ -9,7 +9,8 @@ l_func_1_1(IsKeyReleased, integer, boolean)
 l_func_1_1(IsKeyUp, integer, boolean)
 l_func_0_1(GetKeyPressed, integer)
 l_func_0_1(GetCharPressed, integer)
-l_func_1_0(SetExitKey, integer)
+l_func_1_0(SetExitKey, "Set a custom key to exit program (default is ESC)",
+    key, integer, "A valid KeyboardKey", NULL)
 
 // Input-related functions: gamepads
 l_func_1_1(IsGamepadAvailable, integer, boolean)
@@ -38,7 +39,8 @@ l_func_2_0(SetMouseOffset, integer, integer)
 l_func_2_0(SetMouseScale, number, number)
 l_func_0_1(GetMouseWheelMove, number)
 l_func_0_vec2(GetMouseWheelMoveV, Vector2)
-l_func_1_0(SetMouseCursor, integer)
+l_func_1_0(SetMouseCursor, "Set mouse cursor",
+    cursor, integer, "A valid MouseCursor", NULL)
 
     // Input-related functions: touch TODO if needed
     // l_func_0_1(GetTouchX, integer)                                    // Get touch position X for touch point 0 (relative to screen size)
