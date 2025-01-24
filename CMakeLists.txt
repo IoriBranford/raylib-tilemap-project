@@ -36,6 +36,8 @@ add_executable(game
     src/engine/lua_input.c
     src/engine/lua_physics.c
     src/engine/lua_raylib.c
+    src/engine/lua_rlaudio.c
+    src/engine/lua_rlinput.c
     src/engine/lua_task.c
     src/engine/lua_tmx.c
     src/engine/tasks.c
