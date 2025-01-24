@@ -2,6 +2,7 @@
 #define C9B2A184_9A49_4803_890A_1608AF458EA2
 
 #include <lua.h>
+#include <lauxlib.h>
 
 typedef struct VarDoc {
     const char *name, *type, *desc, *dflt;
@@ -10,35 +11,35 @@ typedef struct VarDoc {
 typedef struct FuncDoc {
     const char *name, *desc;
     int nArgs;
-    VarDoc *args;
+    const VarDoc *args;
     int nRets;
-    VarDoc *rets;
+    const VarDoc *rets;
 } FuncDoc;
 
 typedef struct ClassDoc {
     const char *name, *desc;
     int nFields;
-    VarDoc *fields;
+    const VarDoc *fields;
     int nCtors;
-    FuncDoc *ctors;
+    const FuncDoc *ctors;
     int nMethods;
-    FuncDoc *methods;
+    const FuncDoc *methods;
 } ClassDoc;
 
 typedef struct ModuleDoc {
     const char *name, *desc;
     int nConstants;
-    VarDoc *constants;
+    const VarDoc *constants;
     int nFuncs;
-    FuncDoc *funcs;
+    const FuncDoc *funcs;
     int nClasses;
-    ClassDoc *classes;
+    const ClassDoc *classes;
 } ModuleDoc;
 
-int L_doc_var(lua_State *l, VarDoc *var);
-int L_doc_func(lua_State *l, FuncDoc *func);
-int L_doc_class(lua_State *l, ClassDoc *cls);
-int L_doc_module(lua_State *l, ModuleDoc *module);
+int L_doc_var(lua_State *l, const VarDoc *var);
+int L_doc_func(lua_State *l, const FuncDoc *func);
+int L_doc_class(lua_State *l, const ClassDoc *cls);
+int L_doc_module(lua_State *l, const ModuleDoc *module);
 
 void L_docfuncs_reg(lua_State *l, luaL_Reg *reg);
 void L_docclassfuncs_reg(lua_State *l, const char *cls, luaL_Reg *reg);

@@ -1,6 +1,6 @@
 #include <engine/lua_doc.h>
 
-int L_doc_var(lua_State *l, VarDoc *var) {
+int L_doc_var(lua_State *l, const VarDoc *var) {
     lua_newtable(l);
     if (var->name) {
         lua_pushstring(l, var->name);
@@ -21,7 +21,7 @@ int L_doc_var(lua_State *l, VarDoc *var) {
     return 1;
 }
 
-int L_doc_func(lua_State *l, FuncDoc *func) {
+int L_doc_func(lua_State *l, const FuncDoc *func) {
     lua_newtable(l);
     if (func->name) {
         lua_pushstring(l, func->name);
@@ -53,7 +53,7 @@ int L_doc_func(lua_State *l, FuncDoc *func) {
     return 1;
 }
 
-int L_doc_class(lua_State *l, ClassDoc *cls) {
+int L_doc_class(lua_State *l, const ClassDoc *cls) {
     lua_newtable(l);
     if (cls->name) {
         lua_pushstring(l, cls->name);
@@ -90,7 +90,7 @@ int L_doc_class(lua_State *l, ClassDoc *cls) {
     return 1;
 }
 
-int L_doc_module(lua_State *l, ModuleDoc *module) {
+int L_doc_module(lua_State *l, const ModuleDoc *module) {
     lua_newtable(l);
     if (module->name) {
         lua_pushstring(l, module->name);
