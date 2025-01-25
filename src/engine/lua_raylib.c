@@ -121,6 +121,7 @@ int L_GetRandomSequence(lua_State *l) {                // Load random values seq
     UnloadRandomSequence(seq);
     return 1;
 }
+reg_func(GetRandomSequence)
 
 // RLAPI void UnloadRandomSequence(int *sequence); unnecessary
 
@@ -160,6 +161,7 @@ int L_ColorToRGBA(lua_State *l)
     lua_pushinteger(l, c.a);
     return 4;
 };
+reg_func(ColorToRGBA)
 
 int L_RGBAToColor(lua_State *l)
 {
@@ -175,38 +177,29 @@ int L_RGBAToColor(lua_State *l)
     }));
     return 1;
 };
+reg_func(RGBAToColor)
 
 l_global_funcs_luaopen(raylib_g,
-    // Cursor-related functions
-    l_func_reg(ShowCursor),
-    l_func_reg(HideCursor),
-    l_func_reg(IsCursorHidden),
-    l_func_reg(EnableCursor),
-    l_func_reg(DisableCursor),
-    l_func_reg(IsCursorOnScreen),
-
-    // Timing-related functions
-    l_func_reg(SetTargetFPS),
-    l_func_reg(GetFrameTime),
-    l_func_reg(GetTime),
-    l_func_reg(GetFPS),
-
-    // Random values generation functions
-    l_func_reg(SetRandomSeed),
-    l_func_reg(GetRandomValue),
-    l_func_reg(GetRandomSequence),
-
-    // Misc. functions
-    l_func_reg(TakeScreenshot),
-    l_func_reg(OpenURL),
-
-    l_func_reg(TraceLog),
-    l_func_reg(SetTraceLogLevel),
-
-    // Color/pixel related functions
-    l_func_reg(ColorFromHSV),
-    l_func_reg(ColorToRGBA),
-    l_func_reg(RGBAToColor)
+    reg_ShowCursor,
+    reg_HideCursor,
+    reg_IsCursorHidden,
+    reg_EnableCursor,
+    reg_DisableCursor,
+    reg_IsCursorOnScreen,
+    reg_SetTargetFPS,
+    reg_GetFrameTime,
+    reg_GetTime,
+    reg_GetFPS,
+    reg_SetRandomSeed,
+    reg_GetRandomValue,
+    reg_GetRandomSequence,
+    reg_TakeScreenshot,
+    reg_OpenURL,
+    reg_TraceLog,
+    reg_SetTraceLogLevel,
+    reg_ColorFromHSV,
+    reg_ColorToRGBA,
+    reg_RGBAToColor
 )
 
 int luaopen_rlinput(lua_State *l);

@@ -20,6 +20,7 @@ int L_MapInputsToActions(lua_State *l) {
     lua_pushinteger(l, n);
     return 1;
 }
+reg_func(MapInputsToActions)
 
 doc_func(MapInputsToActions, "Map inputs to actions", 1,
     doc_var(mapping, table, "input strings as keys, action strings as values", ""),
@@ -32,24 +33,24 @@ l_func_1_1(GetActionPosition, string, number)
 
 /*
 l_func_1_1(IsActionPressed, "Check if action started being pressed this frame",
-                    action, string, "The action", "",
-                    pressed, boolean, "If the action was just pressed")
-l_func_1_1(IsActionDown, "Check if the action is being pressed down",
-                    action, string, "The action", "",
-                    down, boolean, "If the action is down")
+                            action, string, "The action", "",
+                            pressed, boolean, "If the action was just pressed")
+l_func_1_1(IsActionDown,    "Check if the action is being pressed down",
+                            action, string, "The action", "",
+                            down, boolean, "If the action is down")
 l_func_1_1(IsActionReleased, "Check if action stopped being pressed this frame",
-                    action, string, "The action", "",
-                    released, boolean, "If the action was just released")
+                                action, string, "The action", "",
+                                released, boolean, "If the action was just released")
 l_func_1_1(GetActionPosition, "Get the position of the action",
-                    action, string, "The action", "",
-                    position, number, "The position")
+                                action, string, "The action", "",
+                                position, number, "The position")
 */
 
 l_global_funcs_luaopen(input, 
-    l_func_reg(MapInputToAction),
-    l_func_reg(MapInputsToActions),
-    l_func_reg(IsActionPressed),
-    l_func_reg(IsActionDown),
-    l_func_reg(IsActionReleased),
-    l_func_reg(GetActionPosition)
+    reg_MapInputToAction,
+    reg_MapInputsToActions,
+    reg_IsActionPressed,
+    reg_IsActionDown,
+    reg_IsActionReleased,
+    reg_GetActionPosition
 )
