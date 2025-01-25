@@ -31,12 +31,21 @@
 #define l_func_0_vec2(f, vt) int L_##f(lua_State *l) { vt v = f(); lua_pushnumber(l, v.x); lua_pushnumber(l, v.y); return 2; }
 #define l_func_1_vec2(f, at, vt) int L_##f(lua_State *l) { vt v = f(luaL_check##at(l, 1)); lua_pushnumber(l, v.x); lua_pushnumber(l, v.y); return 2; }
 
-#define l_func_3_Color(f, at1, at2, at3) \
+#define l_func_3_Color(f, fdesc, \
+                a1, atype1, adesc1, adflt1, \
+                a2, atype2, adesc2, adflt2, \
+                a3, atype3, adesc3, adflt3, \
+                r1, rtype1, rdesc1) \
 int L_##f(lua_State *l) { \
-    Color c = f(luaL_check##at1(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3)); \
+    Color c = f(luaL_check##atype1(l, 1), luaL_check##atype2(l, 2), luaL_check##atype3(l, 3)); \
     lua_pushinteger(l, (uint32_t)ColorToInt(c)); \
     return 1; \
-}
+} \
+doc_func(f, fdesc, 3, \
+    doc_var(a1, atype1, adesc1, adflt1), \
+    doc_var(a2, atype2, adesc2, adflt2), \
+    doc_var(a3, atype3, adesc3, adflt3), \
+    doc_var(r1, rtype1, rdesc1, ""))
 
 #define l_func_1_ud(f, at, ud, isValid) int L_##f(lua_State *l) { \
     ud o = f(lua_to##at(l, 1)); \

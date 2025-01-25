@@ -144,7 +144,11 @@ l_func_1_0(SetTraceLogLevel, "Set the current threshold (minimum) log level",
 // TODO as needed
 
 // Color/pixel related functions
-l_func_3_Color(ColorFromHSV, number, number, number)
+l_func_3_Color(ColorFromHSV, "Get a color by hue/saturation/value",
+    hue, number, "hue from 0-360 degrees", "",
+    saturation, number, "saturation from 0-1", "",
+    value, number, "value from 0-1", "",
+    color, integer, "color as integer 0xRRGGBBAA")
 
 int L_ColorToRGBA(lua_State *l)
 {
@@ -234,7 +238,7 @@ int luaopen_raylib(lua_State *l) {
             // doc_TraceLog,
             doc_SetTraceLogLevel,
 
-            // doc_ColorFromHSV,
+            doc_ColorFromHSV,
             // doc_ColorToRGBA,
             // doc_RGBAToColor
         )
