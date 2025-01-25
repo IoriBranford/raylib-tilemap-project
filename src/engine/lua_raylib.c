@@ -223,23 +223,18 @@ int luaopen_raylib(lua_State *l) {
             doc_EnableCursor,
             doc_DisableCursor,
             doc_IsCursorOnScreen,
-
             doc_SetTargetFPS,
             // doc_GetFrameTime,
             // doc_GetTime,
             // doc_GetFPS,
-
             doc_SetRandomSeed,
             // doc_GetRandomValue,
             // doc_GetRandomSequence,
-
             doc_TakeScreenshot,
             doc_OpenURL,
-
-            // doc_TraceLog,
+            doc_TraceLog,
             doc_SetTraceLogLevel,
-
-            doc_ColorFromHSV,
+            doc_ColorFromHSV//,
             // doc_ColorToRGBA,
             // doc_RGBAToColor
         )

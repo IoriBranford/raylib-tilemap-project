@@ -11,6 +11,8 @@ endif()
 add_subdirectory(lib)
 
 # Our Project
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
 else()
     set(CMAKE_C_FLAGS "-fms-extensions")

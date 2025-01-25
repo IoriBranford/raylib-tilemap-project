@@ -43,25 +43,25 @@ int L_doc_module(lua_State *l, const ModuleDoc *module);
 int SaveModuleDoc(const ModuleDoc *module);
 
 #define doc_func(f, fdesc, na, ...)  \
-    static const VarDoc doc_##f##_vars[] = {__VA_ARGS__}; \
+    static const VarDoc doc_##f##_vars[] = {__VA_ARGS__ __VA_OPT__(,) {0}}; \
     static const FuncDoc doc_##f = { \
         .name = #f, .desc = fdesc, \
         .nArgs = na, .args = doc_##f##_vars, \
-        .nRets = sizeof(doc_##f##_vars)/sizeof(VarDoc) - na, .rets = doc_##f##_vars + na \
+        .nRets = sizeof(doc_##f##_vars)/sizeof(VarDoc) - na - 1, .rets = doc_##f##_vars + na \
     };
 
-#define doc_var(n, t, d, df) (VarDoc){ .name = #n, .type = #t, .desc = d, .dflt = df }
+#define doc_var(n, t, d, df) { .name = #n, .type = #t, .desc = d, .dflt = df }
 
-#define doc_module_constants(...) const VarDoc constants[] = {__VA_ARGS__};
-#define doc_module_funcs(...) const FuncDoc funcs[] = {__VA_ARGS__};
-#define doc_module_classes(...) const ClassDoc classes[] = {__VA_ARGS__};
+#define doc_module_constants(...) const VarDoc constants[] = {__VA_ARGS__ __VA_OPT__(,) {0}};
+#define doc_module_funcs(...) const FuncDoc funcs[] = {__VA_ARGS__ __VA_OPT__(,) {0}};
+#define doc_module_classes(...) const ClassDoc classes[] = {__VA_ARGS__ __VA_OPT__(,) {0}};
 #define doc_module(m, mdesc, ...) { \
     __VA_ARGS__ \
     const ModuleDoc m = { \
         .name = #m, .desc = mdesc, \
-        .constants = constants, .nConstants = sizeof(constants)/sizeof(VarDoc), \
-        .funcs = funcs, .nFuncs = sizeof(funcs)/sizeof(FuncDoc), \
-        .classes = classes, .nClasses = sizeof(classes)/sizeof(ClassDoc), \
+        .constants = constants, .nConstants = sizeof(constants)/sizeof(VarDoc) - 1, \
+        .funcs = funcs, .nFuncs = sizeof(funcs)/sizeof(FuncDoc) - 1, \
+        .classes = classes, .nClasses = sizeof(classes)/sizeof(ClassDoc) - 1, \
     }; \
     SaveModuleDoc(&m); \
 }
