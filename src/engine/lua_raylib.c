@@ -67,6 +67,7 @@ Color L_toColor(lua_State *l, int i) {
 
 // Cursor-related functions
 l_func_0_0(ShowCursor, "")
+
 l_func_0_0(HideCursor, "")
 l_func_0_0(IsCursorHidden, "")
 l_func_0_0(EnableCursor, "")
@@ -247,4 +248,5 @@ int luaopen_raylib(lua_State *l) {
     lua_cpcall(l, luaopen_raylib_g, NULL);
     lua_cpcall(l, luaopen_rlinput, NULL);
     lua_cpcall(l, luaopen_rlaudio, NULL);
+    return 0;
 }
