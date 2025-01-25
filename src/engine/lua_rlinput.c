@@ -235,6 +235,45 @@ int luaopen_rlinput(lua_State *l)
     lua_getglobal(l, ("_G"));
     luaL_Reg r[] = {{.name = "IsKeyPressed", .func = L_IsKeyPressed}, {.name = "IsKeyPressedRepeat", .func = L_IsKeyPressedRepeat}, {.name = "IsKeyDown", .func = L_IsKeyDown}, {.name = "IsKeyReleased", .func = L_IsKeyReleased}, {.name = "IsKeyUp", .func = L_IsKeyUp}, {.name = "GetKeyPressed", .func = L_GetKeyPressed}, {.name = "GetCharPressed", .func = L_GetCharPressed}, {.name = "SetExitKey", .func = L_SetExitKey}, {.name = "IsGamepadAvailable", .func = L_IsGamepadAvailable}, {.name = "GetGamepadName", .func = L_GetGamepadName}, {.name = "IsGamepadButtonPressed", .func = L_IsGamepadButtonPressed}, {.name = "IsGamepadButtonPressed", .func = L_IsGamepadButtonPressed}, {.name = "IsGamepadButtonDown", .func = L_IsGamepadButtonDown}, {.name = "IsGamepadButtonReleased", .func = L_IsGamepadButtonReleased}, {.name = "IsGamepadButtonUp", .func = L_IsGamepadButtonUp}, {.name = "GetGamepadButtonPressed", .func = L_GetGamepadButtonPressed}, {.name = "GetGamepadAxisCount", .func = L_GetGamepadAxisCount}, {.name = "GetGamepadAxisMovement", .func = L_GetGamepadAxisMovement}, {.name = "SetGamepadMappings", .func = L_SetGamepadMappings}, {.name = "SetGamepadVibration", .func = L_SetGamepadVibration}, {.name = "IsMouseButtonPressed", .func = L_IsMouseButtonPressed}, {.name = "IsMouseButtonDown", .func = L_IsMouseButtonDown}, {.name = "IsMouseButtonReleased", .func = L_IsMouseButtonReleased}, {.name = "IsMouseButtonUp", .func = L_IsMouseButtonUp}, {.name = "GetMouseX", .func = L_GetMouseX}, {.name = "GetMouseY", .func = L_GetMouseY}, {.name = "GetMousePosition", .func = L_GetMousePosition}, {.name = "GetMouseDelta", .func = L_GetMouseDelta}, {.name = "SetMousePosition", .func = L_SetMousePosition}, {.name = "SetMouseOffset", .func = L_SetMouseOffset}, {.name = "SetMouseScale", .func = L_SetMouseScale}, {.name = "GetMouseWheelMove", .func = L_GetMouseWheelMove}, {.name = "GetMouseWheelMoveV", .func = L_GetMouseWheelMoveV}, {.name = "SetMouseCursor", .func = L_SetMouseCursor}, {0}};
     luaL_register(l, NULL, r);
-    L_docfuncs_reg(l, r);
+
+    doc_module(rlinput, "Input functions and constants from Raylib",
+        doc_module_classes()
+        doc_module_funcs(
+            // doc_IsKeyPressed, 
+            // doc_IsKeyPressedRepeat, 
+            // doc_IsKeyDown, 
+            // doc_IsKeyReleased, 
+            // doc_IsKeyUp, 
+            // doc_GetKeyPressed, 
+            // doc_GetCharPressed, 
+            doc_SetExitKey,
+            // doc_IsGamepadAvailable,
+            // doc_GetGamepadName,
+            // doc_IsGamepadButtonPressed,
+            // doc_IsGamepadButtonDown,
+            // doc_IsGamepadButtonReleased,
+            // doc_IsGamepadButtonUp,
+            // doc_GetGamepadButtonPressed,
+            // doc_GetGamepadAxisCount,
+            // doc_GetGamepadAxisMovement,
+            // doc_SetGamepadMappings,
+            // doc_SetGamepadVibration,
+            // doc_IsMouseButtonPressed,
+            // doc_IsMouseButtonDown,
+            // doc_IsMouseButtonReleased,
+            // doc_IsMouseButtonUp,
+            // doc_GetMouseX,
+            // doc_GetMouseY,
+            // doc_GetMousePosition,
+            // doc_GetMouseDelta,
+            // doc_SetMousePosition,
+            // doc_SetMouseOffset,
+            // doc_SetMouseScale,
+            // doc_GetMouseWheelMove,
+            // doc_GetMouseWheelMoveV,
+            doc_SetMouseCursor)
+        doc_module_constants(
+        )
+    )
     return 0;
 }
