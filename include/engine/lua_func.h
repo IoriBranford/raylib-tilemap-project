@@ -5,21 +5,22 @@
 
 #define l_func_0_0(f, fdesc) \
     int L_##f(lua_State *l) { f(); return 0; } \
-    static const FuncDoc doc_##f = { .name = #f, .desc = fdesc, .nArgs = 0, .nRets = 0 };
+    doc_func(f, fdesc, 0)
 
 #define l_func_1_0(f, fdesc, \
-                    a1, a1type, a1desc, a1default) \
-    int L_##f(lua_State *l) { f(luaL_check##a1type(l, 1)); return 0; } \
-    static const VarDoc doc_##f##_args[] = { \
-        { .name = #a1, .type = #a1type, .desc = a1desc, .dflt = a1default } \
-    }; \
-    static const FuncDoc doc_##f = { \
-        .name = #f, .desc = fdesc, \
-        .nArgs = sizeof(doc_##f##_args) / sizeof(doc_##f##_args[0]), .args = doc_##f##_args, \
-        .nRets = 0 \
-    };
+                    a1, atype1, adesc1, adflt1) \
+    int L_##f(lua_State *l) { f(luaL_check##atype1(l, 1)); return 0; } \
+    doc_func(f, fdesc, 1, \
+        { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 })
 
-#define l_func_2_0(f, at, at2) int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2)); return 0; }
+#define l_func_2_0(f, fdesc, \
+                    a1, atype1, adesc1, adflt1, \
+                    a2, atype2, adesc2, adflt2) \
+    int L_##f(lua_State *l) { f(luaL_check##atype1(l, 1), luaL_check##atype2(l, 2)); return 0; } \
+    doc_func(f, fdesc, 2, \
+        { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
+        { .name = #a2, .type = #atype2, .desc = adesc2, .dflt = adflt2 })
+
 #define l_func_3_0(f, at, at2, at3) int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3)); return 0; }
 #define l_func_4_0(f, at, at2, at3, at4) int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3), luaL_check##at4(l, 4)); return 0; }
 

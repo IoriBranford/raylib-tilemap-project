@@ -1,7 +1,9 @@
 #include <engine/lua.h>
 #include <engine/input.h>
 
-l_func_2_0(MapInputToAction, string, string)
+l_func_2_0(MapInputToAction, "Map an input to an action",
+    input, string, "An input string", "",
+    action, string, "An action name", "")
 
 int L_MapInputsToActions(lua_State *l) {
     int n = 0;
@@ -19,10 +21,10 @@ int L_MapInputsToActions(lua_State *l) {
     return 1;
 }
 
-l_func_1_1(IsActionPressed, string, boolean)
-l_func_1_1(IsActionDown, string, boolean)
-l_func_1_1(IsActionReleased, string, boolean)
-l_func_1_1(GetActionPosition, string, number)
+doc_func(MapInputsToActions, "Map inputs to actions", 1,
+    doc_var(mapping, table, "input strings as keys, action strings as values", ""),
+    doc_var(numMapped, integer, "number of successful mappings", ""))
+
 
 l_global_funcs_luaopen(input, 
     l_func_reg(MapInputToAction),

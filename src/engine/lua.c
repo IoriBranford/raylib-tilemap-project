@@ -187,7 +187,9 @@ int luaopen_raylib(lua_State *l);
 int luaopen_tmx(lua_State *l);
 int luaopen_input(lua_State *l);
 
-l_func_2_0(ResetLuaEngine, string, integer)
+l_func_2_0(ResetLuaEngine, "Reset the engine and start the given script as main",
+    nextScript, string, "Lua require string of the main script", "",
+    priority, integer, "Priority of the main script", "")
 
 l_global_funcs_luaopen(engine,
     l_func_reg(ResetLuaEngine)

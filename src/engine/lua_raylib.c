@@ -131,7 +131,10 @@ l_func_1_0(TakeScreenshot, "Take a screenshot",
 l_func_1_0(OpenURL, "Open URL with default system browser (if available)",
     url, string, "The URL to open", NULL)
 
-l_func_2_0(TraceLog, integer, string)         // Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
+l_func_2_0(TraceLog, "Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)",
+    level, integer, "The log level", "",
+    message, string, "The message to log", "")
+
 l_func_1_0(SetTraceLogLevel, "Set the current threshold (minimum) log level",
     level, integer, "A valid TraceLogLevel", NULL)                        // Set the current threshold (minimum) log level
 

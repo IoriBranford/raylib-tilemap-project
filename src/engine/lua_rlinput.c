@@ -34,9 +34,15 @@ l_func_0_1(GetMouseX, integer)
 l_func_0_1(GetMouseY, integer)
 l_func_0_vec2(GetMousePosition, Vector2)
 l_func_0_vec2(GetMouseDelta, Vector2)
-l_func_2_0(SetMousePosition, integer, integer)
-l_func_2_0(SetMouseOffset, integer, integer)
-l_func_2_0(SetMouseScale, number, number)
+l_func_2_0(SetMousePosition, "Set mouse position",
+    x, integer, "X position", "",
+    y, integer, "Y position", "")
+l_func_2_0(SetMouseOffset, "Set mouse offset",
+    x, integer, "X offset", "",
+    y, integer, "Y offset", "")
+l_func_2_0(SetMouseScale, "Set mouse scale",
+    x, integer, "X scale", "",
+    y, integer, "Y scale", "")
 l_func_0_1(GetMouseWheelMove, number)
 l_func_0_vec2(GetMouseWheelMoveV, Vector2)
 l_func_1_0(SetMouseCursor, "Set mouse cursor",
