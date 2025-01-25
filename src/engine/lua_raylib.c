@@ -205,6 +205,38 @@ int luaopen_rlinput(lua_State *l);
 int luaopen_rlaudio(lua_State *l);
 
 int luaopen_raylib(lua_State *l) {
+    doc_module(raylib, "Some functions from raylib",
+        doc_module_classes()
+        doc_module_constants()
+        doc_module_funcs(
+            doc_ShowCursor,
+            doc_HideCursor,
+            doc_IsCursorHidden,
+            doc_EnableCursor,
+            doc_DisableCursor,
+            doc_IsCursorOnScreen,
+
+            doc_SetTargetFPS,
+            // doc_GetFrameTime,
+            // doc_GetTime,
+            // doc_GetFPS,
+
+            doc_SetRandomSeed,
+            // doc_GetRandomValue,
+            // doc_GetRandomSequence,
+
+            doc_TakeScreenshot,
+            doc_OpenURL,
+
+            // doc_TraceLog,
+            doc_SetTraceLogLevel,
+
+            // doc_ColorFromHSV,
+            // doc_ColorToRGBA,
+            // doc_RGBAToColor
+        )
+    );
+
     lua_cpcall(l, luaopen_raylib_g, NULL);
     lua_cpcall(l, luaopen_rlinput, NULL);
     lua_cpcall(l, luaopen_rlaudio, NULL);
