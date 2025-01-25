@@ -40,6 +40,7 @@ int L_doc_var(lua_State *l, const VarDoc *var);
 int L_doc_func(lua_State *l, const FuncDoc *func);
 int L_doc_class(lua_State *l, const ClassDoc *cls);
 int L_doc_module(lua_State *l, const ModuleDoc *module);
+int SaveModuleDoc(const ModuleDoc *module);
 
 void L_docfuncs_reg(lua_State *l, luaL_Reg *reg);
 void L_docclassfuncs_reg(lua_State *l, const char *cls, luaL_Reg *reg);

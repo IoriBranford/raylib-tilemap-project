@@ -128,3 +128,76 @@ int L_doc_module(lua_State *l, const ModuleDoc *module) {
     }
     return 1;
 }
+
+void WriteFunction(FILE *file, const FuncDoc *func, const ClassDoc *cls) {
+    fprintf(file, "--- %s\n", func->desc);
+    for (int a = 0; a < func->nArgs; ++a) {
+        const VarDoc *arg = &func->args[a];
+        fprintf(file, "---@param %s %s %s\n", arg->name, arg->type, arg->desc);
+    }
+    for (int r = 0; r < func->nRets; ++r) {
+        const VarDoc *ret = &func->rets[r];
+        fprintf(file, "---@return %s %s %s\n", ret->type, ret->name, ret->desc);
+    }
+    if (cls)
+        fprintf(file, "function %s:%s(", cls->name, func->name);
+    else
+        fprintf(file, "function %s(", func->name);
+    if (func->nArgs)
+        fprintf(file, "%s", func->args[0].name);
+    for (int a = 1; a < func->nArgs; ++a) {
+        const VarDoc *arg = &func->args[a];
+        fprintf(file, ", %s", arg->name);
+    }
+    fprintf(file, ") end\n"
+                    "\n");
+}
+
+void WriteClass(FILE *file, const ClassDoc *cls) {
+    fprintf(file, "--- %s\n"
+                    "---@class %s\n", cls->desc, cls->name);
+    for (int a = 0; a < cls->nFields; ++a) {
+        const VarDoc *field = &cls->fields[a];
+        fprintf(file, "---@field %s %s %s\n", field->name, field->type, field->desc);
+    }
+    fprintf(file, "local %s = {}\n\n", cls->name);
+
+    for (int f = 0; f < cls->nCtors; ++f) {
+        WriteFunction(file, &cls->ctors[f], NULL);
+    }
+
+    for (int f = 0; f < cls->nMethods; ++f) {
+        WriteFunction(file, &cls->methods[f], cls);
+    }
+}
+
+int SaveModuleDoc(const ModuleDoc *module) {
+    char s[128];
+    sprintf(s, "lua/doc/%s.lua", module->name);
+
+    FILE *file = fopen(s, "w");
+    fprintf(file, "---@meta\n"
+        "--- %s\n"
+        "---@module '%s'\n"
+        "\n",
+        module->desc, module->name);
+
+    for (int c = 0; c < module->nConstants; ++c) {
+        const VarDoc constant = module->constants[c];
+        fprintf(file, "--- %s\n"
+                    "local %s\n"
+                    "\n", constant.desc, constant.name);
+    }
+
+    for (int f = 0; f < module->nFuncs; ++f) {
+        WriteFunction(file, &module->funcs[f], NULL);
+    }
+
+    for (int c = 0; c < module->nClasses; ++c) {
+        WriteClass(file, &module->classes[c]);
+    }
+
+    fclose(file);
+
+    return 0;
+}
