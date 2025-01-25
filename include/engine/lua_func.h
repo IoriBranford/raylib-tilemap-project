@@ -63,18 +63,4 @@ int luaopen_##grp(lua_State *l) { \
     lua_setglobal(l, #e); \
 }
 
-#define doc_module_constants(...) const VarDoc constants[] = {__VA_ARGS__};
-#define doc_module_funcs(...) const FuncDoc funcs[] = {__VA_ARGS__};
-#define doc_module_classes(...) const ClassDoc classes[] = {__VA_ARGS__};
-#define doc_module(m, mdesc, ...) { \
-    __VA_ARGS__ \
-    const ModuleDoc m = { \
-        .name = #m, .desc = mdesc, \
-        .constants = constants, .nConstants = sizeof(constants)/sizeof(VarDoc), \
-        .funcs = funcs, .nFuncs = sizeof(funcs)/sizeof(FuncDoc), \
-        .classes = classes, .nClasses = sizeof(classes)/sizeof(ClassDoc), \
-    }; \
-    SaveModuleDoc(&m); \
-}
-
 #endif /* AF748BAB_8CD4_4319_906B_B206A59C10F9 */

@@ -42,6 +42,20 @@ int L_doc_class(lua_State *l, const ClassDoc *cls);
 int L_doc_module(lua_State *l, const ModuleDoc *module);
 int SaveModuleDoc(const ModuleDoc *module);
 
+#define doc_module_constants(...) const VarDoc constants[] = {__VA_ARGS__};
+#define doc_module_funcs(...) const FuncDoc funcs[] = {__VA_ARGS__};
+#define doc_module_classes(...) const ClassDoc classes[] = {__VA_ARGS__};
+#define doc_module(m, mdesc, ...) { \
+    __VA_ARGS__ \
+    const ModuleDoc m = { \
+        .name = #m, .desc = mdesc, \
+        .constants = constants, .nConstants = sizeof(constants)/sizeof(VarDoc), \
+        .funcs = funcs, .nFuncs = sizeof(funcs)/sizeof(FuncDoc), \
+        .classes = classes, .nClasses = sizeof(classes)/sizeof(ClassDoc), \
+    }; \
+    SaveModuleDoc(&m); \
+}
+
 void L_docfuncs_reg(lua_State *l, luaL_Reg *reg);
 void L_docclassfuncs_reg(lua_State *l, const char *cls, luaL_Reg *reg);
 int L_doc_load(lua_State *l);
