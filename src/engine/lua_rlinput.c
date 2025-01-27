@@ -48,8 +48,10 @@ l_func_0_1(GetMouseX, "Get mouse position X",
     x, integer, "X position")
 l_func_0_1(GetMouseY, "Get mouse position Y",
     y, integer, "Y position")
-l_func_0_vec2(GetMousePosition, Vector2)
-l_func_0_vec2(GetMouseDelta, Vector2)
+l_func_0_vec2(GetMousePosition, "Get mouse position XY",
+    pos, Vector2, "Mouse position")
+l_func_0_vec2(GetMouseDelta, "Get mouse delta between frames",
+    delta, Vector2, "Mouse delta")
 l_func_2_0(SetMousePosition, "Set mouse position",
     x, integer, "X position", "",
     y, integer, "Y position", "")
@@ -61,7 +63,8 @@ l_func_2_0(SetMouseScale, "Set mouse scale",
     y, integer, "Y scale", "")
 l_func_0_1(GetMouseWheelMove, "Get mouse wheel movement for X or Y, whichever is larger",
     movement, number, "The wheel movement")
-l_func_0_vec2(GetMouseWheelMoveV, Vector2)
+l_func_0_vec2(GetMouseWheelMoveV, "Get mouse wheel movement for both X and Y",
+    movement, Vector2, "The wheel movement")
 l_func_1_0(SetMouseCursor, "Set mouse cursor",
     cursor, integer, "A valid MouseCursor", NULL)
 

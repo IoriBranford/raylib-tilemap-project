@@ -62,7 +62,7 @@
     int L_##f(lua_State *l) { lua_push##rtype1(l, f()); return 1; } \
     reg_func(f) \
     doc_func(f, fdesc, 0, \
-        { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = "" })
+        { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = NULL })
 
 #define l_func_1_1(f, fdesc, \
                 a1, atype1, adesc1, adflt1, \
@@ -71,7 +71,7 @@
     reg_func(f) \
     doc_func(f, fdesc, 1, \
         { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
-        { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = "" })
+        { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = NULL })
 
 #define l_func_2_1(f, fdesc, \
                 a1, atype1, adesc1, adflt1, \
@@ -85,15 +85,24 @@
     doc_func(f, fdesc, 1, \
         { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
         { .name = #a2, .type = #atype2, .desc = adesc2, .dflt = adflt2 }, \
-        { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = "" })
+        { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = NULL })
 
-#define l_func_0_vec2(f, vt) \
+#define l_func_0_vec2(f, fdesc, r1, vt, rdesc1) \
     int L_##f(lua_State *l) { vt v = f(); lua_pushnumber(l, v.x); lua_pushnumber(l, v.y); return 2; } \
-    reg_func(f)
+    reg_func(f) \
+    doc_func(f, fdesc, 0, \
+        { .name = #r1".x", .type = "number", .desc = rdesc1, .dflt = NULL }, \
+        { .name = #r1".y", .type = "number", .desc = rdesc1, .dflt = NULL })
 
-#define l_func_1_vec2(f, at, vt) \
-    int L_##f(lua_State *l) { vt v = f(luaL_check##at(l, 1)); lua_pushnumber(l, v.x); lua_pushnumber(l, v.y); return 2; } \
-    reg_func(f)
+#define l_func_1_vec2(f, fdesc, \
+                a1, atype1, adesc1, adflt1, \
+                r1, vt, rdesc1) \
+    int L_##f(lua_State *l) { vt v = f(luaL_check##atype1(l, 1)); lua_pushnumber(l, v.x); lua_pushnumber(l, v.y); return 2; } \
+    reg_func(f) \
+    doc_func(f, fdesc, 1, \
+        { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
+        { .name = #r1".x", .type = "number", .desc = rdesc1, .dflt = NULL }, \
+        { .name = #r1".y", .type = "number", .desc = rdesc1, .dflt = NULL })
 
 #define l_func_3_Color(f, fdesc, \
                 a1, atype1, adesc1, adflt1, \
