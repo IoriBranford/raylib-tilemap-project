@@ -89,6 +89,7 @@ int L_Sprite_getcameraZoom(lua_State *l) {
     lua_pushnumber(l, (**o).cameraZoom);
     return 1;
 }
+reg_class_method(Sprite, getcameraZoom)
 
 int L_Sprite_setcameraZoom(lua_State *l) {
     Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
@@ -97,36 +98,55 @@ int L_Sprite_setcameraZoom(lua_State *l) {
     (**o).cameraZoom = luaL_checknumber(l, 2);
     return 0;
 }
+reg_class_method(Sprite, setcameraZoom)
 
 class_luaopen(Sprite,
-    class_method_reg(Sprite, __index),
-    class_method_reg(Sprite, __newindex),
-    class_method_reg(Sprite, __gc),
-    class_getter_reg(Sprite, active),
-    class_getter_reg(Sprite, nearcamera),
-    class_getter_and_setter_reg(Sprite, x),
-    class_getter_and_setter_reg(Sprite, y),
-    class_getter_and_setter_reg(Sprite, z),
-    class_getter_and_setter_reg(Sprite, width),
-    class_getter_and_setter_reg(Sprite, height),
-    class_getter_and_setter_reg(Sprite, rotationDeg),
-    class_getter_and_setter_reg(Sprite, originX),
-    class_getter_and_setter_reg(Sprite, originY),
-    class_getter_and_setter_reg(Sprite, red),
-    class_getter_and_setter_reg(Sprite, green),
-    class_getter_and_setter_reg(Sprite, blue),
-    class_getter_and_setter_reg(Sprite, alpha),
-    class_getter_and_setter_reg(Sprite, animSpeedMS),
-    class_getter_and_setter_reg(Sprite, cameraZoom),
-    class_getter_reg(Sprite, animTimer),
-    class_getter_and_setter_reg(Sprite, position),
-    class_getter_and_setter_reg(Sprite, size),
-    class_getter_and_setter_reg(Sprite, color),
-    class_getter_and_setter_reg(Sprite, origin),
-    class_setter_reg(Sprite, tilenamed),
-    class_setter_reg(Sprite, tilenamedifnew),
-    class_setter_reg(Sprite, tileflipx),
-    class_setter_reg(Sprite, tileflipy)
+    reg_Sprite___index,
+    reg_Sprite___newindex,
+    reg_Sprite___gc,
+    reg_Sprite_getactive,
+    reg_Sprite_getnearcamera,
+    reg_Sprite_getx,
+    reg_Sprite_gety,
+    reg_Sprite_getz,
+    reg_Sprite_getwidth,
+    reg_Sprite_getheight,
+    reg_Sprite_getrotationDeg,
+    reg_Sprite_getoriginX,
+    reg_Sprite_getoriginY,
+    reg_Sprite_getred,
+    reg_Sprite_getgreen,
+    reg_Sprite_getblue,
+    reg_Sprite_getalpha,
+    reg_Sprite_getanimSpeedMS,
+    reg_Sprite_getcameraZoom,
+    reg_Sprite_setx,
+    reg_Sprite_sety,
+    reg_Sprite_setz,
+    reg_Sprite_setwidth,
+    reg_Sprite_setheight,
+    reg_Sprite_setrotationDeg,
+    reg_Sprite_setoriginX,
+    reg_Sprite_setoriginY,
+    reg_Sprite_setred,
+    reg_Sprite_setgreen,
+    reg_Sprite_setblue,
+    reg_Sprite_setalpha,
+    reg_Sprite_setanimSpeedMS,
+    reg_Sprite_setcameraZoom,
+    reg_Sprite_getanimTimer,
+    reg_Sprite_getposition,
+    reg_Sprite_getsize,
+    reg_Sprite_getcolor,
+    reg_Sprite_getorigin,
+    reg_Sprite_setposition,
+    reg_Sprite_setsize,
+    reg_Sprite_setcolor,
+    reg_Sprite_setorigin,
+    reg_Sprite_settilenamed,
+    reg_Sprite_settilenamedifnew,
+    reg_Sprite_settileflipx,
+    reg_Sprite_settileflipy
 )
 
 int luaopen_gfx2d(lua_State *l) {

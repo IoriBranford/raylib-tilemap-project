@@ -41,42 +41,39 @@ class_getterf(Music, , number, Length, GetMusicTimeLength)
 class_getterf(Music, , number, Position, GetMusicTimePlayed)
 
 l_global_funcs_luaopen(rlaudio_g,
-    // Wave/Sound loading/unloading functions
-    l_func_reg(LoadSound),
-
-    // Music management functions
-    l_func_reg(LoadMusicStream)
+    reg_LoadSound,
+    reg_LoadMusicStream
 )
 
 class_luaopen(Sound,
-    class_method_reg(Sound, __index),
-    class_method_reg(Sound, __newindex),
-    class_method_reg(Sound, __gc),
-    class_method_reg(Sound, Play),
-    class_method_reg(Sound, Stop),
-    class_method_reg(Sound, Pause),
-    class_method_reg(Sound, Resume),
-    class_getter_reg(Sound, Playing),
-    class_setter_reg(Sound, Volume),
-    class_setter_reg(Sound, Pitch),
-    class_setter_reg(Sound, Pan))
+    reg_Sound___index,
+    reg_Sound___newindex,
+    reg_Sound___gc,
+    reg_Sound_Play,
+    reg_Sound_Stop,
+    reg_Sound_Pause,
+    reg_Sound_Resume,
+    reg_Sound_getPlaying,
+    reg_Sound_setVolume,
+    reg_Sound_setPitch,
+    reg_Sound_setPan)
 
 class_luaopen(Music,
-    class_method_reg(Music, __index),
-    class_method_reg(Music, __newindex),
-    class_method_reg(Music, __gc),
-    class_method_reg(Music, Play),
-    class_method_reg(Music, Stop),
-    class_method_reg(Music, Update),
-    class_method_reg(Music, Pause),
-    class_method_reg(Music, Resume),
-    class_getter_reg(Music, Playing),
-    class_setter_reg(Music, Position),
-    class_setter_reg(Music, Volume),
-    class_setter_reg(Music, Pitch),
-    class_setter_reg(Music, Pan),
-    class_getter_reg(Music, Length),
-    class_getter_reg(Music, Position)
+    reg_Music___index,
+    reg_Music___newindex,
+    reg_Music___gc,
+    reg_Music_Play,
+    reg_Music_Stop,
+    reg_Music_Update,
+    reg_Music_Pause,
+    reg_Music_Resume,
+    reg_Music_getPlaying,
+    reg_Music_setPosition,
+    reg_Music_setVolume,
+    reg_Music_setPitch,
+    reg_Music_setPan,
+    reg_Music_getLength,
+    reg_Music_getPosition
 )
 
 int luaopen_rlaudio(lua_State *l) {
