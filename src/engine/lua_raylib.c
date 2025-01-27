@@ -108,7 +108,10 @@ l_func_0_1(GetFPS, "Get current FPS",
 l_func_1_0(SetRandomSeed, "Set the seed for the random number generator",
     seed, integer, "The new random seed", NULL)
 
-l_func_2_1(GetRandomValue, integer, integer, integer)                       // Get a random value between min and max (both included)
+l_func_2_1(GetRandomValue, "Get a random integer in range, both ends inclusive", 
+    min, integer, "Minimum", "",
+    max, integer, "Maximum", "",
+    n, integer, "The random number")
 
 int L_GetRandomSequence(lua_State *l) {                // Load random values sequence, no values repeated
     lua_Integer count = luaL_checkinteger(l, 1);
