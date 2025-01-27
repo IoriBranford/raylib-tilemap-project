@@ -27,13 +27,29 @@
         { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
         { .name = #a2, .type = #atype2, .desc = adesc2, .dflt = adflt2 })
 
-#define l_func_3_0(f, at, at2, at3) \
+#define l_func_3_0(f, fdesc, \
+                    a1, atype1, adesc1, adflt1, \
+                    a2, atype2, adesc2, adflt2, \
+                    a3, atype3, adesc3, adflt3) \
     int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3)); return 0; }\
-    reg_func(f)
+    reg_func(f) \
+    doc_func(f, fdesc, 3, \
+        { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
+        { .name = #a2, .type = #atype2, .desc = adesc2, .dflt = adflt2 }, \
+        { .name = #a3, .type = #atype3, .desc = adesc3, .dflt = adflt3 })
 
-#define l_func_4_0(f, at, at2, at3, at4) \
+#define l_func_4_0(f, fdesc, \
+                    a1, atype1, adesc1, adflt1, \
+                    a2, atype2, adesc2, adflt2, \
+                    a3, atype3, adesc3, adflt3, \
+                    a4, atype4, adesc4, adflt4) \
     int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3), luaL_check##at4(l, 4)); return 0; } \
-    reg_func(f)
+    reg_func(f) \
+    doc_func(f, fdesc, 4, \
+        { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
+        { .name = #a2, .type = #atype2, .desc = adesc2, .dflt = adflt2 }, \
+        { .name = #a3, .type = #atype3, .desc = adesc3, .dflt = adflt3 }, \
+        { .name = #a4, .type = #atype4, .desc = adesc4, .dflt = adflt4 })
 
 #define l_func_0_1(f, rt) \
     int L_##f(lua_State *l) { lua_push##rt(l, f()); return 1; } \
