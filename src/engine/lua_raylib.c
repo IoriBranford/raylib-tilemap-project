@@ -167,6 +167,12 @@ int L_ColorToRGBA(lua_State *l)
     return 4;
 };
 reg_func(ColorToRGBA)
+doc_func(ColorToRGBA, "Get RGBA values from color integer", 1,
+    doc_var(color, integer, "Color integer in the form 0xRRGGBBAA", NULL),
+    doc_var(red, integer, "Red value [0..255]", NULL),
+    doc_var(green, integer, "Green value [0..255]", NULL),
+    doc_var(blue, integer, "Blue value [0..255]", NULL),
+    doc_var(alpha, integer, "Alpha value [0..255]", NULL))
 
 int L_RGBAToColor(lua_State *l)
 {
@@ -183,6 +189,12 @@ int L_RGBAToColor(lua_State *l)
     return 1;
 };
 reg_func(RGBAToColor)
+doc_func(RGBAToColor, "Combine RGBA values into color integer", 4,
+    doc_var(red, integer, "Red value [0..255]", "255"),
+    doc_var(green, integer, "Green value [0..255]", "255"),
+    doc_var(blue, integer, "Blue value [0..255]", "255"),
+    doc_var(alpha, integer, "Alpha value [0..255]", "255"),
+    doc_var(color, integer, "Color integer in the form 0xRRGGBBAA", NULL))
 
 l_global_funcs_luaopen(raylib_g,
     reg_ShowCursor,
@@ -232,9 +244,9 @@ int luaopen_raylib(lua_State *l) {
             doc_OpenURL,
             doc_TraceLog,
             doc_SetTraceLogLevel,
-            doc_ColorFromHSV//,
-            // doc_ColorToRGBA,
-            // doc_RGBAToColor
+            doc_ColorFromHSV,
+            doc_ColorToRGBA,
+            doc_RGBAToColor
         )
     );
 
