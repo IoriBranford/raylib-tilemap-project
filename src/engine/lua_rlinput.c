@@ -7,10 +7,12 @@
 // l_func_1_1(IsKeyDown, integer, boolean)
 // l_func_1_1(IsKeyReleased, integer, boolean)
 // l_func_1_1(IsKeyUp, integer, boolean)
-l_func_0_1(GetKeyPressed, integer)
-l_func_0_1(GetCharPressed, integer)
+l_func_0_1(GetKeyPressed, "Get key pressed (keycode), call it multiple times for keys queued", 
+    key, integer, "The next KeyboardKey in the queue, or 0 when the queue is empty")
+l_func_0_1(GetCharPressed, "Get char pressed (unicode), call it multiple times for chars queued",
+    chara, integer, "The next Unicode character in the queue, or 0 when the queue is empty")
 l_func_1_0(SetExitKey, "Set a custom key to exit program (default is ESC)",
-    key, integer, "A valid KeyboardKey", NULL)
+    key, integer, "A valid KeyboardKey", "")
 
 // Input-related functions: gamepads
 // l_func_1_1(IsGamepadAvailable, integer, boolean)
@@ -34,8 +36,10 @@ l_func_1_1(IsMouseButtonPressed, integer, boolean)
 l_func_1_1(IsMouseButtonDown, integer, boolean)
 l_func_1_1(IsMouseButtonReleased, integer, boolean)
 l_func_1_1(IsMouseButtonUp, integer, boolean)
-l_func_0_1(GetMouseX, integer)
-l_func_0_1(GetMouseY, integer)
+l_func_0_1(GetMouseX, "Get mouse position X",
+    x, integer, "X position")
+l_func_0_1(GetMouseY, "Get mouse position Y",
+    y, integer, "Y position")
 l_func_0_vec2(GetMousePosition, Vector2)
 l_func_0_vec2(GetMouseDelta, Vector2)
 l_func_2_0(SetMousePosition, "Set mouse position",
@@ -47,7 +51,8 @@ l_func_2_0(SetMouseOffset, "Set mouse offset",
 l_func_2_0(SetMouseScale, "Set mouse scale",
     x, integer, "X scale", "",
     y, integer, "Y scale", "")
-l_func_0_1(GetMouseWheelMove, number)
+l_func_0_1(GetMouseWheelMove, "Get mouse wheel movement for X or Y, whichever is larger",
+    movement, number, "The wheel movement")
 l_func_0_vec2(GetMouseWheelMoveV, Vector2)
 l_func_1_0(SetMouseCursor, "Set mouse cursor",
     cursor, integer, "A valid MouseCursor", NULL)

@@ -57,9 +57,12 @@
         { .name = #a3, .type = #atype3, .desc = adesc3, .dflt = adflt3 }, \
         { .name = #a4, .type = #atype4, .desc = adesc4, .dflt = adflt4 })
 
-#define l_func_0_1(f, rt) \
-    int L_##f(lua_State *l) { lua_push##rt(l, f()); return 1; } \
-    reg_func(f)
+#define l_func_0_1(f, fdesc, \
+                    r1, rtype1, rdesc1) \
+    int L_##f(lua_State *l) { lua_push##rtype1(l, f()); return 1; } \
+    reg_func(f) \
+    doc_func(f, fdesc, 0, \
+        { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = "" })
 
 #define l_func_1_1(f, fdesc, \
                 a1, atype1, adesc1, adflt1, \

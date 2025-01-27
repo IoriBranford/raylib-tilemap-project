@@ -95,10 +95,12 @@ l_func_0_0(IsCursorOnScreen, "")
 
 l_func_1_0(SetTargetFPS, "Set target FPS (maximum)",
     fps, integer, "The new target FPS", NULL)
-
-l_func_0_1(GetFrameTime, number)
-l_func_0_1(GetTime, number)
-l_func_0_1(GetFPS, integer)
+l_func_0_1(GetFrameTime, "Get time in seconds for last frame drawn (delta time)",
+    frameTime, number, "")
+l_func_0_1(GetTime, "Get elapsed time in seconds since InitWindow()",
+    time, number, "")
+l_func_0_1(GetFPS, "Get current FPS",
+    fps, integer, "")
 
 // Custom frame control functions probably will stay on C side
 
