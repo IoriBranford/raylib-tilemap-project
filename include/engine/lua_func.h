@@ -43,7 +43,13 @@
                     a2, atype2, adesc2, adflt2, \
                     a3, atype3, adesc3, adflt3, \
                     a4, atype4, adesc4, adflt4) \
-    int L_##f(lua_State *l) { f(luaL_check##at(l, 1), luaL_check##at2(l, 2), luaL_check##at3(l, 3), luaL_check##at4(l, 4)); return 0; } \
+    int L_##f(lua_State *l) { \
+        f(luaL_check##atype1(l, 1), \
+            luaL_check##atype2(l, 2), \
+            luaL_check##atype3(l, 3), \
+            luaL_check##atype4(l, 4)); \
+        return 0; \
+    } \
     reg_func(f) \
     doc_func(f, fdesc, 4, \
         { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
