@@ -1,192 +1,202 @@
-#include <stdarg.h>
-#include <string.h>
-#include <engine/lua.h>
+#include <engine/lua_doc.h>
 
-void L_doc(lua_State *l) {
-    lua_getglobal(l, "api");
-}
-
-void L_doc_funcs(lua_State *l) {
-    lua_getfield(l, -1, "functions");
-    if (lua_isnil(l, -1)) {
-        lua_pop(l, 1);
-        lua_newtable(l);
-        lua_pushvalue(l, -1);
-        lua_setfield(l, -3, "functions");
-    }
-}
-
-void L_doc_funcs_entry(lua_State *l, const char *name) {
-    lua_getfield(l, -1, name);
-    if (lua_isnumber(l, -1)) {
-        lua_rawget(l, -2);
-    } else {
-        lua_pop(l, 1);
-        int i = lua_objlen(l, -1) + 1;
-
-        lua_newtable(l);
-        lua_pushinteger(l, i);
-        lua_setfield(l, -3, name);
-        lua_pushvalue(l, -1);
-        lua_rawseti(l, -3, i);
-
-        lua_pushstring(l, name);
+int L_doc_var(lua_State *l, const VarDoc *var) {
+    lua_newtable(l);
+    if (var->name) {
+        lua_pushstring(l, var->name);
         lua_setfield(l, -2, "name");
-        lua_pushstring(l, "");
+    }
+    if (var->type) {
+        lua_pushstring(l, var->type);
+        lua_setfield(l, -2, "type");
+    }
+    if (var->desc) {
+        lua_pushstring(l, var->desc);
         lua_setfield(l, -2, "description");
-        lua_newtable(l);
-        lua_setfield(l, -2, "variants");
     }
-}
-
-void L_doc_types(lua_State *l) {
-    lua_getfield(l, -1, "types");
-    if (lua_isnil(l, -1)) {
-        lua_pop(l, 1);
-        lua_newtable(l);
-        lua_pushvalue(l, -1);
-        lua_setfield(l, -3, "types");
+    if (var->dflt) {
+        lua_pushstring(l, var->dflt);
+        lua_setfield(l, -2, "default");
     }
-}
-
-void L_doc_types_entry(lua_State *l, const char *name) {
-    lua_getfield(l, -1, name);
-    if (lua_isnumber(l, -1)) {
-        lua_rawget(l, -2);
-    } else {
-        lua_pop(l, 1);
-        int i = lua_objlen(l, -1) + 1;
-
-        lua_newtable(l);
-        lua_pushinteger(l, i);
-        lua_setfield(l, -3, name);
-        lua_pushvalue(l, -1);
-        lua_rawseti(l, -3, i);
-
-        lua_pushstring(l, name);
-        lua_setfield(l, -2, "name");
-        lua_pushstring(l, "");
-        lua_setfield(l, -2, "description");
-        lua_newtable(l);
-        lua_setfield(l, -2, "constructors");
-        lua_newtable(l);
-        lua_setfield(l, -2, "functions");
-        lua_newtable(l);
-        lua_setfield(l, -2, "supertypes");
-    }
-}
-
-void L_docfuncs_reg(lua_State *l, luaL_Reg *reg) {
-    L_doc(l);
-    if (lua_isnil(l, -1)) return;
-    L_doc_funcs(l);
-    for (; reg->name; ++reg) {
-        L_doc_funcs_entry(l, reg->name);
-        lua_pop(l, 1);
-    }
-    lua_pop(l, 2);
-}
-
-void L_docclassfuncs_reg(lua_State *l, const char *cls, luaL_Reg *reg) {
-    L_doc(l);
-    if (lua_isnil(l, -1)) return;
-    L_doc_types(l);
-    L_doc_types_entry(l, cls);
-    L_doc_funcs(l);
-    for (; reg->name; ++reg) {
-        if (strncmp(reg->name, "__", 2)) {
-            L_doc_funcs_entry(l, reg->name);
-            lua_pop(l, 1);
-        }
-    }
-    lua_pop(l, 4);
-}
-
-int L_doc_load(lua_State *l) {
-    lua_getglobal(l, "require");
-    lua_pushstring(l, "api");
-    if (lua_pcall(l, 1, 1, 0) != LUA_OK || !lua_istable(l, -1)) {
-        lua_newtable(l);
-    }
-    lua_pushvalue(l, -1);
-    lua_setglobal(l, "api");
     return 1;
 }
 
-void L_doc_funcs_write(lua_State *l, FILE *file, const char *cls) {
-    int nFuncs = lua_objlen(l, -1);
-    for (int i = 1; i <= nFuncs; ++i) {
-        lua_rawgeti(l, -1, i);
-
-        lua_getfield(l, -1, "description");
-        const char *s = lua_tostring(l, -1);
-        fprintf(file, "--- %s\n", s);
-        lua_pop(l, 1);
-
-        lua_getfield(l, -1, "name");
-        s = lua_tostring(l, -1);
-        fprintf(file, "function %s%s%s(",
-            cls ? cls : "",
-            cls ? ":" : "",
-            s);
-        lua_pop(l, 1);
-
-        // TODO args
-
-        fprintf(file, ") end\n\n");
-        lua_pop(l, 1);
+int L_doc_func(lua_State *l, const FuncDoc *func) {
+    lua_newtable(l);
+    if (func->name) {
+        lua_pushstring(l, func->name);
+        lua_setfield(l, -2, "name");
     }
+    if (func->desc) {
+        lua_pushstring(l, func->desc);
+        lua_setfield(l, -2, "description");
+    }
+
+    if (func->nArgs) {
+        lua_newtable(l);
+        for (int i = 1; i <= func->nArgs; ++i) {
+            L_doc_var(l, &func->args[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "arguments");
+    }
+
+    if (func->nRets) {
+        lua_newtable(l);
+        for (int i = 1; i <= func->nRets; ++i) {
+            L_doc_var(l, &func->rets[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "returns");
+    }
+
+    return 1;
 }
 
-void L_doc_types_write(lua_State *l, FILE *file) {
-    int nTypes = lua_objlen(l, -1);
-    for (int i = 1; i <= nTypes; ++i) {
-        lua_rawgeti(l, -1, i);
-        luaL_checktype(l, -1, LUA_TTABLE);
-
-        lua_getfield(l, -1, "description");
-        fprintf(file, "--- %s\n", lua_tostring(l, -1));
-        lua_pop(l, 1);
-
-        lua_getfield(l, -1, "name");
-        const char *name = lua_tostring(l, -1);
-        fprintf(file, "---@class %s\n", name);
-        fprintf(file, "local %s = {}\n\n", name);
-        lua_pop(l, 1);
-
-        lua_getfield(l, -1, "functions");
-        L_doc_funcs_write(l, file, name);
-        lua_pop(l, 1);
-
-        lua_pop(l, 1);
+int L_doc_class(lua_State *l, const ClassDoc *cls) {
+    lua_newtable(l);
+    if (cls->name) {
+        lua_pushstring(l, cls->name);
+        lua_setfield(l, -2, "name");
     }
+    if (cls->desc) {
+        lua_pushstring(l, cls->desc);
+        lua_setfield(l, -2, "description");
+    }
+    if (cls->nCtors) {
+        lua_newtable(l);
+        for (int i = 1; i <= cls->nCtors; ++i) {
+            L_doc_func(l, &cls->ctors[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "constructors");
+    }
+    if (cls->nMethods) {
+        lua_newtable(l);
+        for (int i = 1; i <= cls->nMethods; ++i) {
+            L_doc_func(l, &cls->methods[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "functions");
+    }
+    if (cls->nFields) {
+        lua_newtable(l);
+        for (int i = 1; i <= cls->nFields; ++i) {
+            L_doc_var(l, &cls->fields[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "fields");
+    }
+    return 1;
 }
 
-int L_doc_save(lua_State *l) {
-    lua_getglobal(l, "require");
-    lua_pushstring(l, "pl.pretty");
-    if (lua_pcall(l, 1, 1, 0) != LUA_OK) lua_error(l);
-
-    lua_pushstring(l, "return ");
-    lua_getfield(l, -2, "write");
-    L_doc(l);
-    if (lua_pcall(l, 1, 1, 0) != LUA_OK) lua_error(l);
-    lua_concat(l, 2);
+int L_doc_module(lua_State *l, const ModuleDoc *module) {
+    lua_newtable(l);
+    if (module->name) {
+        lua_pushstring(l, module->name);
+        lua_setfield(l, -2, "name");
+    }
+    if (module->desc) {
+        lua_pushstring(l, module->desc);
+        lua_setfield(l, -2, "description");
+    }
+    if (module->nConstants) {
+        lua_newtable(l);
+        for (int i = 1; i <= module->nConstants; ++i) {
+            L_doc_var(l, &module->constants[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "constants");
+    }
     
-    FILE *file = fopen("lua/api.lua", "w");
-    fprintf(file, "%s", lua_tostring(l, -1));
-    fclose(file);
-    lua_pop(l, 1);
+    if (module->nFuncs) {
+        lua_newtable(l);
+        for (int i = 1; i <= module->nFuncs; ++i) {
+            L_doc_func(l, &module->funcs[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "functions");
+    }
+    
+    if (module->nClasses) {
+        lua_newtable(l);
+        for (int i = 1; i <= module->nClasses; ++i) {
+            L_doc_class(l, &module->classes[i]);
+            lua_rawseti(l, -2, i);
+        }
+        lua_setfield(l, -2, "types");
+    }
+    return 1;
+}
 
-    file = fopen("lua/doc.lua", "w");
-    fprintf(file, "---@meta\n\n");
-    L_doc(l);
-    L_doc_funcs(l);
-    L_doc_funcs_write(l, file, NULL);
-    lua_pop(l, 1);
-    L_doc_types(l);
-    L_doc_types_write(l, file);
-    lua_pop(l, 1);
+void WriteFunction(FILE *file, const FuncDoc *func, const ClassDoc *cls) {
+    fprintf(file, "--- %s\n", func->desc);
+    for (int a = 0; a < func->nArgs; ++a) {
+        const VarDoc *arg = &func->args[a];
+        fprintf(file, "---@param %s %s %s\n", arg->name, arg->type, arg->desc);
+    }
+    for (int r = 0; r < func->nRets; ++r) {
+        const VarDoc *ret = &func->rets[r];
+        fprintf(file, "---@return %s %s %s\n", ret->type, ret->name, ret->desc);
+    }
+    if (cls)
+        fprintf(file, "function %s:%s(", cls->name, func->name);
+    else
+        fprintf(file, "function %s(", func->name);
+    if (func->nArgs)
+        fprintf(file, "%s", func->args[0].name);
+    for (int a = 1; a < func->nArgs; ++a) {
+        const VarDoc *arg = &func->args[a];
+        fprintf(file, ", %s", arg->name);
+    }
+    fprintf(file, ") end\n"
+                    "\n");
+}
+
+void WriteClass(FILE *file, const ClassDoc *cls) {
+    fprintf(file, "--- %s\n"
+                    "---@class %s\n", cls->desc, cls->name);
+    for (int a = 0; a < cls->nFields; ++a) {
+        const VarDoc *field = &cls->fields[a];
+        fprintf(file, "---@field %s %s %s\n", field->name, field->type, field->desc);
+    }
+    fprintf(file, "local %s = {}\n\n", cls->name);
+
+    for (int f = 0; f < cls->nCtors; ++f) {
+        WriteFunction(file, &cls->ctors[f], NULL);
+    }
+
+    for (int f = 0; f < cls->nMethods; ++f) {
+        WriteFunction(file, &cls->methods[f], cls);
+    }
+}
+
+int SaveModuleDoc(const ModuleDoc *module) {
+    char s[128];
+    sprintf(s, "lua/doc/%s.lua", module->name);
+
+    FILE *file = fopen(s, "w");
+    fprintf(file, "---@meta\n"
+        "--- %s\n"
+        "---@module '%s'\n"
+        "\n",
+        module->desc, module->name);
+
+    for (int c = 0; c < module->nConstants; ++c) {
+        const VarDoc constant = module->constants[c];
+        fprintf(file, "--- %s\n"
+                    "local %s\n"
+                    "\n", constant.desc, constant.name);
+    }
+
+    for (int f = 0; f < module->nFuncs; ++f) {
+        WriteFunction(file, &module->funcs[f], NULL);
+    }
+
+    for (int c = 0; c < module->nClasses; ++c) {
+        WriteClass(file, &module->classes[c]);
+    }
+
     fclose(file);
 
     return 0;

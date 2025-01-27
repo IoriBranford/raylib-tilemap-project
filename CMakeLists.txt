@@ -33,7 +33,6 @@ add_executable(game
     src/engine/input.c
     src/engine/lua.c
     src/engine/lua_doc.c
-    src/engine/lua_doc2.c
     src/engine/lua_engine.c
     src/engine/lua_gfx2d.c
     src/engine/lua_input.c

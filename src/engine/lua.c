@@ -207,7 +207,6 @@ void InitLua() {
     lua_settable(lua, -3);
     lua_pop(lua, 1);
 
-    L_doc_load(lua);
     lua_cpcall(lua, luaopen_task, NULL);
     lua_cpcall(lua, luaopen_gfx2d, NULL);
     lua_cpcall(lua, luaopen_physics, NULL);
@@ -215,5 +214,4 @@ void InitLua() {
     lua_cpcall(lua, luaopen_tmx, NULL);
     lua_cpcall(lua, luaopen_engine, NULL);
     lua_cpcall(lua, luaopen_input, NULL);
-    L_doc_save(lua);
 }
