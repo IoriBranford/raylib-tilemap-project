@@ -39,11 +39,16 @@ l_func_1_1(GetActionPosition, "Get action's position this frame",
     action, string, "Name of the action", "",
     position, number, "Position of the action - [0..1] for buttons, [-1..1] for axes")
 
-l_global_funcs_luaopen(input, 
-    reg_MapInputToAction,
-    reg_MapInputsToActions,
-    reg_IsActionPressed,
-    reg_IsActionDown,
-    reg_IsActionReleased,
-    reg_GetActionPosition
-)
+int luaopen_input(lua_State *l)
+{
+    lua_getglobal(l, "_G");
+    luaL_Reg r[] = {reg_MapInputToAction, reg_MapInputsToActions, reg_IsActionPressed, reg_IsActionDown, reg_IsActionReleased, reg_GetActionPosition, {0}};
+    luaL_register(l, ((void *)0), r);
+    doc_module(input, "Functions for binding device inputs to game actions",
+        doc_module_constants()
+        doc_module_classes()
+        doc_module_funcs(
+            doc_MapInputToAction, doc_MapInputsToActions, doc_IsActionPressed, doc_IsActionDown, doc_IsActionReleased, doc_GetActionPosition        
+    ))
+    return 0;
+}
