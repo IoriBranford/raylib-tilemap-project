@@ -127,6 +127,11 @@ int L_GetRandomSequence(lua_State *l) {                // Load random values seq
     return 1;
 }
 reg_func(GetRandomSequence)
+doc_func(GetRandomSequence, "Load random values sequence, no values repeated", 3,
+    doc_var(n, integer, "Number of random values to generate", NULL),
+    doc_var(min, integer, "Minimum value to generate", NULL),
+    doc_var(max, integer, "Maximum value to generate", NULL),
+    doc_var(sequence, table, "Array of random values", NULL))
 
 // RLAPI void UnloadRandomSequence(int *sequence); unnecessary
 
@@ -234,12 +239,12 @@ int luaopen_raylib(lua_State *l) {
             doc_DisableCursor,
             doc_IsCursorOnScreen,
             doc_SetTargetFPS,
-            // doc_GetFrameTime,
-            // doc_GetTime,
-            // doc_GetFPS,
+            doc_GetFrameTime,
+            doc_GetTime,
+            doc_GetFPS,
             doc_SetRandomSeed,
-            // doc_GetRandomValue,
-            // doc_GetRandomSequence,
+            doc_GetRandomValue,
+            doc_GetRandomSequence,
             doc_TakeScreenshot,
             doc_OpenURL,
             doc_TraceLog,
