@@ -2,28 +2,32 @@
 #include <raylib.h>
 
 // Input-related functions: keyboard
-l_func_1_1(IsKeyPressed, integer, boolean)
-l_func_1_1(IsKeyPressedRepeat, integer, boolean)
-l_func_1_1(IsKeyDown, integer, boolean)
-l_func_1_1(IsKeyReleased, integer, boolean)
-l_func_1_1(IsKeyUp, integer, boolean)
-l_func_0_1(GetKeyPressed, integer)
-l_func_0_1(GetCharPressed, integer)
-l_func_1_0(SetExitKey, "Set a custom key to exit program (default is ESC)",
-    key, integer, "A valid KeyboardKey", NULL)
+// l_func_1_1(IsKeyPressed, integer, boolean)
+// l_func_1_1(IsKeyPressedRepeat, integer, boolean)
+// l_func_1_1(IsKeyDown, integer, boolean)
+// l_func_1_1(IsKeyReleased, integer, boolean)
+// l_func_1_1(IsKeyUp, integer, boolean)
+// l_func_0_1(GetKeyPressed, integer)
+// l_func_0_1(GetCharPressed, integer)
+// l_func_1_0(SetExitKey, "Set a custom key to exit program (default is ESC)",
+//     key, integer, "A valid KeyboardKey", NULL)
 
 // Input-related functions: gamepads
-l_func_1_1(IsGamepadAvailable, integer, boolean)
-l_func_1_1(GetGamepadName, integer, string)
-l_func_2_1(IsGamepadButtonPressed, integer, integer, boolean)
-l_func_2_1(IsGamepadButtonDown, integer, integer, boolean)
-l_func_2_1(IsGamepadButtonReleased, integer, integer, boolean)
-l_func_2_1(IsGamepadButtonUp, integer, integer, boolean)
-l_func_0_1(GetGamepadButtonPressed, integer)
-l_func_1_1(GetGamepadAxisCount, integer, integer)
-l_func_2_1(GetGamepadAxisMovement, integer, integer, number)
-l_func_1_1(SetGamepadMappings, string, integer)
-l_func_4_0(SetGamepadVibration, integer, number, number, number)
+// l_func_1_1(IsGamepadAvailable, integer, boolean)
+// l_func_1_1(GetGamepadName, integer, string)
+// l_func_2_1(IsGamepadButtonPressed, integer, integer, boolean)
+// l_func_2_1(IsGamepadButtonDown, integer, integer, boolean)
+// l_func_2_1(IsGamepadButtonReleased, integer, integer, boolean)
+// l_func_2_1(IsGamepadButtonUp, integer, integer, boolean)
+// l_func_0_1(GetGamepadButtonPressed, integer)
+// l_func_1_1(GetGamepadAxisCount, integer, integer)
+// l_func_2_1(GetGamepadAxisMovement, integer, integer, number)
+// l_func_1_1(SetGamepadMappings, string, integer)
+// l_func_4_0(SetGamepadVibration, "Set gamepad vibration for both motors (duration in seconds)",
+//     gamepad, integer, "Index of the gamepad", "",
+//     leftMotor, number, "Left motor vibration strength [0-1]", "",
+//     rightMotor, number, "Right motor vibration strength [0-1]", "",
+//     duration, number, "How long to vibrate in seconds", "")
 
 // Input-related functions: mouse
 l_func_1_1(IsMouseButtonPressed, integer, boolean)
@@ -239,7 +243,8 @@ int luaopen_rlinput(lua_State *l)
     l_global_enum(l, GESTURE_PINCH_OUT  );
 
     lua_getglobal(l, ("_G"));
-    luaL_Reg r[] = {{.name = "IsKeyPressed", .func = L_IsKeyPressed}, {.name = "IsKeyPressedRepeat", .func = L_IsKeyPressedRepeat}, {.name = "IsKeyDown", .func = L_IsKeyDown}, {.name = "IsKeyReleased", .func = L_IsKeyReleased}, {.name = "IsKeyUp", .func = L_IsKeyUp}, {.name = "GetKeyPressed", .func = L_GetKeyPressed}, {.name = "GetCharPressed", .func = L_GetCharPressed}, {.name = "SetExitKey", .func = L_SetExitKey}, {.name = "IsGamepadAvailable", .func = L_IsGamepadAvailable}, {.name = "GetGamepadName", .func = L_GetGamepadName}, {.name = "IsGamepadButtonPressed", .func = L_IsGamepadButtonPressed}, {.name = "IsGamepadButtonPressed", .func = L_IsGamepadButtonPressed}, {.name = "IsGamepadButtonDown", .func = L_IsGamepadButtonDown}, {.name = "IsGamepadButtonReleased", .func = L_IsGamepadButtonReleased}, {.name = "IsGamepadButtonUp", .func = L_IsGamepadButtonUp}, {.name = "GetGamepadButtonPressed", .func = L_GetGamepadButtonPressed}, {.name = "GetGamepadAxisCount", .func = L_GetGamepadAxisCount}, {.name = "GetGamepadAxisMovement", .func = L_GetGamepadAxisMovement}, {.name = "SetGamepadMappings", .func = L_SetGamepadMappings}, {.name = "SetGamepadVibration", .func = L_SetGamepadVibration}, {.name = "IsMouseButtonPressed", .func = L_IsMouseButtonPressed}, {.name = "IsMouseButtonDown", .func = L_IsMouseButtonDown}, {.name = "IsMouseButtonReleased", .func = L_IsMouseButtonReleased}, {.name = "IsMouseButtonUp", .func = L_IsMouseButtonUp}, {.name = "GetMouseX", .func = L_GetMouseX}, {.name = "GetMouseY", .func = L_GetMouseY}, {.name = "GetMousePosition", .func = L_GetMousePosition}, {.name = "GetMouseDelta", .func = L_GetMouseDelta}, {.name = "SetMousePosition", .func = L_SetMousePosition}, {.name = "SetMouseOffset", .func = L_SetMouseOffset}, {.name = "SetMouseScale", .func = L_SetMouseScale}, {.name = "GetMouseWheelMove", .func = L_GetMouseWheelMove}, {.name = "GetMouseWheelMoveV", .func = L_GetMouseWheelMoveV}, {.name = "SetMouseCursor", .func = L_SetMouseCursor}, {0}};
+    luaL_Reg r[] = { //{.name = "IsKeyPressed", .func = L_IsKeyPressed}, {.name = "IsKeyPressedRepeat", .func = L_IsKeyPressedRepeat}, {.name = "IsKeyDown", .func = L_IsKeyDown}, {.name = "IsKeyReleased", .func = L_IsKeyReleased}, {.name = "IsKeyUp", .func = L_IsKeyUp}, {.name = "GetKeyPressed", .func = L_GetKeyPressed}, {.name = "GetCharPressed", .func = L_GetCharPressed}, {.name = "SetExitKey", .func = L_SetExitKey}, {.name = "IsGamepadAvailable", .func = L_IsGamepadAvailable}, {.name = "GetGamepadName", .func = L_GetGamepadName}, {.name = "IsGamepadButtonPressed", .func = L_IsGamepadButtonPressed}, {.name = "IsGamepadButtonPressed", .func = L_IsGamepadButtonPressed}, {.name = "IsGamepadButtonDown", .func = L_IsGamepadButtonDown}, {.name = "IsGamepadButtonReleased", .func = L_IsGamepadButtonReleased}, {.name = "IsGamepadButtonUp", .func = L_IsGamepadButtonUp}, {.name = "GetGamepadButtonPressed", .func = L_GetGamepadButtonPressed}, {.name = "GetGamepadAxisCount", .func = L_GetGamepadAxisCount}, {.name = "GetGamepadAxisMovement", .func = L_GetGamepadAxisMovement}, {.name = "SetGamepadMappings", .func = L_SetGamepadMappings}, {.name = "SetGamepadVibration", .func = L_SetGamepadVibration}, 
+        {.name = "IsMouseButtonPressed", .func = L_IsMouseButtonPressed}, {.name = "IsMouseButtonDown", .func = L_IsMouseButtonDown}, {.name = "IsMouseButtonReleased", .func = L_IsMouseButtonReleased}, {.name = "IsMouseButtonUp", .func = L_IsMouseButtonUp}, {.name = "GetMouseX", .func = L_GetMouseX}, {.name = "GetMouseY", .func = L_GetMouseY}, {.name = "GetMousePosition", .func = L_GetMousePosition}, {.name = "GetMouseDelta", .func = L_GetMouseDelta}, {.name = "SetMousePosition", .func = L_SetMousePosition}, {.name = "SetMouseOffset", .func = L_SetMouseOffset}, {.name = "SetMouseScale", .func = L_SetMouseScale}, {.name = "GetMouseWheelMove", .func = L_GetMouseWheelMove}, {.name = "GetMouseWheelMoveV", .func = L_GetMouseWheelMoveV}, {.name = "SetMouseCursor", .func = L_SetMouseCursor}, {0}};
     luaL_register(l, NULL, r);
 
     doc_module(rlinput, "Input functions and constants from Raylib",
@@ -252,7 +257,7 @@ int luaopen_rlinput(lua_State *l)
             // doc_IsKeyUp, 
             // doc_GetKeyPressed, 
             // doc_GetCharPressed, 
-            doc_SetExitKey,
+            // doc_SetExitKey,
             // doc_IsGamepadAvailable,
             // doc_GetGamepadName,
             // doc_IsGamepadButtonPressed,
