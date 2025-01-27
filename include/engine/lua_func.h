@@ -73,10 +73,6 @@
         { .name = #a1, .type = #atype1, .desc = adesc1, .dflt = adflt1 }, \
         { .name = #r1, .type = #rtype1, .desc = rdesc1, .dflt = "" })
 
-#define l_func_1_1(f, at, rt) \
-    int L_##f(lua_State *l) { lua_push##rt(l, f(luaL_check##at(l, 1))); return 1; } \
-    reg_func(f)
-
 #define l_func_2_1(f, at, at2, rt) \
     int L_##f(lua_State *l) { lua_push##rt(l, f(luaL_check##at(l, 1), luaL_check##at2(l, 2))); return 1; } \
     reg_func(f)

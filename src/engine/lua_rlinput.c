@@ -32,10 +32,18 @@ l_func_4_0(SetGamepadVibration, "Set gamepad vibration for both motors (duration
     duration, number, "How long to vibrate in seconds", "")
 
 // Input-related functions: mouse
-l_func_1_1(IsMouseButtonPressed, integer, boolean)
-l_func_1_1(IsMouseButtonDown, integer, boolean)
-l_func_1_1(IsMouseButtonReleased, integer, boolean)
-l_func_1_1(IsMouseButtonUp, integer, boolean)
+l_func_1_1(IsMouseButtonPressed, "Did mouse button go from up to down this frame",
+    button, integer, "A MouseButton", "",
+    pressed, boolean, "Mouse button was pressed")
+l_func_1_1(IsMouseButtonDown, "Is mouse button currently down this frame",
+    button, integer, "A MouseButton", "",
+    down, boolean, "Mouse button is down")
+l_func_1_1(IsMouseButtonReleased, "Did mouse button go from down to up this frame",
+    button, integer, "A MouseButton", "",
+    released, boolean, "Mouse button was released")
+l_func_1_1(IsMouseButtonUp, "Is mouse button currently up this frame",
+    button, integer, "A MouseButton", "",
+    up, boolean, "Mouse button is up")
 l_func_0_1(GetMouseX, "Get mouse position X",
     x, integer, "X position")
 l_func_0_1(GetMouseY, "Get mouse position Y",
