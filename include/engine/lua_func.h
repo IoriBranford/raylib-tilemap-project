@@ -121,19 +121,6 @@
         doc_var(a3, atype3, adesc3, adflt3), \
         doc_var(r1, rtype1, rdesc1, ""))
 
-#define l_func_1_ud(f, at, ud, isValid) \
-    int L_##f(lua_State *l) { \
-        ud o = f(lua_to##at(l, 1)); \
-        if (isValid(o)) { \
-            ud* od = lua_newuserdata(l, sizeof(ud)); \
-            *od = o; \
-            luaL_setmetatable(l, #ud); \
-            return 1; \
-        } \
-        return 0; \
-    } \
-    reg_func(f)
-
 #define l_funcs_register(...) { \
     luaL_Reg r[] = { __VA_ARGS__, {0} }; \
     luaL_register(l, NULL, r); \
