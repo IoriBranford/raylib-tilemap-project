@@ -66,5 +66,25 @@ int SaveModuleDoc(const ModuleDoc *module);
     SaveModuleDoc(&m); \
 }
 
+#define doc_class_method(cls, f, fdesc, na, ...)  \
+    __VA_ARGS__ \
+    static const VarDoc doc_##cls##_##f##_vars[] = {__VA_ARGS__ __VA_OPT__(,) {0}}; \
+    static const FuncDoc doc_##cls##_##f = { \
+        .name = #cls":"#f, .desc = fdesc, \
+        .nArgs = na, .args = doc_##cls##_##f##_vars, \
+        .nRets = sizeof(doc_##cls##_##f##_vars)/sizeof(VarDoc) - na - 1, .rets = doc_##cls##_##f##_vars + na \
+    };
+
+#define doc_class_fields(cls, ...) const VarDoc cls##_fields[] = {__VA_ARGS__ __VA_OPT__(,) {0}};
+#define doc_class_ctors(cls, ...) const FuncDoc cls##_ctors[] = {__VA_ARGS__ __VA_OPT__(,) {0}};
+#define doc_class_methods(cls, ...) const FuncDoc cls##_methods[] = {__VA_ARGS__ __VA_OPT__(,) {0}};
+#define doc_class(cls, clsdesc, ...) \
+    __VA_ARGS__ \
+    const ClassDoc cls = { \
+        .name = #cls, .desc = clsdesc, \
+        .fields = cls##_fields, .nFields = sizeof(cls##_fields)/sizeof(VarDoc) - 1, \
+        .ctors = cls##_ctors, .nCtors = sizeof(cls##_ctors)/sizeof(FuncDoc) - 1, \
+        .methods = cls##_methods, .nMethods = sizeof(cls##_methods)/sizeof(FuncDoc) - 1 \
+    };
 
 #endif /* C9B2A184_9A49_4803_890A_1608AF458EA2 */
