@@ -39,6 +39,32 @@ int L_##cls##_##name(lua_State *l) { \
     return 0; \
 }
 
+#define class_func_ud_0(cls, p, name, f, acls, ap)\
+int L_##cls##_##name(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    acls ap*a = (acls ap*)(luaL_checkudata(l, 2, #acls)); \
+    f(*o, *a); \
+    return 0; \
+}
+
+#define class_func_ud_1(cls, p, name, f, acls, ap, rt)\
+int L_##cls##_##name(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    acls ap*a = (acls ap*)(luaL_checkudata(l, 2, #acls)); \
+    lua_push##rt(l, f(*o, *a)); \
+    return 1; \
+}
+
+#define class_func_ud_ud(cls, p, name, f, acls, ap, rcls, rp)\
+int L_##cls##_##name(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    acls ap*a = (acls ap*)luaL_checkudata(l, 2, #acls); \
+    rcls rp*r = (rcls rp*)lua_newuserdata(l, sizeof(rcls rp)); \
+    *r = f(*o, *a); \
+    luaL_setmetatable(l, #rcls); \
+    return 1; \
+}
+
 #define class_index(cls) \
 int L_##cls##___index(lua_State *l) { \
     luaL_checkudata(l, 1, #cls);  /* [ map, k ] */ \
