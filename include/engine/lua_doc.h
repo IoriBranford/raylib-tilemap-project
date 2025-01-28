@@ -67,7 +67,6 @@ int SaveModuleDoc(const ModuleDoc *module);
 }
 
 #define doc_class_method(cls, f, fdesc, na, ...)  \
-    __VA_ARGS__ \
     static const VarDoc doc_##cls##_##f##_vars[] = {__VA_ARGS__ __VA_OPT__(,) {0}}; \
     static const FuncDoc doc_##cls##_##f = { \
         .name = #cls":"#f, .desc = fdesc, \
