@@ -11,9 +11,9 @@
     class_getter_reg(cls, field), \
     class_setter_reg(cls, field)
 
-#define reg_class_method(cls, f) reg_func(cls##_##f);
-#define reg_class_getter(cls, field) reg_func(cls##_get##field);
-#define reg_class_setter(cls, field) reg_func(cls##_set##field);
+#define reg_class_method(cls, f) static const luaL_Reg reg_##cls##_##f = class_method_reg(cls, f);
+#define reg_class_getter(cls, field) static const luaL_Reg reg_##cls##_get##field = class_getter_reg(cls, field);
+#define reg_class_setter(cls, field) static const luaL_Reg reg_##cls##_set##field = class_setter_reg(cls, field);
 
 #define class_func_0_0(cls, p, name, f) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o); return 0; } \
