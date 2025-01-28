@@ -212,6 +212,16 @@ int L_##cls##_get##vector2(lua_State *l) { \
     return 2; \
 }
 
+#define class_func_1_vec2(cls, p, fname, f, at, v2type) \
+int L_##cls##_##fname(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    if (!o) return 0; \
+    v2type v = f(*o, luaL_check##at(l, 2)); \
+    lua_pushnumber(l, v.x); \
+    lua_pushnumber(l, v.y); \
+    return 2; \
+}
+
 #define class_getterf_vec2(cls, p, v2type, field, f) \
 int L_##cls##_get##field(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
