@@ -17,23 +17,34 @@
 
 #define class_func_0_0(cls, p, name, f) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o); return 0; } \
-reg_class_method(cls, name)
+reg_class_method(cls, name) \
+doc_class_method(cls, name, "", 0)
 
 #define class_func_1_0(cls, p, name, f, at) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2)); return 0; } \
-reg_class_method(cls, name)
+reg_class_method(cls, name) \
+doc_class_method(cls, name, "", 1, \
+    doc_var(a1, at, "", ""))
 
 #define class_func_2_0(cls, p, name, f, at, at2) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2), luaL_check##at2(l, 3)); return 0; }  \
-reg_class_method(cls, name)
+reg_class_method(cls, name) \
+doc_class_method(cls, name, "", 2, \
+    doc_var(a1, at, "", ""), \
+    doc_var(a2, at2, "", ""))
 
 #define class_func_0_1(cls, p, name, f, rt) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o)); return 1; } \
-reg_class_method(cls, name)
+reg_class_method(cls, name) \
+doc_class_method(cls, name, "", 0, \
+    doc_var(r1, rt, "", ""))
 
 #define class_func_1_1(cls, p, name, f, at, rt) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; } \
-reg_class_method(cls, name)
+reg_class_method(cls, name) \
+doc_class_method(cls, name, "", 1, \
+    doc_var(a1, at, "", ""), \
+    doc_var(r1, rt, "", ""))
 
 #define class_func_1_ud(cls, p, name, f, at, rcls, rp, isValid) \
 int L_##cls##_##name(lua_State *l) { \
@@ -47,7 +58,10 @@ int L_##cls##_##name(lua_State *l) { \
     } \
     return 0; \
 } \
-reg_class_method(cls, name)
+reg_class_method(cls, name) \
+doc_class_method(cls, name, "", 1, \
+    doc_var(a1, at, "", ""), \
+    doc_var(r1, rcls, "", ""))
 
 #define class_index(cls) \
 int L_##cls##___index(lua_State *l) { \
@@ -85,7 +99,9 @@ reg_class_method(cls, __index)
     } \
     return 0; \
 } \
-reg_func(f)
+reg_func(f) \
+doc_func(f, "", 0, \
+    doc_var(new##cls, cls, "", ""))
 
 #define class_ctor_1(cls, p, f, successful, at) int L_##f(lua_State *l) { \
     cls p o = f(lua_to##at(l, 1)); \
@@ -97,7 +113,10 @@ reg_func(f)
     } \
     return 0; \
 } \
-reg_func(f)
+reg_func(f) \
+doc_func(f, "", 1, \
+    doc_var(a1, at, "", ""), \
+    doc_var(new##cls, cls, "", ""))
 
 #define class_newindex(cls) \
 int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
@@ -234,7 +253,10 @@ int L_##cls##_get##vector2(lua_State *l) { \
     lua_pushnumber(l, (p*o).vector2.y); \
     return 2; \
 } \
-reg_class_getter(cls, vector2)
+reg_class_getter(cls, vector2) \
+doc_class_method(cls, get##vector2, "", 0, \
+    doc_var(vector2.x, number, "", NULL), \
+    doc_var(vector2.y, number, "", NULL))
 
 #define class_getterf_vec2(cls, p, v2type, field, f) \
 int L_##cls##_get##field(lua_State *l) { \
@@ -245,7 +267,10 @@ int L_##cls##_get##field(lua_State *l) { \
     lua_pushnumber(l, v.y); \
     return 2; \
 } \
-reg_class_getter(cls, field)
+reg_class_getter(cls, field) \
+doc_class_method(cls, get##field, "", 0, \
+    doc_var(field.x, number, "", NULL), \
+    doc_var(field.y, number, "", NULL))
 
 #define class_setter_Vector2(cls, p, vector2) \
 int L_##cls##_set##vector2(lua_State *l) { \
@@ -255,7 +280,10 @@ int L_##cls##_set##vector2(lua_State *l) { \
     if (lua_isnumber(l, 3)) (p*o).vector2.y = lua_tonumber(l, 3); \
     return 0; \
 } \
-reg_class_setter(cls, vector2)
+reg_class_setter(cls, vector2) \
+doc_class_method(cls, set##vector2, "", 2, \
+    doc_var(vector2.x, number, "", NULL), \
+    doc_var(vector2.y, number, "", NULL))
 
 #define class_setterf_vec2(cls, p, v2type, field, f) \
 int L_##cls##_set##field(lua_State *l) { \
@@ -277,7 +305,10 @@ int L_##cls##_set##field(lua_State *l) { \
         f(*o, (v2type){lua_tonumber(l, -2), lua_tonumber(l, 3)}); \
     return 0; \
 } \
-reg_class_setter(cls, field)
+reg_class_setter(cls, field) \
+doc_class_method(cls, set##field, "", 2, \
+    doc_var(field.x, number, "", NULL), \
+    doc_var(field.y, number, "", NULL))
 
 #define class_getter_and_setter_Vector2(cls, p, vector2) \
     class_getter_Vector2(cls, p, vector2) \
