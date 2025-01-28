@@ -202,6 +202,67 @@ int L_cpBody_PointQueryNearest(lua_State *l) {
     return 0;
 }
 
+void L_SegmentQuery_iter(cpShape *shape, cpFloat t, cpVect n, lua_State *l) {
+    lua_pushvalue(l, -1);
+    class_newuserdata(l, cpShape, shape);
+    lua_pushnumber(l, t);
+    lua_pushnumber(l, n.x);
+    lua_pushnumber(l, n.y);
+    if (lua_pcall(l, 4, 0, 0) != LUA_OK) lua_error(l);
+}
+
+int L_cpBody_SegmentQuery(lua_State *l) {
+    if (!lua_isfunction(l, 2))
+        return 0;
+    cpBody *body = *(cpBody**)luaL_checkudata(l, 1, "cpBody");
+    cpSpace *space = cpBodyGetSpace(body);
+    if (!space)
+        return 0;
+    cpVect startOffset = cpv(luaL_optnumber(l, 3, 0), luaL_optnumber(l, 4, 0));
+    cpVect endOffset = cpv(luaL_optnumber(l, 5, 0), luaL_optnumber(l, 6, 0));
+    cpFloat radius = luaL_optnumber(l, 7, 0);
+    cpShapeFilter filter = {
+        .group = luaL_optinteger(l, 8, CP_NO_GROUP),
+        .categories = luaL_optinteger(l, 9, CP_ALL_CATEGORIES),
+        .mask = luaL_optinteger(l, 10, CP_ALL_CATEGORIES),
+    };
+    cpVect pos = cpBodyGetPosition(body);
+    cpVect start = cpvadd(pos, startOffset);
+    cpVect end = cpvadd(pos, endOffset);
+    lua_pushvalue(l, 2);
+    cpSpaceSegmentQuery(space, start, end, radius, filter,
+	    (cpSpaceSegmentQueryFunc)L_SegmentQuery_iter, l);
+    return 0;
+}
+
+int L_cpBody_SegmentQueryFirst(lua_State *l) {
+    cpBody *body = *(cpBody**)luaL_checkudata(l, 1, "cpBody");
+    cpSpace *space = cpBodyGetSpace(body);
+    if (!space)
+        return 0;
+    cpVect startOffset = cpv(luaL_optnumber(l, 2, 0), luaL_optnumber(l, 3, 0));
+    cpVect endOffset = cpv(luaL_optnumber(l, 4, 0), luaL_optnumber(l, 5, 0));
+    cpFloat radius = luaL_optnumber(l, 6, 0);
+    cpShapeFilter filter = {
+        .group = luaL_optinteger(l, 7, CP_NO_GROUP),
+        .categories = luaL_optinteger(l, 8, CP_ALL_CATEGORIES),
+        .mask = luaL_optinteger(l, 9, CP_ALL_CATEGORIES),
+    };
+    cpVect pos = cpBodyGetPosition(body);
+    cpVect start = cpvadd(pos, startOffset);
+    cpVect end = cpvadd(pos, endOffset);
+    cpSegmentQueryInfo info;
+    cpShape *nearestShape = cpSpaceSegmentQueryFirst(space, start, end, radius, filter, &info);
+    if (nearestShape) {
+        class_newuserdata(l, cpShape, nearestShape);
+        lua_pushnumber(l, info.alpha);
+        lua_pushnumber(l, info.point.x);
+        lua_pushnumber(l, info.point.y);
+        return 4;
+    }
+    return 0;
+}
+
 class_luaopen(cpBody,
     class_method_reg(cpBody, __index),
     class_method_reg(cpBody, __newindex),
@@ -212,6 +273,8 @@ class_luaopen(cpBody,
     class_method_reg(cpBody, RemoveFromSpace),
     class_method_reg(cpBody, PointQuery),
     class_method_reg(cpBody, PointQueryNearest),
+    class_method_reg(cpBody, SegmentQuery),
+    class_method_reg(cpBody, SegmentQueryFirst),
     class_getter_and_setter_reg(cpBody, Angle),
     class_getter_and_setter_reg(cpBody, AngularVelocity),
     class_getter_and_setter_reg(cpBody, Torque),
