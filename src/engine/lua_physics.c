@@ -144,6 +144,64 @@ int L_cpBody_RemoveFromSpace(lua_State *l) {
     return 0;
 }
 
+void L_PointQuery_iter(cpShape *shape, cpVect point, cpFloat distance, cpVect gradient, lua_State *l) {
+    lua_pushvalue(l, -1);
+    class_newuserdata(l, cpShape, shape);
+    lua_pushnumber(l, point.x);
+    lua_pushnumber(l, point.y);
+    lua_pushnumber(l, distance);
+    lua_pushnumber(l, gradient.x);
+    lua_pushnumber(l, gradient.y);
+    if (lua_pcall(l, 6, 0, 0) != LUA_OK) lua_error(l);
+}
+
+int L_cpBody_PointQuery(lua_State *l) {
+    if (!lua_isfunction(l, 2))
+        return 0;
+    cpBody *body = *(cpBody**)luaL_checkudata(l, 1, "cpBody");
+    cpSpace *space = cpBodyGetSpace(body);
+    if (!space)
+        return 0;
+    cpFloat maxDist = luaL_optnumber(l, 3, 0);
+    cpVect offset = cpv(luaL_optnumber(l, 4, 0), luaL_optnumber(l, 5, 0));
+    cpShapeFilter filter = {
+        .group = luaL_optinteger(l, 6, CP_NO_GROUP),
+        .categories = luaL_optinteger(l, 7, CP_ALL_CATEGORIES),
+        .mask = luaL_optinteger(l, 8, CP_ALL_CATEGORIES),
+    };
+    cpVect point = cpvadd(cpBodyGetPosition(body), offset);
+    lua_pushvalue(l, 2);
+    cpSpacePointQuery(space, point, maxDist, filter, (cpSpacePointQueryFunc)L_PointQuery_iter, l);
+    return 0;
+}
+
+int L_cpBody_PointQueryNearest(lua_State *l) {
+    cpBody *body = *(cpBody**)luaL_checkudata(l, 1, "cpBody");
+    cpSpace *space = cpBodyGetSpace(body);
+    if (!space)
+        return 0;
+    cpFloat maxDist = luaL_optnumber(l, 2, 0);
+    cpVect offset = cpv(luaL_optnumber(l, 3, 0), luaL_optnumber(l, 4, 0));
+    cpShapeFilter filter = {
+        .group = luaL_optinteger(l, 5, CP_NO_GROUP),
+        .categories = luaL_optinteger(l, 6, CP_ALL_CATEGORIES),
+        .mask = luaL_optinteger(l, 7, CP_ALL_CATEGORIES),
+    };
+    cpVect point = cpvadd(cpBodyGetPosition(body), offset);
+    cpPointQueryInfo info;
+    cpShape *nearestShape = cpSpacePointQueryNearest(space, point, maxDist, filter, &info);
+    if (nearestShape) {
+        class_newuserdata(l, cpShape, nearestShape);
+        lua_pushnumber(l, info.point.x);
+        lua_pushnumber(l, info.point.y);
+        lua_pushnumber(l, info.distance);
+        lua_pushnumber(l, info.gradient.x);
+        lua_pushnumber(l, info.gradient.y);
+        return 6;
+    }
+    return 0;
+}
+
 class_luaopen(cpBody,
     class_method_reg(cpBody, __index),
     class_method_reg(cpBody, __newindex),
@@ -152,6 +210,8 @@ class_luaopen(cpBody,
     class_method_reg(cpBody, UpdateSprite),
     class_method_reg(cpBody, EachArbiter),
     class_method_reg(cpBody, RemoveFromSpace),
+    class_method_reg(cpBody, PointQuery),
+    class_method_reg(cpBody, PointQueryNearest),
     class_getter_and_setter_reg(cpBody, Angle),
     class_getter_and_setter_reg(cpBody, AngularVelocity),
     class_getter_and_setter_reg(cpBody, Torque),
