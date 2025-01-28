@@ -15,6 +15,17 @@ int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #c
 #define class_func_1_1(cls, p, name, f, at, rt) \
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; }
 
+#define class_func_0_2ud(cls, p, name, f, rcls, rp, rcls2, rp2) \
+int L_##cls##_##name(lua_State *l) { \
+    cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
+    rcls rp*r1 = (rcls rp*) lua_newuserdata(l, sizeof(rcls rp)); \
+    luaL_setmetatable(l, #rcls); \
+    rcls2 rp2*r2 = (rcls2 rp2*) lua_newuserdata(l, sizeof(rcls2 rp2)); \
+    luaL_setmetatable(l, #rcls2); \
+    f(*o, r1, r2); \
+    return 2; \
+}
+
 #define class_func_1_ud(cls, p, name, f, at, rcls, rp, isValid) \
 int L_##cls##_##name(lua_State *l) { \
     cls p*o = luaL_checkudata(l, 1, #cls); \
