@@ -161,5 +161,32 @@ int luaopen_gfx2d(lua_State *l) {
 
     lua_cpcall(l, luaopen_Sprite, NULL);
 
+    doc_class(Sprite, "2d graphic object",
+        doc_class_ctors(Sprite)
+        doc_class_fields(Sprite,
+            doc_var(x, number, "read/write - x position", NULL),
+            doc_var(y, number, "read/write - y position", NULL),
+            doc_var(z, number, "read/write - z position", NULL),
+            doc_var(width, number,  "read/write - rectangle width", NULL),
+            doc_var(height, number, "read/write - rectangle height", NULL),
+            doc_var(rotationDeg, number, "read/write - rotation in degrees", NULL),
+            doc_var(originX, number, "read-write - x position of the pivot point on rectangle", NULL),
+            doc_var(originY, number, "read-write - y position of the pivot point on rectangle", NULL),
+            doc_var(color, integer, "read/write - color in the form 0xRRGGBBAA", NULL),
+            doc_var(animSpeedMS, number, "read/write - number of milliseconds to animate sprite per-frame", NULL),
+            doc_var(animTimer, number, "read-only - number of milliseconds in the current animation state", NULL),
+            doc_var(nearcamera, boolean, "read-only - is close enough to the center of the camera", NULL),
+            doc_var(tileflipx, number, "write-only - -1 to flip, +1 to unflip", NULL),
+            doc_var(tileflipy, number, "write-only - -1 to flip, +1 to unflip", NULL),
+            doc_var(tilenamed, string, "write only - set to the name of a tile stringid defined in tileset properties", NULL),
+            doc_var(tilenamedifnew, string, "write only - as tilenamed, but preserve current animation state if already this tile", NULL)
+        )
+        doc_class_methods(Sprite))
+
+    doc_module(gfx2d, "Graphics 2d",
+        doc_module_constants()
+        doc_module_classes(Sprite)
+        doc_module_funcs())
+
     return 0;
 }

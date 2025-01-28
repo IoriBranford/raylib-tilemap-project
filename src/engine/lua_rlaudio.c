@@ -80,5 +80,27 @@ int luaopen_rlaudio(lua_State *l) {
     lua_cpcall(l, luaopen_rlaudio_g, NULL);
     lua_cpcall(l, luaopen_Sound, NULL);
     lua_cpcall(l, luaopen_Music, NULL);
+
+    doc_class(Sound, "raylib Sound",
+        doc_class_ctors(Sound, doc_LoadSound)
+        doc_class_fields(Sound)
+        doc_class_methods(Sound,
+            doc_Sound_Play,
+            doc_Sound_Stop,
+            doc_Sound_Pause,
+            doc_Sound_Resume))
+    doc_class(Music, "raylib Music",
+        doc_class_ctors(Music, doc_LoadMusicStream)
+        doc_class_fields(Music)
+        doc_class_methods(Music,
+            doc_Music_Play,
+            doc_Music_Stop,
+            doc_Music_Update,
+            doc_Music_Pause,
+            doc_Music_Resume))
+    doc_module(rlaudio, "raylib audio",
+        doc_module_classes(Sound, Music)
+        doc_module_constants()
+        doc_module_funcs())
     return 0;
 }
