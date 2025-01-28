@@ -11,9 +11,9 @@ int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #c
 int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); f(*o, luaL_check##at(l, 2), luaL_check##at2(l, 3)); return 0; }
 
 #define class_func_0_1(cls, p, name, f, rt) \
-int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o)); return 1; }
+int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(l, f(*o)); return 1; }
 #define class_func_1_1(cls, p, name, f, at, rt) \
-int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(f(*o, luaL_check##at(l, 2))); return 1; }
+int L_##cls##_##name(lua_State *l) { cls p *o = (cls p*)luaL_checkudata(l, 1, #cls); lua_push##rt(l, f(*o, luaL_check##at(l, 2))); return 1; }
 
 #define class_func_0_2ud(cls, p, name, f, rcls, rp, rcls2, rp2) \
 int L_##cls##_##name(lua_State *l) { \
