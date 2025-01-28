@@ -41,7 +41,6 @@ int luaopen_##grp(lua_State *l) { \
     lua_getglobal(l, "_G"); \
     luaL_Reg r[] = { __VA_ARGS__, {0} }; \
     luaL_register(l, NULL, r); \
-    L_docfuncs_reg(l, r); \
     return 0; \
 }
 
