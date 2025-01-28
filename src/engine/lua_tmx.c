@@ -4,6 +4,14 @@
 #include <engine/physics.h>
 #include <engine/lua.h>
 
+void L_push_property(lua_State *l, tmx_property *property);
+
+void L_put_property_in_table(tmx_property *property, void *userdata) {
+    lua_State *l = userdata;
+    L_push_property(l, property);
+    lua_setfield(l, -2, property->name);
+}
+
 void L_push_property(lua_State *l, tmx_property *property) {
     if (!property)
         lua_pushnil(l);
@@ -21,14 +29,12 @@ void L_push_property(lua_State *l, tmx_property *property) {
         lua_pushstring(l, property->value.string);
     else if (property->type == PT_OBJECT)
         lua_pushinteger(l, property->value.object_id);
+    else if (property->type == PT_CUSTOM) {
+        lua_newtable(l);
+        tmx_property_foreach(property->value.properties, L_put_property_in_table, l);
+    }
     else
         lua_pushnil(l);
-}
-
-void L_put_property_in_table(tmx_property *property, void *userdata) {
-    lua_State *l = userdata;
-    L_push_property(l, property);
-    lua_setfield(l, -2, property->name);
 }
 
 #define tmx_class_properties_getter(cls) \
@@ -37,13 +43,18 @@ int L_##cls##_getproperties(lua_State *l) { \
     lua_newtable(l); \
     tmx_property_foreach((*o)->properties, L_put_property_in_table, l); \
     return 1; \
-}
+} \
+reg_class_getter(cls, properties)
+
 #define tmx_class_property_getter(cls) \
 int L_##cls##_get_property(lua_State *l) { \
     cls **o = luaL_checkudata(l, 1, #cls); \
     L_push_property(l, tmx_get_property((**o).properties, luaL_checkstring(l, 2))); \
     return 1; \
-}
+} \
+reg_class_method(cls, get_property) \
+doc_class_method(cls, get_property, "", 1, \
+    doc_var(key, string, "", ""))
 
 class_ctor_1(tmx_map, *, LoadMap, , string)
 class_gc(tmx_map, *, UnloadMap)
@@ -87,6 +98,7 @@ int L_tmx_layer_getobjects(lua_State *l) {
     }
     return 0;
 }
+reg_class_getter(tmx_layer, objects)
 
 int L_tmx_layer_new_sprites(lua_State *l) {
     tmx_layer **layer = (tmx_layer **)luaL_checkudata(l, 1, "tmx_layer");
@@ -141,6 +153,12 @@ int L_tmx_layer_new_sprites(lua_State *l) {
     }
     return 1;
 }
+reg_class_method(tmx_layer, new_sprites)
+doc_class_method(tmx_layer, new_sprites, "", 3,
+    doc_var(map, tmx_map, "", NULL),
+    doc_var(baseZ, number, "", "0"),
+    doc_var(deltaZ, number, "", "1"),
+    doc_var(sprites, table, "", NULL))
 
 int L_tmx_map_new_sprites(lua_State *l) {
     tmx_map **m = (tmx_map **)luaL_checkudata(l, 1, "tmx_map");
@@ -160,6 +178,10 @@ int L_tmx_map_new_sprites(lua_State *l) {
     }
     return 1;
 }
+reg_class_method(tmx_map, new_sprites)
+doc_class_method(tmx_map, new_sprites, "", 1,
+    doc_var(baseZ, number, "", "0"),
+    doc_var(sprites, table, "", ""))
 
 class_index_and_newindex(tmx_object)
 class_getter(tmx_object, *, string, type)
@@ -216,36 +238,36 @@ int L_tmx_tile_getcollision(lua_State *l) {
 }
 
 l_global_funcs_luaopen(tmx_g, 
-    l_func_reg(LoadMap)
+    reg_LoadMap
 )
 
 class_luaopen(tmx_map,
-    class_method_reg(tmx_map, __index),
-    class_method_reg(tmx_map, __newindex),
-    class_method_reg(tmx_map, __gc),
-    class_method_reg(tmx_map, get_property),
-    class_method_reg(tmx_map, find_object_by_id),
-    class_method_reg(tmx_map, find_layer_by_id),
-    class_method_reg(tmx_map, find_layer_by_name),
-    class_method_reg(tmx_map, new_sprites),
-    class_getter_reg(tmx_map, class_type),
-    class_getter_reg(tmx_map, width),
-    class_getter_reg(tmx_map, height),
-    class_getter_reg(tmx_map, tile_width),
-    class_getter_reg(tmx_map, tile_height),
-    class_getter_reg(tmx_map, properties)
+    reg_tmx_map___index,
+    reg_tmx_map___newindex,
+    reg_tmx_map___gc,
+    reg_tmx_map_get_property,
+    reg_tmx_map_find_object_by_id,
+    reg_tmx_map_find_layer_by_id,
+    reg_tmx_map_find_layer_by_name,
+    reg_tmx_map_new_sprites,
+    reg_tmx_map_getclass_type,
+    reg_tmx_map_getwidth,
+    reg_tmx_map_getheight,
+    reg_tmx_map_gettile_width,
+    reg_tmx_map_gettile_height,
+    reg_tmx_map_getproperties
 )
 
 class_luaopen(tmx_layer,
-    class_method_reg(tmx_layer, __index),
-    class_method_reg(tmx_layer, __newindex),
-    class_method_reg(tmx_layer, get_property),
-    class_method_reg(tmx_layer, new_sprites),
-    class_getter_reg(tmx_layer, id),
-    class_getter_reg(tmx_layer, class_type),
-    class_getter_reg(tmx_layer, type),
-    class_getter_reg(tmx_layer, objects),
-    class_getter_reg(tmx_layer, properties)
+    reg_tmx_layer___index,
+    reg_tmx_layer___newindex,
+    reg_tmx_layer_get_property,
+    reg_tmx_layer_new_sprites,
+    reg_tmx_layer_getid,
+    reg_tmx_layer_getclass_type,
+    reg_tmx_layer_gettype,
+    reg_tmx_layer_getobjects,
+    reg_tmx_layer_getproperties
 )
 
 class_luaopen(tmx_tile,
@@ -282,5 +304,51 @@ int luaopen_tmx(lua_State *l) {
     lua_cpcall(l, luaopen_tmx_tile, NULL);
     lua_cpcall(l, luaopen_tmx_object, NULL);
     lua_cpcall(l, luaopen_tmx_map, NULL);
+
+    doc_class(tmx_map, "",
+        doc_class_methods(tmx_map,
+            doc_tmx_map_get_property,
+            doc_tmx_map_find_object_by_id,
+            doc_tmx_map_find_layer_by_id,
+            doc_tmx_map_find_layer_by_name,
+            doc_tmx_map_new_sprites
+            )
+        doc_class_ctors(tmx_map, doc_LoadMap)
+        doc_class_fields(tmx_map,
+            doc_var(width, integer, "width in tiles", NULL),
+            doc_var(height, integer, "height in tiles", NULL),
+            doc_var(tile_width, integer, "width of a tilelayer cell", NULL),
+            doc_var(tile_height, integer, "height of a tilelayer cell", NULL),
+            doc_var(properties, table, "properties as key/value table", NULL)))
+
+    doc_class(tmx_layer, "",
+        doc_class_methods(tmx_layer,
+            doc_tmx_layer_get_property,
+            doc_tmx_layer_new_sprites)
+        doc_class_ctors(tmx_layer)
+        doc_class_fields(tmx_layer,
+            doc_var(id, integer, "unique layer id", NULL),
+            doc_var(class_type, string, "user-defined type or class name", NULL),
+            doc_var(type, integer, "L_LAYER, L_OBJGR, L_GROUP, or L_IMAGE", NULL),
+            doc_var(properties, table, "properties as key/value table", NULL)))
+
+    doc_class(tmx_object, "",
+        doc_class_ctors(tmx_object)
+        doc_class_methods(tmx_object,
+            doc_tmx_object_get_property)
+        doc_class_fields(tmx_object,
+            doc_var(id, integer, "unique object id", NULL),
+            doc_var(type, string, "user-defined type or class", NULL),
+            doc_var(x, number, "x", NULL),
+            doc_var(y, number, "y", NULL),
+            doc_var(width, number, "width", NULL),
+            doc_var(height, number, "height", NULL),
+            doc_var(properties, table, "properties", NULL)))
+
+    doc_module(tmx, "",
+        doc_module_constants()
+        doc_module_classes(tmx_map, tmx_layer, tmx_object)
+        doc_module_funcs())
+
     return 0;
 }
