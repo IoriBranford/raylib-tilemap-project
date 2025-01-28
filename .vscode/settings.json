@@ -12,5 +12,6 @@
             "url": "https://ldtk.io/files/JSON_SCHEMA.json"
         }
     ],
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "Lua.workspace.library": [ "${workspaceFolder}/doc/lua" ]
 }
