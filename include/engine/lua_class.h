@@ -112,6 +112,17 @@ int L_##cls##___index(lua_State *l) { \
     return 0; \
 }
 
+#define class_ctor_2(cls, p, f, successful, at, at2) int L_##f(lua_State *l) { \
+    cls p o = f(lua_to##at(l, 1), lua_to##at2(l, 2)); \
+    if (successful(o)) { \
+        cls p*od = (cls p*)lua_newuserdata(l, sizeof(cls p)); \
+        *od = o; \
+        luaL_setmetatable(l, #cls); \
+        return 1; \
+    } \
+    return 0; \
+}
+
 #define class_newindex(cls) \
 int L_##cls##___newindex(lua_State *l) {  /* [ map, k, v ] */\
     luaL_checkudata(l, 1, #cls);\
