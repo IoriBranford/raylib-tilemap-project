@@ -35,6 +35,10 @@ add_executable(game
     src/engine/lua_gfx2d.c
     src/engine/lua_input.c
     src/engine/lua_physics.c
+    src/engine/lua_physics_cpSpace.c
+    src/engine/lua_physics_cpBody.c
+    src/engine/lua_physics_cpShape.c
+    src/engine/lua_physics_cpArbiter.c
     src/engine/lua_raylib.c
     src/engine/lua_rlaudio.c
     src/engine/lua_rlinput.c
