@@ -9,7 +9,7 @@ int L_cpSpace_NewSpace(lua_State *l) {
 class_index_and_newindex(cpSpace)
 class_gc(cpSpace, *, ReleaseSpace)
 
-class_getterf_and_setterf(cpSpace, *, integer, Iterations, cpSpaceGetIterations, cpSpaceSetIterations)
+class_getterf_and_setterf(cpSpace, *, number, Iterations, cpSpaceGetIterations, cpSpaceSetIterations)
 class_getterf_and_setterf_vec2(cpSpace, *, cpVect, Gravity, cpSpaceGetGravity, cpSpaceSetGravity)
 class_getterf_and_setterf(cpSpace, *, number, Damping, cpSpaceGetDamping, cpSpaceSetDamping)
 class_getterf_and_setterf(cpSpace, *, number, IdleSpeedThreshold, cpSpaceGetIdleSpeedThreshold, cpSpaceSetIdleSpeedThreshold)
