@@ -42,11 +42,11 @@ void ReleaseEachSpaceConstraint(cpSpace *sp, cpConstraint *constraint, void *_) 
 }
 
 void ReleaseSpace(cpSpace *sp) {
-    if (space) {
-        cpSpaceEachBody(space, (cpSpaceBodyIteratorFunc)ReleaseEachSpaceBody, NULL);
-        cpSpaceEachShape(space, (cpSpaceShapeIteratorFunc)ReleaseEachSpaceShape, NULL);
-        cpSpaceEachConstraint(space, (cpSpaceConstraintIteratorFunc)ReleaseEachSpaceConstraint, NULL);
-        cpSpaceFree(space);
+    if (sp) {
+        cpSpaceEachBody(sp, (cpSpaceBodyIteratorFunc)ReleaseEachSpaceBody, NULL);
+        cpSpaceEachShape(sp, (cpSpaceShapeIteratorFunc)ReleaseEachSpaceShape, NULL);
+        cpSpaceEachConstraint(sp, (cpSpaceConstraintIteratorFunc)ReleaseEachSpaceConstraint, NULL);
+        cpSpaceFree(sp);
     }
 }
 
