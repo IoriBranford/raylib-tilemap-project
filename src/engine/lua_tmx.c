@@ -174,7 +174,7 @@ tmx_class_property_getter(tmx_object)
 int L_tmx_object_new_body(lua_State *l) {
     tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
     tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
-    class_newuserdata(l, cpBody, NewTMXObjectBody(*o, *m));
+    class_newuserdata(l, cpBody, AddNewTMXObjectBody(*o, *m));
     return 1;
 }
 
