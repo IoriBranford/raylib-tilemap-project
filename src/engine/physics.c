@@ -119,6 +119,14 @@ cpBody* NewTMXObjectBody(tmx_object *obj, tmx_map *map) {
     cpBody *body = cpBodyNew(1, HUGE_VAL);
     cpBodySetPosition(body, cpv(obj->x, obj->y));
     cpBodySetAngle(body, obj->rotation * DEG2RAD);
+    GiveBodyTMXObjectShapes(body, obj, map->tiles, cpv(0, 0));
+    return body;
+}
+
+cpBody* AddNewTMXObjectBody(tmx_object *obj, tmx_map *map) {
+    cpBody *body = cpBodyNew(1, HUGE_VAL);
+    cpBodySetPosition(body, cpv(obj->x, obj->y));
+    cpBodySetAngle(body, obj->rotation * DEG2RAD);
     cpSpaceAddBody(space, body);
     GiveBodyTMXObjectShapes(body, obj, map->tiles, cpv(0, 0));
     return body;
