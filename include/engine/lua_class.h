@@ -339,6 +339,7 @@ int luaopen_##cls(lua_State *l) { \
     luaL_newmetatable(l, #cls); \
     luaL_Reg r[] = { __VA_ARGS__, {0} }; \
     luaL_register(l, NULL, r); \
+    lua_setglobal(l, #cls); \
     return 0; \
 }
 
