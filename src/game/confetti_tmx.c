@@ -52,7 +52,7 @@ void AddTMXObjectConfetti(tmx_object *obj, tmx_map *map) {
 
     Color color = ColorFromHSV(GetRandomValue(0,5) * 60, 1, 1);
 
-    cpBody *body = NewTMXObjectBody(obj, map);
+    cpBody *body = AddNewTMXObjectBody(obj, map);
     cpBodySetPosition(body, pos);
     cpBodySetVelocity(body, cpv(0,4));
     cpBodySetAngularVelocity(body, PI/16);
