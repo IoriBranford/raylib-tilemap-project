@@ -9,7 +9,7 @@ void ClosePhysics();
 void UpdatePhysics();
 
 cpBody* NewBody(cpFloat x, cpFloat y, cpFloat rotationRad);
-cpBody* NewTMXObjectBody(tmx_object *obj, tmx_map *map);
+cpBody* SpaceAddNewTMXObjectBody(cpSpace *sp, tmx_object *obj, tmx_map *map);
 cpBody* AddNewTMXObjectBody(tmx_object *obj, tmx_map *map);
 cpBody* GiveBodyTMXObjectShapes(cpBody *body, tmx_object *obj, tmx_tile **maptiles, cpVect offset);
 cpBody* GiveBodyTMXLayerShapes(cpBody *body, tmx_layer *layer, tmx_map *map, cpVect offset);
