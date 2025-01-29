@@ -83,4 +83,5 @@ int luaopen_rlaudio(lua_State *l) {
     lua_cpcall(l, luaopen_rlaudio_g, NULL);
     lua_cpcall(l, luaopen_Sound, NULL);
     lua_cpcall(l, luaopen_Music, NULL);
+    return 0;
 }

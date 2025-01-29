@@ -199,4 +199,5 @@ int luaopen_raylib(lua_State *l) {
     lua_cpcall(l, luaopen_raylib_g, NULL);
     lua_cpcall(l, luaopen_rlinput, NULL);
     lua_cpcall(l, luaopen_rlaudio, NULL);
+    return 0;
 }
