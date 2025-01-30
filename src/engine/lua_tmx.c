@@ -65,6 +65,9 @@ class_func_1_ud(tmx_map, *, find_layer_by_id,
 class_func_1_ud(tmx_map, *, find_layer_by_name,
     tmx_find_layer_by_name, string,
     tmx_layer, *, )
+class_func_1_ud(tmx_map, *, get_tile,
+    tmx_get_tile, integer,
+    tmx_tile, *, )
 
 class_index_and_newindex(tmx_layer)
 class_getter(tmx_layer, *, integer, id)
