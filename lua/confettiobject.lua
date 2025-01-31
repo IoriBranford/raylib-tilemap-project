@@ -48,6 +48,6 @@ return function(obj, map)
     body:RemoveFromSpace()
     spr.alpha = 0
     if popped then
-        task.run("pop", 0, spr.x, spr.y)
+        require("pop")(spr.x, spr.y)
     end
 end
