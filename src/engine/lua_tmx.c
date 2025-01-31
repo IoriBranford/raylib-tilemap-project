@@ -69,6 +69,54 @@ class_func_1_ud(tmx_map, *, get_tile,
     tmx_get_tile, integer,
     tmx_tile, *, )
 
+int L_tmx_map_get_layer_tile(lua_State *l) {
+    tmx_map *map = *(tmx_map**)luaL_checkudata(l, 1, "tmx_map");
+    tmx_layer *layer = *(tmx_layer**)luaL_checkudata(l, 2, "tmx_layer");
+    int x = floor(luaL_checknumber(l, 3));
+    int y = floor(luaL_checknumber(l, 4));
+    uint32_t gid;
+    tmx_tile *tile = tmx_get_layer_tile(map, layer, x, y, &gid);
+    class_newuserdata(l, tmx_tile, tile);
+    lua_pushboolean(l, gid & TMX_FLIPPED_HORIZONTALLY);
+    lua_pushboolean(l, gid & TMX_FLIPPED_VERTICALLY);
+    return 3;
+}
+
+int L_tmx_map_set_layer_tile(lua_State *l) {
+    tmx_map *map = *(tmx_map**)luaL_checkudata(l, 1, "tmx_map");
+    tmx_layer *layer = *(tmx_layer**)luaL_checkudata(l, 2, "tmx_layer");
+    int x = floor(luaL_checknumber(l, 3));
+    int y = floor(luaL_checknumber(l, 4));
+    tmx_tile *tile = *(tmx_tile**)luaL_checkudata(l, 5, "tmx_tile");
+    uint32_t flags = 0;
+    if (lua_toboolean(l, 6))
+        flags |= TMX_FLIPPED_HORIZONTALLY;
+    if (lua_toboolean(l, 7))
+        flags |= TMX_FLIPPED_VERTICALLY;
+    tmx_set_layer_tile(map, layer, x, y, tile, flags);
+    return 0;
+}
+
+int L_tmx_map_get_layer_gid(lua_State *l) {
+    tmx_map *map = *(tmx_map**)luaL_checkudata(l, 1, "tmx_map");
+    tmx_layer *layer = *(tmx_layer**)luaL_checkudata(l, 2, "tmx_layer");
+    int x = floor(luaL_checknumber(l, 3));
+    int y = floor(luaL_checknumber(l, 4));
+    uint32_t gid = tmx_get_layer_gid(map, layer, x, y);
+    lua_pushinteger(l, gid);
+    return 1;
+}
+
+int L_tmx_map_set_layer_gid(lua_State *l) {
+    tmx_map *map = *(tmx_map**)luaL_checkudata(l, 1, "tmx_map");
+    tmx_layer *layer = *(tmx_layer**)luaL_checkudata(l, 2, "tmx_layer");
+    int x = floor(luaL_checknumber(l, 3));
+    int y = floor(luaL_checknumber(l, 4));
+    uint32_t gid = floor(luaL_checknumber(l, 5));
+    tmx_set_layer_gid(map, layer, x, y, gid);
+    return 0;
+}
+
 class_index_and_newindex(tmx_layer)
 class_getter(tmx_layer, *, integer, id)
 class_getter(tmx_layer, *, string, class_type)
@@ -227,6 +275,10 @@ class_luaopen(tmx_map,
     class_method_reg(tmx_map, __newindex),
     class_method_reg(tmx_map, __gc),
     class_method_reg(tmx_map, get_property),
+    class_method_reg(tmx_map, get_layer_tile),
+    class_method_reg(tmx_map, set_layer_tile),
+    class_method_reg(tmx_map, get_layer_gid),
+    class_method_reg(tmx_map, set_layer_gid),
     class_method_reg(tmx_map, find_object_by_id),
     class_method_reg(tmx_map, find_layer_by_id),
     class_method_reg(tmx_map, find_layer_by_name),
