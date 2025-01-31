@@ -1,28 +1,5 @@
 --utility
 
-sqrt = math.sqrt
-abs = math.abs
-min, max = math.min, math.max
-flr, ceil = math.floor, math.ceil
-
-function add(t, v, i)
-    return table.insert(t, i, v)
-end
-
-function rnd(i)
-    return math.random()*(i or 1)
-end
-
-function all(t)
-    local i = 0
-    return function()
-        i = i + 1
-        return t[i]
-    end
-end
-
-function pal(...) end
-
 function nop() end
 
 function xor(a, b)
