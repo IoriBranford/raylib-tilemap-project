@@ -3,10 +3,11 @@
 
 void Task_ResumeLuaThread(Task *t);
 void ReleaseLuaTask(Task *task);
+int L_Retask(lua_State *l);
 
 class_gc(Task, *, ReleaseLuaTask)
 
-int L_Task_run(lua_State *l) {
+int L_RunNewTask(lua_State *l) {
     if (lua_isstring(l, 1)) {
         lua_getglobal(l, "require");
         lua_pushvalue(l, 1);
@@ -82,12 +83,7 @@ int L_Task_end(lua_State *l) {
 
 class_getterf(Task, *, boolean, done, IsTaskDone)
 
-int L_Task_sleep(lua_State *l) {
-    Task **ud = luaL_checkudata(l, 1, "Task");
-    int sleep = luaL_checknumber(l, 2);
-    SleepTask(*ud, sleep);
-    return 0;
-}
+class_func_1_0(Task, *, sleep, SleepTask, integer)
 
 class_index_and_newindex(Task)
 class_getter_and_setter(Task, *, number, priority)
@@ -107,11 +103,13 @@ class_luaopen(Task,
 )
 
 int luaopen_task(lua_State *l) {
+    lua_getglobal(l, "_G");
     luaL_Reg task_r[] = {
-        class_method_reg(Task, run),
+        l_func_reg(RunNewTask),
+        l_func_reg(Retask),
         {0}
     };
-    luaL_register(l, "task", task_r);
+    luaL_register(l, NULL, task_r);
     lua_pop(l, 1);
 
     lua_cpcall(l, luaopen_Task, NULL);
