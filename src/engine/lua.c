@@ -3,59 +3,23 @@
 #include <assert.h>
 #include <stdarg.h>
 
-int L_RunNewTask(lua_State *l);
+int L_RunTask(lua_State *l);
 
 static lua_State *lua;
 
-static Task *currentTask = NULL;
-static bool retasked = false;
-
-int L_Retask(lua_State *l) {
-    if (lua_isstring(l, 1)) {
-        lua_getglobal(l, "require");
-        lua_pushvalue(l, 1);
-        if (lua_pcall(l, 1, 1, 0) != LUA_OK)
-            lua_error(l);
-        lua_replace(l, 1);
-    }
-
-    if (!lua_isfunction(l, 1) && !lua_iscfunction(l, 1))
-        return luaL_typerror(l, 1, "function or valid require string");
-
-    retasked = true;
-    lua_State *thread = lua_newthread(lua);
-    int ref = luaL_ref(lua, LUA_REGISTRYINDEX);
-    lua_xmove(l, thread, lua_gettop(l));
-
-    luaL_unref(lua, LUA_REGISTRYINDEX, currentTask->threadRef);
-    currentTask->threadRef = ref;
-    return 0;
-}
-
 void Task_ResumeLuaThread(Task *t) {
-    int result = LUA_OK;
-    int nArgs = 0;
-    lua_State *thread;
+    lua_rawgeti(lua, LUA_REGISTRYINDEX, t->threadRef);
+    lua_State *thread = lua_tothread(lua, -1);
+    lua_pop(lua, 1);
 
-    currentTask = t;
-    do {
-        retasked = false;
-
-        lua_rawgeti(lua, LUA_REGISTRYINDEX, t->threadRef);
-        thread = lua_tothread(lua, -1);
-        lua_pop(lua, 1);
-
-        nArgs += lua_gettop(thread);
-
-        #ifdef LUA54
-            int nResults;
-            result = lua_resume(thread, NULL, nArgs, &nResults);
-        #else
-            result = lua_resume(thread, nArgs);
-        #endif
-
-        nArgs = -1;
-    } while (retasked && result <= LUA_YIELD);
+    int nArgs = lua_gettop(thread);
+    int result;
+    #ifdef LUA54
+        int nResults;
+        result = lua_resume(thread, NULL, nArgs, &nResults);
+    #else
+        result = lua_resume(thread, nArgs);
+    #endif
 
     if (result > LUA_YIELD)
         fprintf(stderr, "LUA: %s\n", lua_tostring(thread, -1));
@@ -84,7 +48,7 @@ int GetLua(lua_State *l, const char *luaFile) {
 }
 
 int RunLua(const char *luaFile, int priority, const char *argf, ...) {
-    lua_pushcfunction(lua, L_RunNewTask);
+    lua_pushcfunction(lua, L_RunTask);
     lua_pushstring(lua, luaFile);
     lua_pushinteger(lua, priority);
 

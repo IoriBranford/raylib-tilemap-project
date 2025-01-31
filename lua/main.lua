@@ -14,7 +14,7 @@ return function()
                 return
             end
             sound:Play()
-            RunNewTask("confettiobject", 1, obj, map)
+            RunTask("confettiobject", 1, obj, map)
             key = GetKeyPressed();
         end
     end
