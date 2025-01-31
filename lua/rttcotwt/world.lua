@@ -60,8 +60,8 @@ function room_cell(x, y)
     local room = rooms[y & ~0x7F]
     if room then
         return
-            room[1] + ((x & 0x7F) >> 3),
-            room[2] + ((y & 0x7F) >> 3)
+            room[1] + bit.rshift((x & 0x7F), 3),
+            room[2] + bit.rshift((y & 0x7F), 3)
     end
 end
 
@@ -78,7 +78,7 @@ function cell_bound(x, y, axis, dir)
 end
 
 function obj_ground(o)
-    local w, h = o.w << 3, o.h << 3
+    local w, h = bit.lshift(o.w, 3), bit.lshift(o.h, 3)
     local x, y = o.x, o.y + h
     for x = x, x + w - 1, w - 1 do
         local bnd = cell_bound(x, y, 1, 1)
@@ -97,7 +97,7 @@ function cell_ladder(x, y, axis)
 end
 
 function obj_ladder(o)
-    local w, h = o.w << 3, o.h << 3
+    local w, h = bit.lshift(o.w, 3), bit.lshift(o.h, 3)
     local x, y = o.x, o.y
     for x = x, x + w - 1, w - 1 do
         local ldr = cell_ladder(x, y, 0)
@@ -121,7 +121,7 @@ end
 
 function obj_fall_out_y(o)
     if o.y < 0
-        and o.y + (o.w << 3) < cam.y
+        and o.y + (bit.lshift(o.w, 3)) < cam.y
         or o.y > cam.y + 128 then
         kill_obj(o)
     end

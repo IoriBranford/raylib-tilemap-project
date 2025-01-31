@@ -34,8 +34,8 @@ function start_enemy_shot(o)
     update_obj_ani(o, o.sprset.throw)
     local b = add_bomb({
         target = ninja,
-        x = o.x + (o.w << 1),
-        y = o.y + (o.h << 1)
+        x = o.x + (bit.lshift(o.w, 1)),
+        y = o.y + (bit.lshift(o.h, 1))
     }, o.bombtmpl)
     if o.flpx and b.vx then
         b.vx = -b.vx
@@ -256,8 +256,8 @@ function enemy_try_fire(o)
         and o.readytofire
         and o.y == o.floory then
         local firedistx = o.firedistx or 2
-        local dx = ninja.x + (ninja.w << 2)
-            - (o.x + (o.w << 2))
+        local dx = ninja.x + (bit.lshift(ninja.w, 2))
+            - (o.x + (bit.lshift(o.w, 2)))
         if abs(dx) < firedistx then
             start_enemy_shot(o)
             return true

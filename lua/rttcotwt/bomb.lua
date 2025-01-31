@@ -274,7 +274,7 @@ function update_godbomb_prefly(o)
         local vx, vy = 0, -1
         if not o.target.hidden then
             local cx, cy = obj_spr_center(o)
-            local tx = o.target.x + (o.target.w << 2)
+            local tx = o.target.x + bit.lshift(o.target.w, 2)
             local ty = o.target.y
             vx, vy = unitv(cx, cy, tx, ty)
         end
@@ -383,10 +383,10 @@ function obj_explode_bombs(o, bombs)
         if bomb ~= o
             and bomb ~= heldbomb
             and aabbs(o.x, o.y,
-                o.w << 3, o.h << 3,
-                bomb.x + (bomb.w << 1),
-                bomb.y + (bomb.w << 1),
-                bomb.w << 2, bomb.h << 2)
+                bit.lshift(o.w, 3), bit.lshift(o.h, 3),
+                bomb.x + (bit.lshift(bomb.w, 1)),
+                bomb.y + (bit.lshift(bomb.w, 1)),
+                bit.lshift(bomb.w, 2), bit.lshift(bomb.h, 2))
         then
             bomb_explode(bomb)
         end
@@ -396,9 +396,9 @@ end
 function obj_hit_any_expl(o)
     for expl in all(expls) do
         if aabbs(o.x, o.y,
-                o.w << 3, o.h << 3,
+                bit.lshift(o.w, 3), bit.lshift(o.h, 3),
                 expl.x, expl.y,
-                expl.w << 3, expl.h << 3)
+                bit.lshift(expl.w, 3), bit.lshift(expl.h, 3))
         then
             return expl
         end
