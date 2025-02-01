@@ -6,7 +6,7 @@ min, max = math.min, math.max
 flr, ceil = math.floor, math.ceil
 
 MAP = nil ---@type tmx_map
-MAPL = nil ---@type tmx_layer
+MAPLAYER = nil ---@type tmx_layer
 
 function mid(a, b, c)
     local mx = max(a, b, c)
@@ -42,9 +42,17 @@ function dset(...) print("dset NYI") end
 function pal(...) print("pal NYI") end
 function palt(...) print("palt NYI") end
 function pset(...) print("pset NYI") end
-function mget(...) print("mget NYI") end
-function mset(...) print("mset NYI") end
-function fget(...) print("fget NYI") end
+function mget(x, y) return MAP:get_layer_gid(MAPLAYER, x, y) - 1 end
+function mset(x, y, t) MAP:set_layer_gid(MAPLAYER, x, y, t+1) end
+function fget(t, f)
+    local tile = MAP:get_tile(t+1)
+    local flags = tile and tile:get_property("flags")
+    if type(flags) ~= "number" then flags = 0 end
+    if f then
+        return bit.band(flags, bit.lshift(1, f)) ~= 0
+    end
+    return flags
+end
 function music(...) print("music NYI") end
 function sfx(...) print("sfx NYI") end
 function spr(...) print("spr NYI") end
