@@ -151,7 +151,7 @@ int L_tmx_layer_new_sprites(lua_State *l) {
             class_newuserdata(l, Sprite, spr);
         } break;
         case L_LAYER: {
-            Sprite *spr = NewTileLayerSprite(*layer, *m);
+            Sprite *spr = NewTileLayerSprite(*layer, *m, (Rectangle){0}, (Rectangle){0});
             spr->z = z;
             class_newuserdata(l, Sprite, spr);
         } break;

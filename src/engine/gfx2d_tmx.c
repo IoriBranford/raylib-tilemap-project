@@ -320,6 +320,23 @@ Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color) {
     return NULL;
 }
 
+void SetLayerSpriteSource(Sprite *spr, Rectangle source) {
+    assert(spr->behavior.type == SPRITETYPE_TILELAYER);
+    tmx_map *map = spr->layer.map;
+    tmx_layer *layer = spr->layer.layer;
+    if (source.x < 0) source.x = 0;
+    if (source.y < 0) source.y = 0;
+    if (source.width > map->width - source.x)
+        source.width = map->width - source.x;
+    else if (source.width == 0)
+        source.width = map->width;
+    if (source.height > map->height - source.y)
+        source.height = map->height - source.y;
+    else if (source.height == 0)
+        source.height = map->height;
+    spr->layer.source = source;
+}
+
 void UpdateSprite_TileLayer(Sprite *spr) {
     spr->animTimer += GetFrameTime()*spr->animSpeedMS;
 }
@@ -334,24 +351,32 @@ void DrawSprite_TileLayer(Sprite *spr) {
     uint32_t *gids = layer->content.gids;
     tmx_tile **mapTiles = map->tiles;
     
-    unsigned cols = map->width;
-    unsigned rows = map->height;
-    unsigned colw = map->tile_width;
-    unsigned rowh = map->tile_height;
-    unsigned n = cols * rows;
+    int col = spr->layer.source.x;
+    int row = spr->layer.source.y;
+    int cols = spr->layer.source.width;
+    int rows = spr->layer.source.height;
+    int colw = map->tile_width;
+    int rowh = map->tile_height;
+    int n = cols * rows;
 
-    Rectangle source;
-    Vector2 position = spr->position;
-    position.y += rowh;
+    Rectangle tileSource;
+    Vector2 position = {
+        .x = spr->position.x,
+        .y = spr->position.y + rowh
+    };
+    float x0 = position.x;
     Vector2 origin = { 0, 0 }, size = { 0, 0 };
     Color color = tmx2rl_Color(layer->tintcolor);
 
-    unsigned col = 0, row = 0;
-    for (unsigned i = 0; i < n; ++i) {
-        uint32_t gid = *gids++;
-        uint32_t tileId = gid & TMX_FLIP_BITS_REMOVAL;
+    for (; row < rows; ++row, position.x = x0, position.y += rowh) {
+        int i = row*map->width + col;
+        int i2 = i + cols;
+        for (; i < i2; ++i, position.x += colw) {
+            uint32_t gid = gids[i];
+            uint32_t tileId = gid & TMX_FLIP_BITS_REMOVAL;
+            if (!tileId)
+                continue;
 
-        if (tileId) {
             tmx_tile *tile = mapTiles[tileId];
 
             tmx_anim_frame *anim = tile->animation;
@@ -382,29 +407,18 @@ void DrawSprite_TileLayer(Sprite *spr) {
                 (gid & TMX_FLIPPED_HORIZONTALLY) ? -1 : 1,
                 (gid & TMX_FLIPPED_VERTICALLY) ? -1 : 1
             };
-            GetTileSource(&source, tile, flip);
+            GetTileSource(&tileSource, tile, flip);
 
             Texture *texture = GetTileImage(tile);
-            DrawTexturePro(*texture, source, rect, origin, 0, color);
-        }
-
-        ++col;
-        if (col >= cols) {
-            col = 0;
-            ++row;
-            position.x = spr->position.x;
-            position.y += rowh;
-        } else {
-            position.x += colw;
+            DrawTexturePro(*texture, tileSource, rect, origin, 0, color);
         }
     }
 }
 
-Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
+Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map, Rectangle source, Rectangle rect) {
     if (layer->type != L_LAYER) return NULL;
     Sprite *spr = NewSprite();
     if (spr) {
-        Rectangle rect = {0};
         spr->active = true;
         spr->rect = rect;
         spr->rotationDeg = 0;
@@ -416,6 +430,7 @@ Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map) {
         spr->animSpeedMS = 1000;
         spr->layer.layer = layer;
         spr->layer.map = map;
+        SetLayerSpriteSource(spr, source);
     }
     return spr;
 }
