@@ -255,6 +255,20 @@ class_getter(tmx_tile, *, number, height)
 tmx_class_properties_getter(tmx_tile)
 tmx_class_property_getter(tmx_tile)
 
+int L_tmx_tile_new_sprite(lua_State *l) {
+    tmx_tile *t = *(tmx_tile**)luaL_checkudata(l, 1, "tmx_tile");
+    Rectangle r = {
+        .x = luaL_optnumber(l, 2, 0),
+        .y = luaL_optnumber(l, 3, 0),
+        .width = luaL_optnumber(l, 4, t->width),
+        .height = luaL_optnumber(l, 5, t->height),
+    };
+    lua_Number rotationDeg = luaL_optnumber(l, 6, 0);
+    Color color = L_toColor(l, 7);
+    class_newuserdata(l, Sprite, NewTileSprite(t, r, rotationDeg, color));
+    return 1;
+}
+
 int L_tmx_tile_getcollision(lua_State *l) {
     tmx_tile **o = luaL_checkudata(l, 1, "tmx_tile");
     lua_newtable(l);
@@ -307,6 +321,7 @@ class_luaopen(tmx_tile,
     class_method_reg(tmx_tile, __index),
     class_method_reg(tmx_tile, __newindex),
     class_method_reg(tmx_tile, get_property),
+    class_method_reg(tmx_tile, new_sprite),
     class_getter_reg(tmx_tile, id),
     class_getter_reg(tmx_tile, type),
     class_getter_reg(tmx_tile, width),

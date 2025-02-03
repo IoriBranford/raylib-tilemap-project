@@ -75,6 +75,23 @@ class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
 class_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
 class_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
 
+int L_Sprite_gettile(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_TILE)
+        return 0;
+    class_newuserdata(l, tmx_tile, (**o).tile.tile);
+    return 1;
+}
+
+int L_Sprite_settile(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_TILE)
+        return 0;
+    tmx_tile *tile = *(tmx_tile**)luaL_checkudata(l, 2, "tmx_tile");
+    SetSpriteTile(*o, tile);
+    return 0;
+}
+
 class_func_1_ud(Sprite, *, settilenamed,
     SetSpriteNamedTileFromCurrentTileset, string,
     tmx_tile, *, )
@@ -123,6 +140,7 @@ class_luaopen(Sprite,
     class_getter_and_setter_reg(Sprite, size),
     class_getter_and_setter_reg(Sprite, color),
     class_getter_and_setter_reg(Sprite, origin),
+    class_getter_and_setter_reg(Sprite, tile),
     class_setter_reg(Sprite, tilenamed),
     class_setter_reg(Sprite, tilenamedifnew),
     class_setter_reg(Sprite, tileflipx),
