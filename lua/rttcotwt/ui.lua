@@ -1,11 +1,27 @@
-function draw_life(life)
-    pal()
-    fillp()
+local lifebar = {}
+local gameover = nil
+
+function add_lifebar()
     local y = 121
     local x = 0
-    for i = 1, life do
-        spr(sprs.heart, x, y)
+    for i = 1, ninmaxstartlife do
+        add(lifebar, newspr(sprs.heart, x, y))
         x = x + 8
+    end
+end
+
+function add_game_over()
+    gameover = newspr(sprs.gameover,
+                64 - 16, 64 - 8,
+                4, 2)
+end
+
+function update_lifebar(life)
+    for i = 1, life do
+        lifebar[i].alpha = 255
+    end
+    for i = life+1, ninmaxstartlife do
+        lifebar[i].alpha = 0
     end
 end
 

@@ -79,7 +79,6 @@ function draw_game()
     camera(cam.x, cam.y)
     draw_objs()
     camera()
-    draw_life(ninja.life)
     draw_clock()
     if obj_dead(ninja) then
         spr(sprs.gameover,
@@ -122,6 +121,7 @@ function update_title()
             ninstartlife = min(ninmaxstartlife,
                 ninstartlife + 1)
         end
+        update_lifebar(ninstartlife)
     end
 end
 
@@ -129,7 +129,6 @@ function draw_title()
     cls()
     draw_sky()
     draw_objs()
-    draw_life(ninstartlife)
     print("best", 80, 123, 7)
     draw_clock()
 end
@@ -153,6 +152,7 @@ function start_title()
    ]]
     }
     music(snds.titlemus)
+    add_lifebar()
     _update60 = update_title
     _draw = draw_title
 end

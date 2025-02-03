@@ -53,7 +53,8 @@ function draw_obj_spr(o)
     pal(o.pal)
     palt(o.palt or 0x8000)
     fillp((o.fillp or "█"))--|0b.01)
-    spr(o.spri, o.x, o.y, o.w, o.h,
+    sprpos(o.spr, o.x, o.y)
+    sprflip(o.spr,
         xor(o.flpx, o.frmflpx),
         xor(o.flpy, o.frmflpy))
 end
@@ -62,7 +63,7 @@ function draw_obj_map(o)
     pal(o.pal)
     palt(o.palt or 0x8000)
     fillp((o.fillp or "█"))--|0b.01)
-    map(o.celx, o.cely, o.x, o.y, o.celw, o.celh, o.layer)
+    sprpos(o.spr, o.x, o.y)
 end
 
 function add_obj(o)
@@ -125,7 +126,7 @@ function set_obj_frm(o, fi)
     if snd then
         sfx(snd)
     end
-    o.spri = spri or 1
+    sprtile(o.spr, spri or 1)
     o.fi = fi
     o.ft = ft or 1
     o.frmflpx = flpx
@@ -173,6 +174,9 @@ function add_obj_spr(o)
         start_obj_ani(o, o.ani, o.fi)
     end
     o.spri = o.spri or 1
+    o.spr = newspr(o.spri, o.x, o.y, o.w, o.h,
+        xor(o.flpx, o.frmflpx),
+        xor(o.flpy, o.frmflpy))
     return o
 end
 
@@ -198,6 +202,7 @@ function add_obj_map(o)
     o.cely = o.cely or 0
     o.celw = o.celw or 1
     o.celh = o.celh or 1
+    o.spr = newmap(o.celx, o.cely, o.x, o.y, o.celw, o.celh, o.layer)
 end
 
 function obj_dead(o)

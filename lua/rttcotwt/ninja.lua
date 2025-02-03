@@ -53,12 +53,14 @@ function update_nin_death(o)
             music(snds.deadmus)
             kill_obj(o)
             clock_pause(true)
+            add_game_over()
         end
     end
 end
 
 function nin_start_dying(o)
     o.life = o.life - 1
+    update_lifebar(life)
     if o.life <= 0 then
         music(-1)
     end

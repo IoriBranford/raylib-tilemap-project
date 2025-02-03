@@ -13,6 +13,7 @@ local rooms = {  --<y,{celx,cely}>
     [512] = { 32, 0 },
     [640] = { 32, 16 },
 }
+local roomsprs = {}
 mapbtm = 768
 worldbtm = mapbtm + 88
 
@@ -109,13 +110,10 @@ end
 
 function add_rooms()
     for y, room in pairs(rooms) do
-        add_obj_map({
-            y = y,
-            celx = room[1],
-            cely = room[2],
-            celw = 16,
-            celh = 16
-        })
+        add(roomsprs, newmap(
+            room[1], room[2],
+            0, y,
+            16, 16))
     end
 end
 
