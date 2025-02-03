@@ -139,6 +139,29 @@ int L_tmx_layer_getobjects(lua_State *l) {
     return 0;
 }
 
+int L_tmx_layer_new_tilelayer_sprite(lua_State *l) {
+    tmx_layer *layer = *(tmx_layer **)luaL_checkudata(l, 1, "tmx_layer");
+    if (layer->type != L_LAYER)
+        return 0;
+    
+    tmx_map *map = *(tmx_map **)luaL_checkudata(l, 2, "tmx_map");
+    Rectangle source = {
+        .x = luaL_optnumber(l, 3, 0),
+        .y = luaL_optnumber(l, 4, 0),
+        .width = luaL_optnumber(l, 5, 0),
+        .height = luaL_optnumber(l, 6, 0),
+    };
+    Rectangle rect = {
+        .x = luaL_optnumber(l, 7, 0),
+        .y = luaL_optnumber(l, 8, 0),
+        .width = luaL_optnumber(l, 9, 0),
+        .height = luaL_optnumber(l, 10, 0),
+    };
+    Sprite *spr = NewTileLayerSprite(layer, map, source, rect);
+    class_newuserdata(l, Sprite, spr);
+    return 1;
+}
+
 int L_tmx_layer_new_sprites(lua_State *l) {
     tmx_layer **layer = (tmx_layer **)luaL_checkudata(l, 1, "tmx_layer");
     tmx_map **m = (tmx_map **)luaL_checkudata(l, 2, "tmx_map");
@@ -151,7 +174,7 @@ int L_tmx_layer_new_sprites(lua_State *l) {
             class_newuserdata(l, Sprite, spr);
         } break;
         case L_LAYER: {
-            Sprite *spr = NewTileLayerSprite(*layer, *m);
+            Sprite *spr = NewTileLayerSprite(*layer, *m, (Rectangle){0}, (Rectangle){0});
             spr->z = z;
             class_newuserdata(l, Sprite, spr);
         } break;

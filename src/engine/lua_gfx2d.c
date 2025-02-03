@@ -92,6 +92,24 @@ int L_Sprite_settile(lua_State *l) {
     return 0;
 }
 
+int L_Sprite_gettileSourceSize(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_TILE)
+        return 0;
+    lua_pushnumber(l, (**o).tile.source.width);
+    lua_pushnumber(l, (**o).tile.source.height);
+    return 2;
+}
+
+int L_Sprite_settileSourceSize(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_TILE)
+        return 0;
+    (**o).tile.source.width = luaL_checknumber(l, 2);
+    (**o).tile.source.height = luaL_checknumber(l, 3);
+    return 0;
+}
+
 class_func_1_ud(Sprite, *, settilenamed,
     SetSpriteNamedTileFromCurrentTileset, string,
     tmx_tile, *, )

@@ -71,7 +71,7 @@ void InitLayers(tmx_layer *head, tmx_map *map) {
                     s->z = z;
             }
         } else if (layer->type == L_LAYER) {
-            Sprite *s = NewTileLayerSprite(layer, map);
+            Sprite *s = NewTileLayerSprite(layer, map, (Rectangle){0}, (Rectangle){0});
             s->z = z += 1;
         }
     }
@@ -164,6 +164,12 @@ void UpdateEnding()
     UpdateTasks();
     UpdateLua();
 
+    if (framesCounter == 0) {
+        AddTMXObjectConfetti(tmx_find_object_by_id(map, 16), map);
+    }
+    ++framesCounter;
+    framesCounter %= FRAMES_PER_CONFETTI;
+    
     PruneSprites();
 
     // Press enter to return to TITLE screen
