@@ -64,7 +64,7 @@ void InitLayers(tmx_layer *head, tmx_map *map) {
                     s->z = z;
             }
         } else if (layer->type == L_LAYER) {
-            Sprite *s = NewTileLayerSprite(layer, map);
+            Sprite *s = NewTileLayerSprite(layer, map, (Rectangle){0}, (Rectangle){0});
             s->z = z += 1;
         }
     }

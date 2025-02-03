@@ -86,6 +86,7 @@ struct Sprite {
         struct SpriteLayer {
             tmx_layer *layer;
             tmx_map *map;
+            Rectangle source;
         } layer;
 
         struct SpriteShape {
@@ -117,7 +118,7 @@ Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, V
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
-Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map);
+Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map, Rectangle source, Rectangle rect);
 Sprite* NewImageLayerSprite(tmx_layer *layer);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
 
@@ -133,6 +134,8 @@ void SetSpriteTileFlip(Sprite *spr, Vector2 flip);
 void SetSpriteTileIfNew(Sprite *spr, tmx_tile *tile);
 tmx_tile* SetSpriteNamedTileFromCurrentTileset(Sprite *spr, const char *name);
 tmx_tile* SetSpriteNamedTileFromCurrentTilesetIfNew(Sprite *spr, const char *name);
+
+void SetLayerSpriteSource(Sprite *spr, Rectangle source);
 
 bool IsNearCamera2D(Vector2 position, Camera2D Camera);
 bool IsSpriteNearCamera(Sprite *sprite);
