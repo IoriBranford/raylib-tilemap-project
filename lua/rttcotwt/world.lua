@@ -58,11 +58,11 @@ end
 
 function room_cell(x, y)
     x, y = flr(x), flr(y)
-    local room = rooms[y & ~0x7F]
+    local room = rooms[flr(y/128)*128]
     if room then
         return
-            room[1] + bit.rshift((x & 0x7F), 3),
-            room[2] + bit.rshift((y & 0x7F), 3)
+            room[1] + bit.rshift(x % 128, 3),
+            room[2] + bit.rshift(y % 128, 3)
     end
 end
 
@@ -70,7 +70,7 @@ function cell_bound(x, y, axis, dir)
     local c, r = room_cell(x, y)
     if c and fget(mget(c, r), solidflag) then
         local v = axis > 0 and y or x
-        local bnd = (flr(v) & ~0x7)
+        local bnd = flr(v/8)*8
         if (dir or 1) < 0 then
             bnd = bnd + 8
         end
@@ -93,7 +93,7 @@ function cell_ladder(x, y, axis)
     local c, r = room_cell(x, y)
     if c and fget(mget(c, r), ladderflag) then
         local v = axis > 0 and y or x
-        return flr(v) & ~0x7
+        return flr(v/8)*8
     end
 end
 
