@@ -75,8 +75,7 @@ function sprtile(s, t)
 end
 function newspr(t, x, y, w, h, fx, fy)
     if type(t) == "number" then t = MAP:get_tile(t+1) end
-    if not t then return end
-    w, h = w*8, h*8
+    w, h = (w or 1)*8, (h or 1)*8
     if fx then w = -w end
     if fy then h = -h end
     local s = t:new_sprite(x, y, w, h)
