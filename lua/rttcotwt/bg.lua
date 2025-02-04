@@ -1,5 +1,7 @@
 local STARZ = -20
-local stars = {}
+bgcam = sprite.camera()
+bgcam.z = -25
+stars = {}
 
 for y = 16, 80, 32 do
     for x = 16, 80, 32 do
