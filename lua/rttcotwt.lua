@@ -14,7 +14,18 @@ require "rttcotwt.ui"
 require "rttcotwt.utility"
 require "rttcotwt.world"
 
-function _init()
+return function()
     cartdata("rttcotwt")
+    MapInputsToActions {
+        ["KAXIS_-LEFT+RIGHT"] = "movex",
+        ["KAXIS_-UP+DOWN"] = "movey",
+        KEY_Z = "throw",
+        KEY_X = "jump"
+    }
     start_title()
+    while true do
+        _draw()
+        coroutine.yield()
+        _update60()
+    end
 end
