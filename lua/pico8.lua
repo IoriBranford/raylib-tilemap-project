@@ -14,16 +14,10 @@ end
 local MAPZ = 0
 local SPRZ = 1
 
-function mid(a, b, c)
-    local mx = max(a, b, c)
-    local mn = min(a, b, c)
-    if a ~= mx and a ~= mn then
-        return a
-    end
-    if b ~= mx and b ~= mn then
-        return b
-    end
-    return c
+function mid(...)
+    local t = {...}
+    table.sort(t)
+    return t[ceil(#t/2)]
 end
 
 function add(t, v, i)
