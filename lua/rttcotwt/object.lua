@@ -210,6 +210,9 @@ end
 
 function kill_obj(o)
     o.age = -0x8000
+    if o.spr then
+        o.spr.alpha = 0
+    end
 end
 
 function update_objs()
