@@ -2,7 +2,7 @@ local lifebar = {}
 local gameover = nil
 
 local uiz = 100
-local uicam = sprite.camera()
+uicam = sprite.camera()
 uicam.z = uiz - 1
 
 function add_lifebar()
