@@ -1,11 +1,17 @@
 local lifebar = {}
 local gameover = nil
 
+local uiz = 100
+local uicam = sprite.camera()
+uicam.z = uiz - 1
+
 function add_lifebar()
     local y = 121
     local x = 0
     for i = 1, ninmaxstartlife do
-        add(lifebar, newspr(sprs.heart, x, y))
+        local s = newspr(sprs.heart, x, y)
+        s.z = uiz
+        add(lifebar, s)
         x = x + 8
     end
 end
@@ -14,6 +20,7 @@ function add_game_over()
     gameover = newspr(sprs.gameover,
                 64 - 16, 64 - 8,
                 4, 2)
+    gameover.z = uiz
 end
 
 function update_lifebar(life)
