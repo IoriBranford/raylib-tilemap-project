@@ -60,7 +60,7 @@ end
 
 function nin_start_dying(o)
     o.life = o.life - 1
-    update_lifebar(life)
+    update_lifebar(o.life)
     if o.life <= 0 then
         music(-1)
     end
