@@ -13,7 +13,7 @@ local rooms = {  --<y,{celx,cely}>
     [512] = { 32, 0 },
     [640] = { 32, 16 },
 }
-local roomsprs = {}
+roomsprs = {}
 mapbtm = 768
 worldbtm = mapbtm + 88
 
