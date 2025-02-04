@@ -33,25 +33,25 @@ end
 
 -- game assets
 snds = {
-    gamemus = 0,
-    titlemus = 9,
-    deadmus = 15,
-    endmus = 16,
-    finalmus = 22,
+    gamemus = LoadMusicStream("resources/rttcotwt/music0.ogg"),
+    titlemus = LoadMusicStream("resources/rttcotwt/music9.ogg"),
+    deadmus = LoadMusicStream("resources/rttcotwt/music15.ogg"),
+    endmus = LoadMusicStream("resources/rttcotwt/music16.ogg"),
+    finalmus = LoadMusicStream("resources/rttcotwt/music22.ogg"),
 
-    step = 32,
-    jump = 33,
-    nindie = 34,
-    expl = 35,
-    expl2 = 36,
-    catch = 38,
-    engetup = 39,
-    throw = 40,
-    split = 41,
-    bdrop = 42,
-    fwall = 43,
-    change = 47,
-    godbomb = 48
+    step = LoadSound("resources/rttcotwt/sound32.wav"),
+    jump = LoadSound("resources/rttcotwt/sound33.wav"),
+    nindie = LoadSound("resources/rttcotwt/sound34.wav"),
+    expl = LoadSound("resources/rttcotwt/sound35.wav"),
+    expl2 = LoadSound("resources/rttcotwt/sound36.wav"),
+    catch = LoadSound("resources/rttcotwt/sound38.wav"),
+    engetup = LoadSound("resources/rttcotwt/sound39.wav"),
+    throw = LoadSound("resources/rttcotwt/sound40.wav"),
+    split = LoadSound("resources/rttcotwt/sound41.wav"),
+    bdrop = LoadSound("resources/rttcotwt/sound42.wav"),
+    fwall = LoadSound("resources/rttcotwt/sound43.wav"),
+    change = LoadSound("resources/rttcotwt/sound47.wav"),
+    godbomb = LoadSound("resources/rttcotwt/sound48.wav")
 }
 
 local pals = {
