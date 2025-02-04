@@ -25,7 +25,7 @@ function mid(a, b, c)
 end
 
 function add(t, v, i)
-    return table.insert(t, i, v)
+    return i and table.insert(t, i, v) or table.insert(t, v)
 end
 
 function rnd(i)
