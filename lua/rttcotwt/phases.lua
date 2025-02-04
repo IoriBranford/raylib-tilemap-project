@@ -140,6 +140,7 @@ function start_title()
     }
     music(snds.titlemus)
     add_lifebar()
+    update_lifebar(ninstartlife)
     _update60 = update_title
     _draw = draw_title
 end
