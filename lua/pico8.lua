@@ -42,12 +42,12 @@ function all(t)
     end
 end
 
-function cartdata(...) print("cartdata NYI") end
+function cartdata(...) end --print("cartdata NYI") end
 function dget(i) return DATA[i] end
 function dset(i, v) DATA[i] = v end
-function pal(...) print("pal NYI") end
-function palt(...) print("palt NYI") end
-function pset(...) print("pset NYI") end
+function pal(...) end --print("pal NYI") end
+function palt(...) end --print("palt NYI") end
+function pset(...) end --print("pset NYI") end
 function mget(x, y) return MAP:get_layer_gid(MAPLAYER, x, y) - 1 end
 function mset(x, y, t) MAP:set_layer_gid(MAPLAYER, x, y, t+1) end
 function fget(t, f)
@@ -59,8 +59,8 @@ function fget(t, f)
     end
     return flags
 end
-function music(...) print("music NYI") end
-function sfx(...) print("sfx NYI") end
+function music(...) end --print("music NYI") end
+function sfx(...) end --print("sfx NYI") end
 function sprpos(s, x, y)
     if x then s.x = x end
     if y then s.y = y end
@@ -85,18 +85,19 @@ function newspr(t, x, y, w, h, fx, fy)
     s:settileSourceSize(w, h)
     return s
 end
-function sspr(...) print("sspr NYI") end
-function fillp(...) print("fillp NYI") end
-function rectfill(...) print("rectfill NYI") end
-function circfill(...) print("circfill NYI") end
-function circ(...) print("circ NYI") end
+function sspr(...) end --print("sspr NYI") end
+function fillp(...) end --print("fillp NYI") end
+function rectfill(...) end --print("rectfill NYI") end
+function circfill(...) end --print("circfill NYI") end
+function circ(...) end --print("circ NYI") end
 function newmap(sx, sy, dx, dy, sw, sh, layer)
     local s = MAPLAYER:new_tilelayer_sprite(MAP, sx, sy, sw, sh, dx, dy)
     s.z = MAPZ
     return s
 end
-function oval(...) print("oval NYI") end
-function cls(...) print("cls NYI") end
-function camera(...) print("camera NYI") end
-function poke(...) print("poke NYI") end
-function reload(...) print("reload NYI") end
+function oval(...) end --print("oval NYI") end
+function cls(...) end --print("cls NYI") end
+function camera(...) end --print("camera NYI") end
+function poke(...) end --print("poke NYI") end
+function reload(...) end --print("reload NYI") end
+function txt(...) end

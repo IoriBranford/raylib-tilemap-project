@@ -12,7 +12,7 @@ function draw_bomb(o)
     local secs = ceil((o.fuse or -1) / 60)
     local clr = fusecolors[secs]
     if clr then
-        print(secs, o.x + 2, o.y - 8, clr)
+        txt(secs, o.x + 2, o.y - 8, clr)
     end
     draw_obj_spr(o)
     if clr then

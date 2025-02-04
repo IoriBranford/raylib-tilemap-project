@@ -459,10 +459,10 @@ function draw_ninja(o)
             fillp(fp)
             oval(x - bit.lshift(d, 1), y - d, x + w + bit.lshift(d, 1), y + h + d, clr)
             if o.climbing then
-                print("⬅️\n🅾️", o.x - 8, o.y, 7)
-                print("➡️\n🅾️", o.x + 8, o.y, 7)
+                txt("⬅️\n🅾️", o.x - 8, o.y, 7)
+                txt("➡️\n🅾️", o.x + 8, o.y, 7)
             else
-                print("❎", x + 1, y, clr)
+                txt("❎", x + 1, y, clr)
             end
             fillp()
         end

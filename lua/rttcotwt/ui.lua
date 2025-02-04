@@ -44,5 +44,5 @@ function draw_clock()
     end
     pal()
     fillp()
-    print("" .. m .. ":" .. s .. ":" .. f, 100, 123, 7)
+    txt("" .. m .. ":" .. s .. ":" .. f, 100, 123, 7)
 end

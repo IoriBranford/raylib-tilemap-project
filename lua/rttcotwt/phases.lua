@@ -116,7 +116,7 @@ end
 
 function draw_title()
     draw_objs()
-    print("best", 80, 123, 7)
+    txt("best", 80, 123, 7)
     draw_clock()
 end
 

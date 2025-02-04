@@ -10,11 +10,11 @@ function draw_obj_text(o)
         local y = o.y
         local lineh = o.lineh or 8
         for i = 1, #text do
-            print(text[i], o.x, y, o.clr)
+            txt(text[i], o.x, y, o.clr)
             y = y + 8
         end
     elseif typ == "string" then
-        print(text, o.x, o.y, o.clr)
+        txt(text, o.x, o.y, o.clr)
     end
 end
 
