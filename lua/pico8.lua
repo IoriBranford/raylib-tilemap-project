@@ -52,7 +52,7 @@ function mget(x, y) return MAP:get_layer_gid(MAPLAYER, x, y) - 1 end
 function mset(x, y, t) MAP:set_layer_gid(MAPLAYER, x, y, t+1) end
 function fget(t, f)
     if type(t) == "number" then t = MAP:get_tile(t+1) end
-    local flags = tile and tile:get_property("flags")
+    local flags = t and t:get_property("flags")
     if type(flags) ~= "number" then flags = 0 end
     if f then
         return bit.band(flags, bit.lshift(1, f)) ~= 0
