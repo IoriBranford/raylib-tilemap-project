@@ -32,8 +32,8 @@ end
 --         sx = bit.lshift(bit.band(i,  0xF), 3)
 --         sy = bit.rshift(bit.band(i, ~0xF), 1)
 --     end
---     sw = sw or bit.lshift((o.w or 1), 3)
---     sh = sh or bit.lshift((o.h or 1), 3)
+--     sw = sw or (o.w or 1)*8
+--     sh = sh or (o.h or 1)*8
 --     pal(o.pal)
 --     palt(o.palt or 0x8000)
 --     fillp((o.fillp or "█"))--|0b.01)
@@ -180,8 +180,8 @@ function add_obj_spr(o)
 end
 
 function obj_spr_center(o)
-    return o.x + (bit.lshift(o.w, 2)),
-        o.y + (bit.lshift(o.h, 2))
+    return o.x + (o.w*4),
+        o.y + (o.h*4)
 end
 
 function obj_frm_ending(o)

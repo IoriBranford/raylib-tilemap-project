@@ -147,7 +147,7 @@ function nin_move_x(o)
     else
         vx = mid(-nintoprunspd, vx + inx * ninrunaccel, nintoprunspd)
     end
-    vx = vx + nin_coll_vx(o.x + vx, o.y, bit.lshift(o.w, 3), bit.lshift(o.h, 3), vx)
+    vx = vx + nin_coll_vx(o.x + vx, o.y, o.w*8, o.h*8, vx)
     o.vx = vx
     o.x = o.x + vx
 end
@@ -164,7 +164,7 @@ function nin_climb_y(o)
     else
         vy = mid(-nintopclimbspd, vy + iny * ninclimbaccel, nintopclimbspd)
     end
-    local collvy = nin_coll_vy(o.x, o.y + vy, bit.lshift(o.w, 3), bit.lshift(o.h, 3), vy)
+    local collvy = nin_coll_vy(o.x, o.y + vy, o.w*8, o.h*8, vy)
     vy = vy + collvy
     o.vy = vy
     o.y = o.y + vy
@@ -174,7 +174,7 @@ end
 function nin_drop_y(o)
     local vx, vy = o.vx, o.vy
     vy = min(vy + ningrav, nintopfallspd)
-    vy = vy + nin_coll_vy(o.x, o.y + vy, bit.lshift(o.w, 3), bit.lshift(o.h, 3), vy)
+    vy = vy + nin_coll_vy(o.x, o.y + vy, o.w*8, o.h*8, vy)
     o.vy = vy
     o.y = o.y + vy
 end
@@ -216,7 +216,7 @@ function nin_catch_allowed(o)
 end
 
 function nin_catch_box(o)
-    local w, h = bit.lshift(o.w, 3), bit.lshift(o.h, 2)
+    local w, h = o.w*8, o.h*4
     return o.x, o.y - h, w, h
 end
 
@@ -227,7 +227,7 @@ function nin_find_catch_bomb(o)
         if not b.cantcatch
             and aabbs(x, y, w, h,
                 b.x, b.y,
-                bit.lshift(b.w, 3), bit.lshift(b.h, 3))
+                b.w*8, b.h*8)
         then
             return b, i
         end
@@ -245,9 +245,9 @@ function nin_find_coming_bomb(o)
             and not b.cantcatch
             and aabbs(x, y, w, h,
                 b.x, b.y,
-                bit.lshift(b.w, 3), bit.lshift(b.h, 3))
+                b.w*8, b.h*8)
         then
-            local d = y + warnh - b.y - (bit.lshift(b.h, 3))
+            local d = y + warnh - b.y - (b.h*8)
             if d < dst then
                 bomb, dst = b, d
             end
@@ -370,7 +370,7 @@ function update_nin_ground(o)
     else
         local grnd = obj_ground(o)
         if grnd then
-            o.vy = grnd - o.y - (bit.lshift(o.h, 3))
+            o.vy = grnd - o.y - (o.h*8)
             o.y = o.y + o.vy
         else
             o.update = update_nin_air
@@ -441,8 +441,11 @@ end
 
 function draw_ninja(o)
     if (o.invul or 0) % 4 <= 1 then
-        draw_obj_spr(o)
+        o.spr.alpha = 255
+    else
+        o.spr.alpha = 0
     end
+    draw_obj_spr(o)
     if nin_catch_allowed(o)
         or o.climbing then
         local b, d = nin_find_coming_bomb(o)
@@ -457,7 +460,7 @@ function draw_ninja(o)
             end
             pal()
             fillp(fp)
-            oval(x - bit.lshift(d, 1), y - d, x + w + bit.lshift(d, 1), y + h + d, clr)
+            oval(x - d*2, y - d, x + w + d*2, y + h + d, clr)
             if o.climbing then
                 txt("⬅️\n🅾️", o.x - 8, o.y, 7)
                 txt("➡️\n🅾️", o.x + 8, o.y, 7)
