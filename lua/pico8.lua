@@ -5,8 +5,12 @@ abs = math.abs
 min, max = math.min, math.max
 flr, ceil = math.floor, math.ceil
 
-MAP = nil ---@type tmx_map
-MAPLAYER = nil ---@type tmx_layer
+local MAP = LoadMap("resources/rttcotwt.tmx") ---@type tmx_map
+local MAPLAYER = MAP:find_layer_by_name("map") ---@type tmx_layer
+local DATA = {}
+for i = 0, 63 do
+    DATA[i] = 0
+end
 
 function mid(a, b, c)
     local mx = max(a, b, c)
@@ -37,8 +41,8 @@ function all(t)
 end
 
 function cartdata(...) print("cartdata NYI") end
-function dget(...) print("dget NYI") end
-function dset(...) print("dset NYI") end
+function dget(i) return DATA[i] end
+function dset(i, v) DATA[i] = v end
 function pal(...) print("pal NYI") end
 function palt(...) print("palt NYI") end
 function pset(...) print("pset NYI") end
