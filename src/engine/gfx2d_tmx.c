@@ -355,6 +355,7 @@ void DrawSprite_TileLayer(Sprite *spr) {
     int row = spr->layer.source.y;
     int cols = spr->layer.source.width;
     int rows = spr->layer.source.height;
+    int row2 = row + rows;
     int colw = map->tile_width;
     int rowh = map->tile_height;
     int n = cols * rows;
@@ -365,10 +366,9 @@ void DrawSprite_TileLayer(Sprite *spr) {
         .y = spr->position.y + rowh
     };
     float x0 = position.x;
-    Vector2 origin = { 0, 0 }, size = { 0, 0 };
     Color color = tmx2rl_Color(layer->tintcolor);
 
-    for (; row < rows; ++row, position.x = x0, position.y += rowh) {
+    for (; row < row2; ++row, position.x = x0, position.y += rowh) {
         int i = row*map->width + col;
         int i2 = i + cols;
         for (; i < i2; ++i, position.x += colw) {
