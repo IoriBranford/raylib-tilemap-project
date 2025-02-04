@@ -11,6 +11,8 @@ local DATA = {}
 for i = 0, 63 do
     DATA[i] = 0
 end
+local MAPZ = 0
+local SPRZ = 1
 
 function mid(a, b, c)
     local mx = max(a, b, c)
@@ -79,6 +81,7 @@ function newspr(t, x, y, w, h, fx, fy)
     if fx then w = -w end
     if fy then h = -h end
     local s = t:new_sprite(x, y, w, h)
+    s.z = SPRZ
     s:settileSourceSize(w, h)
     return s
 end
@@ -88,7 +91,9 @@ function rectfill(...) print("rectfill NYI") end
 function circfill(...) print("circfill NYI") end
 function circ(...) print("circ NYI") end
 function newmap(sx, sy, dx, dy, sw, sh, layer)
-    return MAPLAYER:new_tilelayer_sprite(MAP, sx, sy, sw, sh, dx, dy)
+    local s = MAPLAYER:new_tilelayer_sprite(MAP, sx, sy, sw, sh, dx, dy)
+    s.z = MAPZ
+    return s
 end
 function oval(...) print("oval NYI") end
 function cls(...) print("cls NYI") end
