@@ -170,13 +170,12 @@ function add_obj_spr(o)
     if (o.draw or nop) == nop then
         o.draw = draw_obj_spr
     end
+    o.spr = newspr(o.spri or 1, o.x, o.y, o.w, o.h,
+        xor(o.flpx, o.frmflpx),
+        xor(o.flpy, o.frmflpy))
     if o.ani then
         start_obj_ani(o, o.ani, o.fi)
     end
-    o.spri = o.spri or 1
-    o.spr = newspr(o.spri, o.x, o.y, o.w, o.h,
-        xor(o.flpx, o.frmflpx),
-        xor(o.flpy, o.frmflpy))
     return o
 end
 
