@@ -1,6 +1,4 @@
 -- camera
-cam = {
-    x = 0, y = 0
-}
-
+cam = sprite.camera()
+cam.z = -10
 camtopspd = 4

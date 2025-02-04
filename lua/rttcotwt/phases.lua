@@ -1,8 +1,6 @@
 --game phases
 
 function draw_credits()
-    cls()
-    draw_sky()
     draw_objs()
 end
 
@@ -14,7 +12,7 @@ function update_credits()
 end
 
 function start_credits()
-    camera()
+    cam:setposition(0, 0)
     clear_game_objs()
     add_obj_text {
         x = 16, y = 128,
@@ -74,17 +72,8 @@ function update_game()
 end
 
 function draw_game()
-    cls()
-    draw_sky()
-    camera(cam.x, cam.y)
     draw_objs()
-    camera()
     draw_clock()
-    if obj_dead(ninja) then
-        spr(sprs.gameover,
-            64 - 16, 64 - 8,
-            4, 2)
-    end
     if hazeptn and hazeclr then
         fillp(hazeptn)
         rectfill(0, 0, 128, 128, hazeclr)
@@ -126,8 +115,6 @@ function update_title()
 end
 
 function draw_title()
-    cls()
-    draw_sky()
     draw_objs()
     print("best", 80, 123, 7)
     draw_clock()
@@ -139,7 +126,7 @@ function start_title()
     poke(0X5F5C, 0)
     clear_game_objs()
     clock_loadbest()
-    camera()
+    cam:setposition(0, 0)
     add_obj_text {
         x = 8, y = 48,
         text = [[
