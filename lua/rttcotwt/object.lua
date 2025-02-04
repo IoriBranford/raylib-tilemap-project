@@ -24,32 +24,32 @@ function draw_obj_circ(o)
     circ(o.x, o.y, o.rad, o.clr)
 end
 
-function draw_obj_sspr(o)
-    local sx, sy = o.sx, o.sy
-    local sw, sh = o.sw, o.sh
-    local i = o.spri
-    if i and not (sx and sy) then
-        sx = bit.lshift((i &  0xF), 3)
-        sy = bit.rshift((i & ~0xF), 1)
-    end
-    sw = sw or bit.lshift((o.w or 1), 3)
-    sh = sh or bit.lshift((o.h or 1), 3)
-    pal(o.pal)
-    palt(o.palt or 0x8000)
-    fillp((o.fillp or "█"))--|0b.01)
-    sspr(sx or 0, sy or 0,
-        sw, sh,
-        o.x, o.y,
-        o.dw or sw, o.dh or sh,
-        xor(o.flpx, o.frmflpx),
-        xor(o.flpy, o.frmflpy))
-end
+-- function draw_obj_sspr(o)
+--     local sx, sy = o.sx, o.sy
+--     local sw, sh = o.sw, o.sh
+--     local i = o.spri
+--     if i and not (sx and sy) then
+--         sx = bit.lshift(bit.band(i,  0xF), 3)
+--         sy = bit.rshift(bit.band(i, ~0xF), 1)
+--     end
+--     sw = sw or bit.lshift((o.w or 1), 3)
+--     sh = sh or bit.lshift((o.h or 1), 3)
+--     pal(o.pal)
+--     palt(o.palt or 0x8000)
+--     fillp((o.fillp or "█"))--|0b.01)
+--     sspr(sx or 0, sy or 0,
+--         sw, sh,
+--         o.x, o.y,
+--         o.dw or sw, o.dh or sh,
+--         xor(o.flpx, o.frmflpx),
+--         xor(o.flpy, o.frmflpy))
+-- end
 
 function draw_obj_spr(o)
-    if o.dw or o.dh then
-        draw_obj_sspr(o)
-        return
-    end
+    -- if o.dw or o.dh then
+    --     draw_obj_sspr(o)
+    --     return
+    -- end
     pal(o.pal)
     palt(o.palt or 0x8000)
     fillp((o.fillp or "█"))--|0b.01)
