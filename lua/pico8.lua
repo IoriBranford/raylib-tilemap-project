@@ -5,7 +5,7 @@ abs = math.abs
 min, max = math.min, math.max
 flr, ceil = math.floor, math.ceil
 
-local MAP = LoadMap("resources/rttcotwt.tmx") ---@type tmx_map
+local MAP = LoadMap("resources/rttcotwt/rttcotwt.tmx") ---@type tmx_map
 local MAPLAYER = MAP:find_layer_by_name("map") ---@type tmx_layer
 local DATA = {}
 for i = 0, 63 do
