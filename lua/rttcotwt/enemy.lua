@@ -101,7 +101,7 @@ function update_enemy_hiding(o)
     if o.hidetime > 120 then
         o.x = 8 + rnd(96)
         o.flpx = ninja.x < o.x
-        o.hidden = false
+        o.spr.alpha = 255
         o.hidetime = nil
         o.update = update_enemy_warpin
     end
@@ -110,7 +110,7 @@ end
 function update_enemy_warpout(o)
     update_obj_ani(o, o.sprset.warpout)
     if obj_ani_ending(o) then
-        o.hidden = true
+        o.spr.alpha = 0
         o.hidetime = 0
         o.update = update_enemy_hiding
     end
@@ -137,7 +137,7 @@ function update_enemy_dying(o)
             add_normal_expl(o.x + rnd(16), o.y + rnd(16))
         end
         if i == 300 then
-            o.hidden = true
+            o.spr.alpha = 0
             hazeptn = "░"
             hazeclr = 0
         end
@@ -340,19 +340,13 @@ enemylevels = {
     }
 }
 
-function draw_enemy(o)
-    o.spr.alpha = o.hidden and 0 or 255
-    draw_obj_spr(o)
-end
-
 function add_enemy(lvl)
     lvl = lvl or 1
     local o = add_obj_spr {
         x = 56, y = mapbtm - 128 * (1 + lvl),
         vx = 0, vy = 0,
         w = 2, h = 2,
-        sprset = sprs.enemy,
-        draw = draw_enemy
+        sprset = sprs.enemy
     }
     o.floory = o.y
     set_enemy_level(o, lvl)
