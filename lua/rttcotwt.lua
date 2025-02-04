@@ -24,8 +24,7 @@ return function()
     }
     start_title()
     while true do
-        _draw()
         coroutine.yield()
-        _update60()
+        pico8_loop()
     end
 end

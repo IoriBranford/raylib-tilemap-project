@@ -53,8 +53,21 @@ function fget(t, f)
     end
     return flags
 end
-function music(...) end --print("music NYI") end
-function sfx(...) end --print("sfx NYI") end
+local MUS = nil
+function music(mus)
+    if MUS then
+        MUS:Stop()
+    end
+    if mus ~= -1 then
+        mus:Play()
+        MUS = mus
+    else
+        MUS = nil
+    end
+end
+function sfx(snd)
+    snd:Play()
+end
 function sprpos(s, x, y)
     if x then s.x = x end
     if y then s.y = y end
@@ -95,3 +108,11 @@ function camera(...) end --print("camera NYI") end
 function poke(...) end --print("poke NYI") end
 function reload(...) end --print("reload NYI") end
 function txt(...) end
+
+function pico8_loop()
+    _update60()
+    _draw()
+    if MUS then
+        MUS:Update()
+    end
+end
