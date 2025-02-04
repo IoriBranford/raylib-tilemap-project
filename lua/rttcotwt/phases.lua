@@ -7,7 +7,7 @@ end
 function update_credits()
     update_objs()
     if IsActionPressed("jump") then
-        start_title()
+        ResetLuaEngine("rttcotwt", 0)
     end
 end
 
@@ -64,7 +64,7 @@ function update_game()
 
     if obj_dead(ninja) then
         if IsActionPressed("jump") or IsActionPressed("throw") then
-            start_title()
+            ResetLuaEngine("rttcotwt", 0)
         end
     elseif obj_dead(enemy) then
         start_credits()
