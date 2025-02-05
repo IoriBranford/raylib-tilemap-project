@@ -54,6 +54,7 @@ function clock_loadbest()
         clock = clocklimit
         dset(save.besttime, clocklimit)
     end
+    update_clock()
 end
 
 function room_cell(x, y)

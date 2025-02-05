@@ -14,7 +14,7 @@ function draw_obj_text(o)
             y = y + 8
         end
     elseif typ == "string" then
-        txt(text, o.x, o.y, o.clr)
+        sprpos(o.spr, o.x, o.y)
     end
 end
 
@@ -84,7 +84,8 @@ end
 
 function add_obj_text(o)
     add_obj(o)
-    o.clr = o.clr or 7
+    o.clr = o.clr or 0xFFFFFFFF
+    o.spr = newtxt(o.text or "", o.x, o.y, o.clr)
     o.lineh = o.lineh or 8
     o.draw = draw_obj_text
 end

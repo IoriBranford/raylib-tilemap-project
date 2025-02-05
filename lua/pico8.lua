@@ -108,6 +108,14 @@ function camera(...) end --print("camera NYI") end
 function poke(...) end --print("poke NYI") end
 function reload(...) end --print("reload NYI") end
 function txt(...) end
+function newtxt(t, x, y, c)
+    local s = sprite.text(t, x, y, 128, 128, c)
+    s.z = SPRZ
+    return s
+end
+function sprtxt(s, t)
+    s.text = t
+end
 
 function pico8_loop()
     _update60()

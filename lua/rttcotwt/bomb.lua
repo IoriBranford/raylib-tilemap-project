@@ -6,13 +6,15 @@ local flamegrav = -1 / 32
 local fbombexpldist = 16
 local godbombspeed = 3
 local splitbombmaxvely = 1.5
-local fusecolors = { 8, 14, 7 }
+local fusecolors = { 0xFF0000FF, 0xFFFF00FF, 0xFFFFFFFF }
 
 function draw_bomb(o)
     local secs = ceil((o.fuse or -1) / 60)
-    local clr = fusecolors[secs]
-    if clr then
-        txt(secs, o.x + 2, o.y - 8, clr)
+    local clr = fusecolors[secs] or 0xFFFFFFFF
+    if o.fusetxt then
+        sprtxt(o.fusetxt, tostring(secs))
+        sprpos(o.fusetxt, o.x + 2, o.y - 8)
+        o.fusetxt.color = clr
     end
     draw_obj_spr(o)
     if clr then
@@ -288,6 +290,8 @@ end
 function update_bomb_fuse(o)
     o.fuse = o.fuse - 1
     if o.fuse <= 0 then
+        o.fusetxt.alpha = 0
+        o.fusetxt = nil
         bomb_explode(o)
     end
     update_obj_ani(o)
@@ -295,6 +299,7 @@ end
 
 function start_bomb_fuse(o)
     o.fuse = abs(o.fuse)
+    o.fusetxt = newtxt("3", o.x, o.y)
     o.updateonthrow = o.updateonthrow or o.update
     o.update = update_bomb_fuse
 end
@@ -303,6 +308,8 @@ function start_bomb_thrown(o)
     o.update = o.updateonthrow
     o.updateonthrow = nil
     o.fuse = -1
+    o.fusetxt.alpha = 0
+    o.fusetxt = nil
     o.target = enemy
     o.flpy = true
     o.dist = nil

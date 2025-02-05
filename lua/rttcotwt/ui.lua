@@ -5,6 +5,9 @@ local uiz = 100
 uicam = sprite.camera()
 uicam.z = uiz - 1
 
+uiclock = newtxt("0:00:00", 100, 123)
+uiclock.z = uiz
+
 function add_lifebar()
     local y = 121
     local x = 0
@@ -32,7 +35,7 @@ function update_lifebar(life)
     end
 end
 
-function draw_clock()
+function update_clock()
     local f = clock % 60
     local s = flr(clock / 60) % 60
     local m = flr(clock / 3600)
@@ -44,5 +47,5 @@ function draw_clock()
     end
     pal()
     fillp()
-    txt("" .. m .. ":" .. s .. ":" .. f, 100, 123, 7)
+    sprtxt(uiclock, "" .. m .. ":" .. s .. ":" .. f)
 end

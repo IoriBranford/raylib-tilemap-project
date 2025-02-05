@@ -200,7 +200,7 @@ function enemy_say_taunt(o)
         add_obj_text {
             text = taunt,
             x = 0, y = 16,
-            clr = 8,
+            clr = 0xFF8080FF,
             update = function(o)
                 o.x = cam.x
                 o.y = cam.y + 24

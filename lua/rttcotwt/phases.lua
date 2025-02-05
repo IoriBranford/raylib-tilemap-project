@@ -55,6 +55,7 @@ function update_game()
     if not clockpaused
         and clock < clocklimit then
         clock = clock + 1
+        update_clock()
     end
     update_objs()
     cleanup_dead_objs()
@@ -73,7 +74,6 @@ end
 
 function draw_game()
     draw_objs()
-    draw_clock()
     if hazeptn and hazeclr then
         fillp(hazeptn)
         rectfill(0, 0, 128, 128, hazeclr)
@@ -116,8 +116,6 @@ end
 
 function draw_title()
     draw_objs()
-    txt("best", 80, 123, 7)
-    draw_clock()
 end
 
 function start_title()
