@@ -38,11 +38,42 @@ int L_Sprite_camera(lua_State *l) {
     return 1;
 }
 
-int L_Sprite_cameraend(lua_State *l) {
-    Camera2D camera = {.zoom = 0};
-    Sprite *cameraSprite = NewSpriteCamera(camera, WHITE);
-    cameraSprite->z = 10000000;
-    class_newuserdata(l, Sprite, cameraSprite);
+int L_Sprite_text(lua_State *l) {
+    Rectangle rect = {
+        .x = luaL_optnumber(l, 2, 0),
+        .y = luaL_optnumber(l, 3, 0),
+        .width = luaL_optnumber(l, 4, INFINITY),
+        .height = luaL_optnumber(l, 5, INFINITY)
+    };
+    Color color = L_toColor(l, 6);
+    SpriteText text = {0};
+    Sprite *spr = NewTextSprite(&text, rect, color);
+    if (lua_istable(l, 1)) {
+        lua_getfield(l, 1, "text");
+        SetSpriteText(spr, luaL_optstring(l, -1, " "));
+        lua_pop(l, 1);
+        lua_getfield(l, 1, "fontsize");
+        spr->text.fontSize = luaL_optnumber(l, -1, 16);
+        lua_pop(l, 1);
+        lua_getfield(l, 1, "spacing");
+        spr->text.spacing = luaL_optnumber(l, -1, 0);
+        lua_pop(l, 1);
+        lua_getfield(l, 1, "halign");
+        spr->text.halign = luaL_optnumber(l, -1, 0);
+        lua_pop(l, 1);
+        lua_getfield(l, 1, "valign");
+        spr->text.valign = luaL_optnumber(l, -1, 0);
+        lua_pop(l, 1);
+        lua_getfield(l, 1, "wrap");
+        spr->text.wrap = lua_toboolean(l, -1);
+        lua_pop(l, 1);
+        
+        // TODO fontfamily
+    } else {
+        SetSpriteText(spr, lua_tostring(l, 1));
+    }
+    
+    class_newuserdata(l, Sprite, spr);
     return 1;
 }
 
@@ -74,6 +105,22 @@ class_getter_and_setter_Color(Sprite, *, color)
 class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
 class_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
 class_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
+
+int L_Sprite_gettext(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_TEXT)
+        return 0;
+    lua_pushstring(l, (**o).text.text);
+    return 1;
+}
+
+int L_Sprite_settext(lua_State *l) {
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
+    if ((**o).behavior.type != SPRITETYPE_TEXT)
+        return 0;
+    SetSpriteText(*o, luaL_checkstring(l, 2));
+    return 1;
+}
 
 int L_Sprite_gettile(lua_State *l) {
     Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
@@ -158,6 +205,7 @@ class_luaopen(Sprite,
     class_getter_and_setter_reg(Sprite, size),
     class_getter_and_setter_reg(Sprite, color),
     class_getter_and_setter_reg(Sprite, origin),
+    class_getter_and_setter_reg(Sprite, text),
     class_getter_and_setter_reg(Sprite, tile),
     class_getter_and_setter_reg(Sprite, tileSourceSize),
     class_setter_reg(Sprite, tilenamed),
@@ -170,7 +218,7 @@ int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
         class_method_reg(Sprite, rectangle),
         class_method_reg(Sprite, camera),
-        class_method_reg(Sprite, cameraend),
+        class_method_reg(Sprite, text),
         {0}
     };
     luaL_register(l, "sprite", staticMethods);
