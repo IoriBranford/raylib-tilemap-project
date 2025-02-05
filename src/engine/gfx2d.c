@@ -176,7 +176,21 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
         spr->behavior.type = SPRITETYPE_TEXT;
         spr->behavior.update = NULL;
         spr->behavior.draw = DrawSprite_Text;
-        spr->text = *text;
+        if (text) {
+            spr->text = *text;
+            spr->text.capacity = 0;
+            spr->text.text = NULL;
+            if (text->capacity)
+                SetSpriteTextN(spr, text->text, text->capacity);
+            else
+                SetSpriteText(spr, text->text);
+        } else {
+            spr->text = (SpriteText){0};
+        }
+        if (!IsFontValid(spr->text.font))
+            spr->text.font = GetFontDefault();
+        if (!spr->text.fontSize)
+            spr->text.fontSize = 10;
     }
     return spr;
 }
@@ -219,4 +233,9 @@ bool IsSpriteNearCamera(Sprite *sprite) {
 
 void ReleaseSprite(Sprite* spr) {
     spr->active = false;
+    if (spr->behavior.type == SPRITETYPE_TEXT)
+        if (spr->text.text) {
+            MemFree(spr->text.text);
+            spr->text.text = NULL;
+        }
 }
