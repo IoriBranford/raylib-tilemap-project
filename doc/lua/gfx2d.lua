@@ -20,5 +20,7 @@
 ---@field tileflipy number write-only - -1 to flip, +1 to unflip
 ---@field tilenamed string write only - set to the name of a tile stringid defined in tileset properties
 ---@field tilenamedifnew string write only - as tilenamed, but preserve current animation state if already this tile
+---@field text string read/write - text string if text sprite
+---@field tile tmx_tile read/write - tile if tile sprite
 local Sprite = {}
 
