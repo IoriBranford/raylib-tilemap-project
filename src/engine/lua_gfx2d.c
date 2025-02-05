@@ -46,17 +46,19 @@ int L_Sprite_text(lua_State *l) {
         .height = luaL_optnumber(l, 5, INFINITY)
     };
     Color color = L_toColor(l, 6);
-    SpriteText text = {0};
+    SpriteText text = {
+        .spacing = 1
+    };
     Sprite *spr = NewTextSprite(&text, rect, color);
     if (lua_istable(l, 1)) {
         lua_getfield(l, 1, "text");
         SetSpriteText(spr, luaL_optstring(l, -1, " "));
         lua_pop(l, 1);
         lua_getfield(l, 1, "fontsize");
-        spr->text.fontSize = luaL_optnumber(l, -1, 16);
+        spr->text.fontSize = luaL_optnumber(l, -1, spr->text.font.baseSize);
         lua_pop(l, 1);
         lua_getfield(l, 1, "spacing");
-        spr->text.spacing = luaL_optnumber(l, -1, 0);
+        spr->text.spacing = luaL_optnumber(l, -1, spr->text.spacing);
         lua_pop(l, 1);
         lua_getfield(l, 1, "halign");
         spr->text.halign = luaL_optnumber(l, -1, 0);
