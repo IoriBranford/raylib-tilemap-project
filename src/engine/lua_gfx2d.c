@@ -79,6 +79,54 @@ int L_Sprite_text(lua_State *l) {
     return 1;
 }
 
+#define sprite_getter(SPRTYPE, sprcontent, fieldtype, field) \
+int L_Sprite_get##field(lua_State *l) { \
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite"); \
+    if ((**o).behavior.type != SPRITETYPE_##SPRTYPE) \
+        return 0; \
+    lua_push##fieldtype(l, (**o).sprcontent.field); \
+    return 1; \
+}
+
+#define sprite_getter_ud(SPRTYPE, sprcontent, cls, p, field) \
+int L_Sprite_get##field(lua_State *l) { \
+    Sprite *spr = *(Sprite**)luaL_checkudata(l, 1, "Sprite"); \
+    if (spr->behavior.type != SPRITETYPE_##SPRTYPE) \
+        return 0; \
+    cls p*od = lua_newuserdata(l, sizeof(cls*)); \
+    *od = spr->sprcontent.field; \
+    luaL_setmetatable(l, #cls); \
+    return 1; \
+}
+
+#define sprite_setter(SPRTYPE, sprcontent, fieldtype, field) \
+int L_Sprite_set##field(lua_State *l) { \
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite"); \
+    if ((**o).behavior.type != SPRITETYPE_##SPRTYPE) \
+        return 0; \
+    (**o).sprcontent.field = luaL_check##fieldtype(l, 2); \
+    return 0; \
+}
+
+#define sprite_setterf(SPRTYPE, sprcontent, fieldtype, field, f) \
+int L_Sprite_set##field(lua_State *l) { \
+    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite"); \
+    if ((**o).behavior.type != SPRITETYPE_##SPRTYPE) \
+        return 0; \
+    f(*o, luaL_check##fieldtype(l, 2)); \
+    return 0; \
+}
+
+#define sprite_setterf_ud(SPRTYPE, sprcontent, cls, p, field, f) \
+int L_Sprite_set##field(lua_State *l) { \
+    Sprite *spr = *(Sprite**)luaL_checkudata(l, 1, "Sprite"); \
+    if (spr->behavior.type != SPRITETYPE_##SPRTYPE) \
+        return 0; \
+    cls p o = *(cls p*)luaL_checkudata(l, 2, #cls); \
+    f(spr, o); \
+    return 0; \
+}
+
 class_index_and_newindex(Sprite)
 class_gc(Sprite, *, ReleaseSprite)
 class_getter(Sprite, *, boolean, active)
@@ -108,38 +156,10 @@ class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
 class_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
 class_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
 
-int L_Sprite_gettext(lua_State *l) {
-    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
-    if ((**o).behavior.type != SPRITETYPE_TEXT)
-        return 0;
-    lua_pushstring(l, (**o).text.text);
-    return 1;
-}
-
-int L_Sprite_settext(lua_State *l) {
-    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
-    if ((**o).behavior.type != SPRITETYPE_TEXT)
-        return 0;
-    SetSpriteText(*o, luaL_checkstring(l, 2));
-    return 1;
-}
-
-int L_Sprite_gettile(lua_State *l) {
-    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
-    if ((**o).behavior.type != SPRITETYPE_TILE)
-        return 0;
-    class_newuserdata(l, tmx_tile, (**o).tile.tile);
-    return 1;
-}
-
-int L_Sprite_settile(lua_State *l) {
-    Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
-    if ((**o).behavior.type != SPRITETYPE_TILE)
-        return 0;
-    tmx_tile *tile = *(tmx_tile**)luaL_checkudata(l, 2, "tmx_tile");
-    SetSpriteTile(*o, tile);
-    return 0;
-}
+sprite_getter(TEXT, text, string, text)
+sprite_setterf(TEXT, text, string, text, SetSpriteText)
+sprite_getter_ud(TILE, tile, tmx_tile, *, tile)
+sprite_setterf_ud(TILE, tile, tmx_tile, *, tile, SetSpriteTile)
 
 int L_Sprite_gettileSourceSize(lua_State *l) {
     Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite");
