@@ -14,64 +14,64 @@ Color L_toColor(lua_State *l, int i) {
 }
 
 // Window-related functions TODO if needed
-// l_func_3_0(InitWindow, integer, integer, string) //(int width, int height, const char *title);  // Initialize window and OpenGL context
-// l_func_0_0(CloseWindow)                                     // Close window and unload OpenGL context
-// l_func_0_0(WindowShouldClose)                               // Check if application should close (KEY_ESCAPE pressed or windows close icon clicked)
-// l_func_0_0(IsWindowReady)                                   // Check if window has been initialized successfully
-// l_func_0_0(IsWindowFullscreen)                              // Check if window is currently fullscreen
-// l_func_0_0(IsWindowHidden)                                  // Check if window is currently hidden
-// l_func_0_0(IsWindowMinimized)                               // Check if window is currently minimized
-// l_func_0_0(IsWindowMaximized)                               // Check if window is currently maximized
-// l_func_0_0(IsWindowFocused)                                 // Check if window is currently focused
-// l_func_0_0(IsWindowResized)                                 // Check if window has been resized last frame
-// l_func_1_0(IsWindowState, integer)                      // Check if one specific window flag is enabled
-// l_func_1_0(SetWindowState, integer)                    // Set window configuration state using flags
-// l_func_1_0(ClearWindowState, integer)                  // Clear window configuration state flags
-// l_func_0_0(ToggleFullscreen)                                // Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
-// l_func_0_0(ToggleBorderlessWindowed)                        // Toggle window state: borderless windowed, resizes window to match monitor resolution
-// l_func_0_0(MaximizeWindow)                                  // Set window state: maximized, if resizable
-// l_func_0_0(MinimizeWindow)                                  // Set window state: minimized, if resizable
-// l_func_0_0(RestoreWindow)                                   // Set window state: not minimized/maximized
+// lfunc_3_0(InitWindow, integer, integer, string) //(int width, int height, const char *title);  // Initialize window and OpenGL context
+// lfunc_0_0(CloseWindow)                                     // Close window and unload OpenGL context
+// lfunc_0_0(WindowShouldClose)                               // Check if application should close (KEY_ESCAPE pressed or windows close icon clicked)
+// lfunc_0_0(IsWindowReady)                                   // Check if window has been initialized successfully
+// lfunc_0_0(IsWindowFullscreen)                              // Check if window is currently fullscreen
+// lfunc_0_0(IsWindowHidden)                                  // Check if window is currently hidden
+// lfunc_0_0(IsWindowMinimized)                               // Check if window is currently minimized
+// lfunc_0_0(IsWindowMaximized)                               // Check if window is currently maximized
+// lfunc_0_0(IsWindowFocused)                                 // Check if window is currently focused
+// lfunc_0_0(IsWindowResized)                                 // Check if window has been resized last frame
+// lfunc_1_0(IsWindowState, integer)                      // Check if one specific window flag is enabled
+// lfunc_1_0(SetWindowState, integer)                    // Set window configuration state using flags
+// lfunc_1_0(ClearWindowState, integer)                  // Clear window configuration state flags
+// lfunc_0_0(ToggleFullscreen)                                // Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
+// lfunc_0_0(ToggleBorderlessWindowed)                        // Toggle window state: borderless windowed, resizes window to match monitor resolution
+// lfunc_0_0(MaximizeWindow)                                  // Set window state: maximized, if resizable
+// lfunc_0_0(MinimizeWindow)                                  // Set window state: minimized, if resizable
+// lfunc_0_0(RestoreWindow)                                   // Set window state: not minimized/maximized
 // // TODO after Image class
-// // l_func_ud_0(SetWindowIcon, Image)                            // Set icon for window (single image, RGBA 32bit)
-// // l_func_ud1_0(SetWindowIcons, Image, integer)              // Set icon for window (multiple images, RGBA 32bit)
-// l_func_1_0(SetWindowTitle, string)                     // Set title for window
-// l_func_2_0(SetWindowPosition, integer, integer)                       // Set window position on screen
-// l_func_1_0(SetWindowMonitor, integer)                         // Set monitor for the current window
-// l_func_2_0(SetWindowMinSize, integer, integer)               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
-// l_func_2_0(SetWindowMaxSize, integer, integer)               // Set window maximum dimensions (for FLAG_WINDOW_RESIZABLE)
-// l_func_2_0(SetWindowSize, integer, integer)                  // Set window dimensions
-// l_func_1_0(SetWindowOpacity, number)                       // Set window opacity [0.0f..1.0f]
-// l_func_0_0(SetWindowFocused)                                // Set window focused
+// // lfunc_ud_0(SetWindowIcon, Image)                            // Set icon for window (single image, RGBA 32bit)
+// // lfunc_ud1_0(SetWindowIcons, Image, integer)              // Set icon for window (multiple images, RGBA 32bit)
+// lfunc_1_0(SetWindowTitle, string)                     // Set title for window
+// lfunc_2_0(SetWindowPosition, integer, integer)                       // Set window position on screen
+// lfunc_1_0(SetWindowMonitor, integer)                         // Set monitor for the current window
+// lfunc_2_0(SetWindowMinSize, integer, integer)               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
+// lfunc_2_0(SetWindowMaxSize, integer, integer)               // Set window maximum dimensions (for FLAG_WINDOW_RESIZABLE)
+// lfunc_2_0(SetWindowSize, integer, integer)                  // Set window dimensions
+// lfunc_1_0(SetWindowOpacity, number)                       // Set window opacity [0.0f..1.0f]
+// lfunc_0_0(SetWindowFocused)                                // Set window focused
 // // RLAPI void *GetWindowHandle(void);                                // Get native window handle
-// l_func_0_1(GetScreenWidth, integer)                                   // Get current screen width
-// l_func_0_1(GetScreenHeight, integer)                                  // Get current screen height
-// l_func_0_1(GetRenderWidth, integer)                                   // Get current render width (it considers HiDPI)
-// l_func_0_1(GetRenderHeight, integer)                                  // Get current render height (it considers HiDPI)
-// l_func_0_1(GetMonitorCount, integer)                                  // Get number of connected monitors
-// l_func_0_1(GetCurrentMonitor, integer)                                // Get current monitor where window is placed
-// l_func_1_vec2(GetMonitorPosition, integer, Vector2);                    // Get specified monitor position
-// l_func_1_1(GetMonitorWidth, integer, integer)                           // Get specified monitor width (current video mode used by monitor)
-// l_func_1_1(GetMonitorHeight, integer, integer)                          // Get specified monitor height (current video mode used by monitor)
-// l_func_1_1(GetMonitorPhysicalWidth, integer, integer)                   // Get specified monitor physical width in millimetres
-// l_func_1_1(GetMonitorPhysicalHeight, integer, integer)                  // Get specified monitor physical height in millimetres
-// l_func_1_1(GetMonitorRefreshRate, integer, integer)                     // Get specified monitor refresh rate
-// l_func_0_vec2(GetWindowPosition, Vector2)                            // Get window position XY on monitor
-// l_func_0_vec2(GetWindowScaleDPI, Vector2)                            // Get window scale DPI factor
-// l_func_1_1(GetMonitorName, integer, string)                    // Get the human-readable, UTF-8 encoded name of the specified monitor
-// l_func_1_0(SetClipboardText, string)                    // Set clipboard text content
-// l_func_0_1(GetClipboardText, string)                         // Get clipboard text content
+// lfunc_0_1(GetScreenWidth, integer)                                   // Get current screen width
+// lfunc_0_1(GetScreenHeight, integer)                                  // Get current screen height
+// lfunc_0_1(GetRenderWidth, integer)                                   // Get current render width (it considers HiDPI)
+// lfunc_0_1(GetRenderHeight, integer)                                  // Get current render height (it considers HiDPI)
+// lfunc_0_1(GetMonitorCount, integer)                                  // Get number of connected monitors
+// lfunc_0_1(GetCurrentMonitor, integer)                                // Get current monitor where window is placed
+// lfunc_1_vec2(GetMonitorPosition, integer, Vector2);                    // Get specified monitor position
+// lfunc_1_1(GetMonitorWidth, integer, integer)                           // Get specified monitor width (current video mode used by monitor)
+// lfunc_1_1(GetMonitorHeight, integer, integer)                          // Get specified monitor height (current video mode used by monitor)
+// lfunc_1_1(GetMonitorPhysicalWidth, integer, integer)                   // Get specified monitor physical width in millimetres
+// lfunc_1_1(GetMonitorPhysicalHeight, integer, integer)                  // Get specified monitor physical height in millimetres
+// lfunc_1_1(GetMonitorRefreshRate, integer, integer)                     // Get specified monitor refresh rate
+// lfunc_0_vec2(GetWindowPosition, Vector2)                            // Get window position XY on monitor
+// lfunc_0_vec2(GetWindowScaleDPI, Vector2)                            // Get window scale DPI factor
+// lfunc_1_1(GetMonitorName, integer, string)                    // Get the human-readable, UTF-8 encoded name of the specified monitor
+// lfunc_1_0(SetClipboardText, string)                    // Set clipboard text content
+// lfunc_0_1(GetClipboardText, string)                         // Get clipboard text content
 // // RLAPI Image GetClipboardImage(void);                              // Get clipboard image content
 // // RLAPI void EnableEventWaiting(void);                              // Enable waiting for events on EndDrawing(), no automatic event polling
 // // RLAPI void DisableEventWaiting(void);                             // Disable waiting for events on EndDrawing(), automatic events polling
 
 // Cursor-related functions
-l_func_0_0(ShowCursor)
-l_func_0_0(HideCursor)
-l_func_0_0(IsCursorHidden)
-l_func_0_0(EnableCursor)
-l_func_0_0(DisableCursor)
-l_func_0_0(IsCursorOnScreen)
+lfunc_0_0(ShowCursor)
+lfunc_0_0(HideCursor)
+lfunc_0_0(IsCursorHidden)
+lfunc_0_0(EnableCursor)
+lfunc_0_0(DisableCursor)
+lfunc_0_0(IsCursorOnScreen)
 
 // Drawing-related functions TODO?
 
@@ -91,16 +91,16 @@ l_func_0_0(IsCursorOnScreen)
 // RLAPI Matrix GetCameraMatrix2D(Camera2D camera);                                            // Get camera 2d transform matrix
 
 // Timing-related functions
-l_func_1_0(SetTargetFPS, integer)
-l_func_0_1(GetFrameTime, number)
-l_func_0_1(GetTime, number)
-l_func_0_1(GetFPS, integer)
+lfunc_1_0(SetTargetFPS, integer)
+lfunc_0_1(GetFrameTime, number)
+lfunc_0_1(GetTime, number)
+lfunc_0_1(GetFPS, integer)
 
 // Custom frame control functions probably will stay on C side
 
 // Random values generation functions
-l_func_1_0(SetRandomSeed, integer)                      // Set the seed for the random number generator
-l_func_2_1(GetRandomValue, integer, integer, integer)                       // Get a random value between min and max (both included)
+lfunc_1_0(SetRandomSeed, integer)                      // Set the seed for the random number generator
+lfunc_2_1(GetRandomValue, integer, integer, integer)                       // Get a random value between min and max (both included)
 
 int L_GetRandomSequence(lua_State *l) {                // Load random values sequence, no values repeated
     lua_Integer count = luaL_checkinteger(l, 1);
@@ -119,12 +119,12 @@ int L_GetRandomSequence(lua_State *l) {                // Load random values seq
 // RLAPI void UnloadRandomSequence(int *sequence); unnecessary
 
 // Misc. functions
-l_func_1_0(TakeScreenshot, string)
+lfunc_1_0(TakeScreenshot, string)
 // RLAPI void SetConfigFlags(unsigned int flags); necessary?
-l_func_1_0(OpenURL, string)
+lfunc_1_0(OpenURL, string)
 
-l_func_2_0(TraceLog, integer, string)         // Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
-l_func_1_0(SetTraceLogLevel, integer)                        // Set the current threshold (minimum) log level
+lfunc_2_0(TraceLog, integer, string)         // Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
+lfunc_1_0(SetTraceLogLevel, integer)                        // Set the current threshold (minimum) log level
 
 // Files management functions
 // File system functions
@@ -132,7 +132,7 @@ l_func_1_0(SetTraceLogLevel, integer)                        // Set the current 
 // TODO as needed
 
 // Color/pixel related functions
-l_func_3_Color(ColorFromHSV, number, number, number)
+lfunc_3_Color(ColorFromHSV, number, number, number)
 
 int L_ColorToRGBA(lua_State *l)
 {
@@ -161,35 +161,35 @@ int L_RGBAToColor(lua_State *l)
 
 l_global_funcs_luaopen(raylib_g,
     // Cursor-related functions
-    l_func_reg(ShowCursor),
-    l_func_reg(HideCursor),
-    l_func_reg(IsCursorHidden),
-    l_func_reg(EnableCursor),
-    l_func_reg(DisableCursor),
-    l_func_reg(IsCursorOnScreen),
+    lfunc_reg(ShowCursor),
+    lfunc_reg(HideCursor),
+    lfunc_reg(IsCursorHidden),
+    lfunc_reg(EnableCursor),
+    lfunc_reg(DisableCursor),
+    lfunc_reg(IsCursorOnScreen),
 
     // Timing-related functions
-    l_func_reg(SetTargetFPS),
-    l_func_reg(GetFrameTime),
-    l_func_reg(GetTime),
-    l_func_reg(GetFPS),
+    lfunc_reg(SetTargetFPS),
+    lfunc_reg(GetFrameTime),
+    lfunc_reg(GetTime),
+    lfunc_reg(GetFPS),
 
     // Random values generation functions
-    l_func_reg(SetRandomSeed),
-    l_func_reg(GetRandomValue),
-    l_func_reg(GetRandomSequence),
+    lfunc_reg(SetRandomSeed),
+    lfunc_reg(GetRandomValue),
+    lfunc_reg(GetRandomSequence),
 
     // Misc. functions
-    l_func_reg(TakeScreenshot),
-    l_func_reg(OpenURL),
+    lfunc_reg(TakeScreenshot),
+    lfunc_reg(OpenURL),
 
-    l_func_reg(TraceLog),
-    l_func_reg(SetTraceLogLevel),
+    lfunc_reg(TraceLog),
+    lfunc_reg(SetTraceLogLevel),
 
     // Color/pixel related functions
-    l_func_reg(ColorFromHSV),
-    l_func_reg(ColorToRGBA),
-    l_func_reg(RGBAToColor)
+    lfunc_reg(ColorFromHSV),
+    lfunc_reg(ColorToRGBA),
+    lfunc_reg(RGBAToColor)
 )
 
 int luaopen_rlinput(lua_State *l);

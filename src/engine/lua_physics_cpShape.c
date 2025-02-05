@@ -6,7 +6,7 @@ int L_cpShape_NewCircleShape(lua_State *l) {
     cpVect offset = cpv(luaL_optnumber(l, 3, 0), luaL_optnumber(l, 4, 0));
     cpShape *shape = cpCircleShapeNew(body ? *body : NULL, radius, offset);
     cpShapeSetUserData(shape, (cpDataPointer)LUA_REFNIL);
-    class_newuserdata(l, cpShape, shape);
+    lclass_newuserdata(l, cpShape, shape);
     return 1;
 }
 
@@ -17,7 +17,7 @@ int L_cpShape_NewSegmentShape(lua_State *l) {
     cpFloat radius = luaL_optnumber(l, 6, 0);
     cpShape *shape = cpSegmentShapeNew(body ? *body : NULL, a, b, radius);
     cpShapeSetUserData(shape, (cpDataPointer)LUA_REFNIL);
-    class_newuserdata(l, cpShape, shape);
+    lclass_newuserdata(l, cpShape, shape);
     return 1;
 }
 
@@ -61,24 +61,24 @@ int L_cpShape_NewPolyShape(lua_State *l) {
 
     cpShape *shape = cpPolyShapeNew(body ? *body : NULL, nVerts, verts, cpTransformIdentity, 0);
     cpShapeSetUserData(shape, (cpDataPointer)LUA_REFNIL);
-    class_newuserdata(l, cpShape, shape);
+    lclass_newuserdata(l, cpShape, shape);
 
     free(verts);
     return 1;
 }
 
-class_index_and_newindex(cpShape)
-class_gc(cpShape, *, ReleaseOrphanedShape)
-class_getterf_and_setterf_ud(cpShape, *, cpBody, *, Body, cpShapeGetBody, cpShapeSetBody)
-class_getterf_and_setterf(cpShape, *, number, Mass, cpShapeGetMass, cpShapeSetMass)
-class_getterf_and_setterf(cpShape, *, number, Density, cpShapeGetDensity, cpShapeSetDensity)
-class_getterf(cpShape, *, number, Moment, cpShapeGetMoment)
-class_getterf(cpShape, *, number, Area, cpShapeGetArea)
-class_getterf_vec2(cpShape, *, cpVect, CenterOfGravity, cpShapeGetCenterOfGravity)
-class_getterf_and_setterf(cpShape, *, boolean, Sensor, cpShapeGetSensor, cpShapeSetSensor)
-class_getterf_and_setterf(cpShape, *, number, Elasticity, cpShapeGetElasticity, cpShapeSetElasticity)
-class_getterf_and_setterf(cpShape, *, number, Friction, cpShapeGetFriction, cpShapeSetFriction)
-class_getterf_and_setterf_vec2(cpShape, *, cpVect, SurfaceVelocity, cpShapeGetSurfaceVelocity, cpShapeSetSurfaceVelocity)
+lclass_index_and_newindex(cpShape)
+lclass_gc(cpShape, *, ReleaseOrphanedShape)
+lclass_getterf_and_setterf_ud(cpShape, *, cpBody, *, Body, cpShapeGetBody, cpShapeSetBody)
+lclass_getterf_and_setterf(cpShape, *, number, Mass, cpShapeGetMass, cpShapeSetMass)
+lclass_getterf_and_setterf(cpShape, *, number, Density, cpShapeGetDensity, cpShapeSetDensity)
+lclass_getterf(cpShape, *, number, Moment, cpShapeGetMoment)
+lclass_getterf(cpShape, *, number, Area, cpShapeGetArea)
+lclass_getterf_vec2(cpShape, *, cpVect, CenterOfGravity, cpShapeGetCenterOfGravity)
+lclass_getterf_and_setterf(cpShape, *, boolean, Sensor, cpShapeGetSensor, cpShapeSetSensor)
+lclass_getterf_and_setterf(cpShape, *, number, Elasticity, cpShapeGetElasticity, cpShapeSetElasticity)
+lclass_getterf_and_setterf(cpShape, *, number, Friction, cpShapeGetFriction, cpShapeSetFriction)
+lclass_getterf_and_setterf_vec2(cpShape, *, cpVect, SurfaceVelocity, cpShapeGetSurfaceVelocity, cpShapeSetSurfaceVelocity)
 cp_getter_and_setter_userdata(cpShape)
 
 int L_cpShape_getFilter(lua_State *l) {
@@ -108,24 +108,24 @@ int L_cpShape_RemoveFromSpace(lua_State *l) {
     return 0;
 }
 
-class_luaopen(cpShape,
-    class_method_reg(cpShape, NewCircleShape),
-    class_method_reg(cpShape, NewSegmentShape),
-    class_method_reg(cpShape, NewPolyShape),
-    class_method_reg(cpShape, __index),
-    class_method_reg(cpShape, __newindex),
-    class_method_reg(cpShape, __gc),
-    class_getter_and_setter_reg(cpShape, Body),
-    class_getter_and_setter_reg(cpShape, Mass),
-    class_getter_and_setter_reg(cpShape, Density),
-    class_getter_reg(cpShape, Moment),
-    class_getter_reg(cpShape, Area),
-    class_getter_reg(cpShape, CenterOfGravity),
-    class_getter_and_setter_reg(cpShape, Sensor),
-    class_getter_and_setter_reg(cpShape, Elasticity),
-    class_getter_and_setter_reg(cpShape, Friction),
-    class_getter_and_setter_reg(cpShape, SurfaceVelocity),
-    class_getter_and_setter_reg(cpShape, Filter),
-    class_getter_and_setter_reg(cpShape, UserData),
-    class_method_reg(cpShape, RemoveFromSpace)
+lclass_luaopen(cpShape,
+    lclass_method_reg(cpShape, NewCircleShape),
+    lclass_method_reg(cpShape, NewSegmentShape),
+    lclass_method_reg(cpShape, NewPolyShape),
+    lclass_method_reg(cpShape, __index),
+    lclass_method_reg(cpShape, __newindex),
+    lclass_method_reg(cpShape, __gc),
+    lclass_getter_and_setter_reg(cpShape, Body),
+    lclass_getter_and_setter_reg(cpShape, Mass),
+    lclass_getter_and_setter_reg(cpShape, Density),
+    lclass_getter_reg(cpShape, Moment),
+    lclass_getter_reg(cpShape, Area),
+    lclass_getter_reg(cpShape, CenterOfGravity),
+    lclass_getter_and_setter_reg(cpShape, Sensor),
+    lclass_getter_and_setter_reg(cpShape, Elasticity),
+    lclass_getter_and_setter_reg(cpShape, Friction),
+    lclass_getter_and_setter_reg(cpShape, SurfaceVelocity),
+    lclass_getter_and_setter_reg(cpShape, Filter),
+    lclass_getter_and_setter_reg(cpShape, UserData),
+    lclass_method_reg(cpShape, RemoveFromSpace)
 )

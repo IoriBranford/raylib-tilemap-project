@@ -20,7 +20,7 @@ int L_Sprite_rectangle(lua_State *l) {
         L_toColor(l, 8)
     );
 
-    class_newuserdata(l, Sprite, s);
+    lclass_newuserdata(l, Sprite, s);
     return 1;
 }
 
@@ -34,7 +34,7 @@ int L_Sprite_camera(lua_State *l) {
     Color color = L_toColor(l, 7);
     Sprite *sprite = NewSpriteCamera(camera, color);
     sprite->z = -10000000;
-    class_newuserdata(l, Sprite, sprite);
+    lclass_newuserdata(l, Sprite, sprite);
     return 1;
 }
 
@@ -75,7 +75,7 @@ int L_Sprite_text(lua_State *l) {
         SetSpriteText(spr, lua_tostring(l, 1));
     }
     
-    class_newuserdata(l, Sprite, spr);
+    lclass_newuserdata(l, Sprite, spr);
     return 1;
 }
 
@@ -127,34 +127,34 @@ int L_Sprite_set##field(lua_State *l) { \
     return 0; \
 }
 
-class_index_and_newindex(Sprite)
-class_gc(Sprite, *, ReleaseSprite)
-class_getter(Sprite, *, boolean, active)
-class_getter_and_setter(Sprite, *, number, x)
-class_getter_and_setter(Sprite, *, number, y)
-class_getter_and_setter(Sprite, *, number, z)
-class_getter_and_setter(Sprite, *, number, width)
-class_getter_and_setter(Sprite, *, number, height)
-class_getter_and_setter(Sprite, *, number, rotationDeg)
-class_getter_and_setter(Sprite, *, number, originX)
-class_getter_and_setter(Sprite, *, number, originY)
-class_getter(Sprite, *, number, red)
-class_getter(Sprite, *, number, green)
-class_getter(Sprite, *, number, blue)
-class_getter(Sprite, *, number, alpha)
-class_setter_clamped(Sprite, *, red, 0, 255)
-class_setter_clamped(Sprite, *, green, 0, 255)
-class_setter_clamped(Sprite, *, blue, 0, 255)
-class_setter_clamped(Sprite, *, alpha, 0, 255)
-class_getter_and_setter(Sprite, *, number, animSpeedMS)
-class_getter(Sprite, *, number, animTimer)
-class_getter_and_setter_Vector2(Sprite, *, position)
-class_getter_and_setter_Vector2(Sprite, *, size)
-class_getter_and_setter_Vector2(Sprite, *, origin)
-class_getter_and_setter_Color(Sprite, *, color)
-class_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
-class_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
-class_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
+lclass_index_and_newindex(Sprite)
+lclass_gc(Sprite, *, ReleaseSprite)
+lclass_getter(Sprite, *, boolean, active)
+lclass_getter_and_setter(Sprite, *, number, x)
+lclass_getter_and_setter(Sprite, *, number, y)
+lclass_getter_and_setter(Sprite, *, number, z)
+lclass_getter_and_setter(Sprite, *, number, width)
+lclass_getter_and_setter(Sprite, *, number, height)
+lclass_getter_and_setter(Sprite, *, number, rotationDeg)
+lclass_getter_and_setter(Sprite, *, number, originX)
+lclass_getter_and_setter(Sprite, *, number, originY)
+lclass_getter(Sprite, *, number, red)
+lclass_getter(Sprite, *, number, green)
+lclass_getter(Sprite, *, number, blue)
+lclass_getter(Sprite, *, number, alpha)
+lclass_setter_clamped(Sprite, *, red, 0, 255)
+lclass_setter_clamped(Sprite, *, green, 0, 255)
+lclass_setter_clamped(Sprite, *, blue, 0, 255)
+lclass_setter_clamped(Sprite, *, alpha, 0, 255)
+lclass_getter_and_setter(Sprite, *, number, animSpeedMS)
+lclass_getter(Sprite, *, number, animTimer)
+lclass_getter_and_setter_Vector2(Sprite, *, position)
+lclass_getter_and_setter_Vector2(Sprite, *, size)
+lclass_getter_and_setter_Vector2(Sprite, *, origin)
+lclass_getter_and_setter_Color(Sprite, *, color)
+lclass_getterf(Sprite, *, boolean, nearcamera, IsSpriteNearCamera)
+lclass_setterf(Sprite, *, number, tileflipx, SetSpriteTileFlipX)
+lclass_setterf(Sprite, *, number, tileflipy, SetSpriteTileFlipY)
 
 sprite_getter(TEXT, text, string, text)
 sprite_setterf(TEXT, text, string, text, SetSpriteText)
@@ -179,10 +179,10 @@ int L_Sprite_settileSourceSize(lua_State *l) {
     return 0;
 }
 
-class_func_1_ud(Sprite, *, settilenamed,
+lclass_func_1_ud(Sprite, *, settilenamed,
     SetSpriteNamedTileFromCurrentTileset, string,
     tmx_tile, *, )
-class_func_1_ud(Sprite, *, settilenamedifnew,
+lclass_func_1_ud(Sprite, *, settilenamedifnew,
     SetSpriteNamedTileFromCurrentTilesetIfNew, string,
     tmx_tile, *, )
 
@@ -202,45 +202,45 @@ int L_Sprite_setcameraZoom(lua_State *l) {
     return 0;
 }
 
-class_luaopen(Sprite,
-    class_method_reg(Sprite, __index),
-    class_method_reg(Sprite, __newindex),
-    class_method_reg(Sprite, __gc),
-    class_getter_reg(Sprite, active),
-    class_getter_reg(Sprite, nearcamera),
-    class_getter_and_setter_reg(Sprite, x),
-    class_getter_and_setter_reg(Sprite, y),
-    class_getter_and_setter_reg(Sprite, z),
-    class_getter_and_setter_reg(Sprite, width),
-    class_getter_and_setter_reg(Sprite, height),
-    class_getter_and_setter_reg(Sprite, rotationDeg),
-    class_getter_and_setter_reg(Sprite, originX),
-    class_getter_and_setter_reg(Sprite, originY),
-    class_getter_and_setter_reg(Sprite, red),
-    class_getter_and_setter_reg(Sprite, green),
-    class_getter_and_setter_reg(Sprite, blue),
-    class_getter_and_setter_reg(Sprite, alpha),
-    class_getter_and_setter_reg(Sprite, animSpeedMS),
-    class_getter_and_setter_reg(Sprite, cameraZoom),
-    class_getter_reg(Sprite, animTimer),
-    class_getter_and_setter_reg(Sprite, position),
-    class_getter_and_setter_reg(Sprite, size),
-    class_getter_and_setter_reg(Sprite, color),
-    class_getter_and_setter_reg(Sprite, origin),
-    class_getter_and_setter_reg(Sprite, text),
-    class_getter_and_setter_reg(Sprite, tile),
-    class_getter_and_setter_reg(Sprite, tileSourceSize),
-    class_setter_reg(Sprite, tilenamed),
-    class_setter_reg(Sprite, tilenamedifnew),
-    class_setter_reg(Sprite, tileflipx),
-    class_setter_reg(Sprite, tileflipy)
+lclass_luaopen(Sprite,
+    lclass_method_reg(Sprite, __index),
+    lclass_method_reg(Sprite, __newindex),
+    lclass_method_reg(Sprite, __gc),
+    lclass_getter_reg(Sprite, active),
+    lclass_getter_reg(Sprite, nearcamera),
+    lclass_getter_and_setter_reg(Sprite, x),
+    lclass_getter_and_setter_reg(Sprite, y),
+    lclass_getter_and_setter_reg(Sprite, z),
+    lclass_getter_and_setter_reg(Sprite, width),
+    lclass_getter_and_setter_reg(Sprite, height),
+    lclass_getter_and_setter_reg(Sprite, rotationDeg),
+    lclass_getter_and_setter_reg(Sprite, originX),
+    lclass_getter_and_setter_reg(Sprite, originY),
+    lclass_getter_and_setter_reg(Sprite, red),
+    lclass_getter_and_setter_reg(Sprite, green),
+    lclass_getter_and_setter_reg(Sprite, blue),
+    lclass_getter_and_setter_reg(Sprite, alpha),
+    lclass_getter_and_setter_reg(Sprite, animSpeedMS),
+    lclass_getter_and_setter_reg(Sprite, cameraZoom),
+    lclass_getter_reg(Sprite, animTimer),
+    lclass_getter_and_setter_reg(Sprite, position),
+    lclass_getter_and_setter_reg(Sprite, size),
+    lclass_getter_and_setter_reg(Sprite, color),
+    lclass_getter_and_setter_reg(Sprite, origin),
+    lclass_getter_and_setter_reg(Sprite, text),
+    lclass_getter_and_setter_reg(Sprite, tile),
+    lclass_getter_and_setter_reg(Sprite, tileSourceSize),
+    lclass_setter_reg(Sprite, tilenamed),
+    lclass_setter_reg(Sprite, tilenamedifnew),
+    lclass_setter_reg(Sprite, tileflipx),
+    lclass_setter_reg(Sprite, tileflipy)
 )
 
 int luaopen_gfx2d(lua_State *l) {
     luaL_Reg staticMethods[] = {
-        class_method_reg(Sprite, rectangle),
-        class_method_reg(Sprite, camera),
-        class_method_reg(Sprite, text),
+        lclass_method_reg(Sprite, rectangle),
+        lclass_method_reg(Sprite, camera),
+        lclass_method_reg(Sprite, text),
         {0}
     };
     luaL_register(l, "sprite", staticMethods);

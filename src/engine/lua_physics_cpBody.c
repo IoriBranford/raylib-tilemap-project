@@ -3,35 +3,35 @@
 int L_cpBody_NewBody(lua_State *l) {
     cpBody *body = cpBodyNew(luaL_optnumber(l, 1, 1), luaL_optnumber(l, 2, HUGE_VAL));
     cpBodySetUserData(body, (cpDataPointer)LUA_REFNIL);
-    class_newuserdata(l, cpBody, body);
+    lclass_newuserdata(l, cpBody, body);
     return 1;
 }
 
 int L_cpBody_NewKinematicBody(lua_State *l) {
     cpBody *body = cpBodyNewKinematic();
     cpBodySetUserData(body, (cpDataPointer)LUA_REFNIL);
-    class_newuserdata(l, cpBody, body);
+    lclass_newuserdata(l, cpBody, body);
     return 1;
 }
 
 int L_cpBody_NewStaticBody(lua_State *l) {
     cpBody *body = cpBodyNewStatic();
     cpBodySetUserData(body, (cpDataPointer)LUA_REFNIL);
-    class_newuserdata(l, cpBody, body);
+    lclass_newuserdata(l, cpBody, body);
     return 1;
 }
 
-class_index_and_newindex(cpBody)
-class_gc(cpBody, *, ReleaseOrphanedBody)
-class_getterf_and_setterf(cpBody, *, number, Angle, cpBodyGetAngle, cpBodySetAngle)
-class_getterf_and_setterf(cpBody, *, number, AngularVelocity, cpBodyGetAngularVelocity, cpBodySetAngularVelocity)
-class_getterf_and_setterf(cpBody, *, number, Torque, cpBodyGetTorque, cpBodySetTorque)
-class_getterf_and_setterf(cpBody, *, number, Mass, cpBodyGetMass, cpBodySetMass)
-class_getterf_and_setterf(cpBody, *, number, Moment, cpBodyGetMoment, cpBodySetMoment)
-class_getterf_and_setterf_vec2(cpBody, *, cpVect, Position, cpBodyGetPosition, cpBodySetPosition)
-class_getterf_and_setterf_vec2(cpBody, *, cpVect, CenterOfGravity, cpBodyGetCenterOfGravity, cpBodySetCenterOfGravity)
-class_getterf_and_setterf_vec2(cpBody, *, cpVect, Velocity, cpBodyGetVelocity, cpBodySetVelocity)
-class_getterf_and_setterf_vec2(cpBody, *, cpVect, Force, cpBodyGetForce, cpBodySetForce)
+lclass_index_and_newindex(cpBody)
+lclass_gc(cpBody, *, ReleaseOrphanedBody)
+lclass_getterf_and_setterf(cpBody, *, number, Angle, cpBodyGetAngle, cpBodySetAngle)
+lclass_getterf_and_setterf(cpBody, *, number, AngularVelocity, cpBodyGetAngularVelocity, cpBodySetAngularVelocity)
+lclass_getterf_and_setterf(cpBody, *, number, Torque, cpBodyGetTorque, cpBodySetTorque)
+lclass_getterf_and_setterf(cpBody, *, number, Mass, cpBodyGetMass, cpBodySetMass)
+lclass_getterf_and_setterf(cpBody, *, number, Moment, cpBodyGetMoment, cpBodySetMoment)
+lclass_getterf_and_setterf_vec2(cpBody, *, cpVect, Position, cpBodyGetPosition, cpBodySetPosition)
+lclass_getterf_and_setterf_vec2(cpBody, *, cpVect, CenterOfGravity, cpBodyGetCenterOfGravity, cpBodySetCenterOfGravity)
+lclass_getterf_and_setterf_vec2(cpBody, *, cpVect, Velocity, cpBodyGetVelocity, cpBodySetVelocity)
+lclass_getterf_and_setterf_vec2(cpBody, *, cpVect, Force, cpBodyGetForce, cpBodySetForce)
 cp_getter_and_setter_userdata(cpBody)
 
 int L_cpBody_NewCircleShape(lua_State *l) {
@@ -45,7 +45,7 @@ int L_cpBody_NewCircleShape(lua_State *l) {
     cpSpace *space = cpBodyGetSpace(*body);
     if (space)
         cpSpaceAddShape(space, shape);
-    class_newuserdata(l, cpShape, shape);
+    lclass_newuserdata(l, cpShape, shape);
     return 1;
 }
 
@@ -58,7 +58,7 @@ int L_cpBody_UpdateSprite(lua_State *l) {
 
 void L_cpBody_EachArbiter_iter(cpBody *body, cpArbiter *arbiter, lua_State *l) {
     lua_pushvalue(l, 2);
-    class_newuserdata(l, cpArbiter, arbiter);
+    lclass_newuserdata(l, cpArbiter, arbiter);
     if (lua_pcall(l, 1, 0, 0) != LUA_OK) lua_error(l);
 }
 
@@ -115,7 +115,7 @@ int L_cpBody_PointQueryNearest(lua_State *l) {
     cpPointQueryInfo info;
     cpShape *nearestShape = cpSpacePointQueryNearest(space, point, maxDist, filter, &info);
     if (nearestShape) {
-        class_newuserdata(l, cpShape, nearestShape);
+        lclass_newuserdata(l, cpShape, nearestShape);
         lua_pushnumber(l, info.point.x);
         lua_pushnumber(l, info.point.y);
         lua_pushnumber(l, info.distance);
@@ -169,7 +169,7 @@ int L_cpBody_SegmentQueryFirst(lua_State *l) {
     cpSegmentQueryInfo info;
     cpShape *nearestShape = cpSpaceSegmentQueryFirst(space, start, end, radius, filter, &info);
     if (nearestShape) {
-        class_newuserdata(l, cpShape, nearestShape);
+        lclass_newuserdata(l, cpShape, nearestShape);
         lua_pushnumber(l, info.alpha);
         lua_pushnumber(l, info.point.x);
         lua_pushnumber(l, info.point.y);
@@ -178,29 +178,29 @@ int L_cpBody_SegmentQueryFirst(lua_State *l) {
     return 0;
 }
 
-class_luaopen(cpBody,
-    class_method_reg(cpBody, NewBody),
-    class_method_reg(cpBody, NewKinematicBody),
-    class_method_reg(cpBody, NewStaticBody),
-    class_method_reg(cpBody, __index),
-    class_method_reg(cpBody, __newindex),
-    class_method_reg(cpBody, __gc),
-    class_method_reg(cpBody, NewCircleShape),
-    class_method_reg(cpBody, UpdateSprite),
-    class_method_reg(cpBody, EachArbiter),
-    class_method_reg(cpBody, RemoveFromSpace),
-    class_method_reg(cpBody, PointQuery),
-    class_method_reg(cpBody, PointQueryNearest),
-    class_method_reg(cpBody, SegmentQuery),
-    class_method_reg(cpBody, SegmentQueryFirst),
-    class_getter_and_setter_reg(cpBody, Angle),
-    class_getter_and_setter_reg(cpBody, AngularVelocity),
-    class_getter_and_setter_reg(cpBody, Torque),
-    class_getter_and_setter_reg(cpBody, Mass),
-    class_getter_and_setter_reg(cpBody, Moment),
-    class_getter_and_setter_reg(cpBody, Position),
-    class_getter_and_setter_reg(cpBody, CenterOfGravity),
-    class_getter_and_setter_reg(cpBody, Velocity),
-    class_getter_and_setter_reg(cpBody, Force),
-    class_getter_and_setter_reg(cpBody, UserData)
+lclass_luaopen(cpBody,
+    lclass_method_reg(cpBody, NewBody),
+    lclass_method_reg(cpBody, NewKinematicBody),
+    lclass_method_reg(cpBody, NewStaticBody),
+    lclass_method_reg(cpBody, __index),
+    lclass_method_reg(cpBody, __newindex),
+    lclass_method_reg(cpBody, __gc),
+    lclass_method_reg(cpBody, NewCircleShape),
+    lclass_method_reg(cpBody, UpdateSprite),
+    lclass_method_reg(cpBody, EachArbiter),
+    lclass_method_reg(cpBody, RemoveFromSpace),
+    lclass_method_reg(cpBody, PointQuery),
+    lclass_method_reg(cpBody, PointQueryNearest),
+    lclass_method_reg(cpBody, SegmentQuery),
+    lclass_method_reg(cpBody, SegmentQueryFirst),
+    lclass_getter_and_setter_reg(cpBody, Angle),
+    lclass_getter_and_setter_reg(cpBody, AngularVelocity),
+    lclass_getter_and_setter_reg(cpBody, Torque),
+    lclass_getter_and_setter_reg(cpBody, Mass),
+    lclass_getter_and_setter_reg(cpBody, Moment),
+    lclass_getter_and_setter_reg(cpBody, Position),
+    lclass_getter_and_setter_reg(cpBody, CenterOfGravity),
+    lclass_getter_and_setter_reg(cpBody, Velocity),
+    lclass_getter_and_setter_reg(cpBody, Force),
+    lclass_getter_and_setter_reg(cpBody, UserData)
 )

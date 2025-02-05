@@ -3,30 +3,30 @@
 int L_cpSpace_NewSpace(lua_State *l) {
     cpSpace * o = cpSpaceNew();
     cpSpaceSetUserData(o, LUA_REFNIL);
-    class_newuserdata(l, cpSpace, o);
+    lclass_newuserdata(l, cpSpace, o);
     return 1;
 }
-class_index_and_newindex(cpSpace)
-class_gc(cpSpace, *, ReleaseSpace)
+lclass_index_and_newindex(cpSpace)
+lclass_gc(cpSpace, *, ReleaseSpace)
 
-class_getterf_and_setterf(cpSpace, *, number, Iterations, cpSpaceGetIterations, cpSpaceSetIterations)
-class_getterf_and_setterf_vec2(cpSpace, *, cpVect, Gravity, cpSpaceGetGravity, cpSpaceSetGravity)
-class_getterf_and_setterf(cpSpace, *, number, Damping, cpSpaceGetDamping, cpSpaceSetDamping)
-class_getterf_and_setterf(cpSpace, *, number, IdleSpeedThreshold, cpSpaceGetIdleSpeedThreshold, cpSpaceSetIdleSpeedThreshold)
-class_getterf_and_setterf(cpSpace, *, number, SleepTimeThreshold, cpSpaceGetSleepTimeThreshold, cpSpaceSetSleepTimeThreshold)
-class_getterf_and_setterf(cpSpace, *, number, CollisionSlop, cpSpaceGetCollisionSlop, cpSpaceSetCollisionSlop)
-class_getterf_and_setterf(cpSpace, *, number, CollisionBias, cpSpaceGetCollisionBias, cpSpaceSetCollisionBias)
-class_getterf_and_setterf(cpSpace, *, number, CollisionPersistence, cpSpaceGetCollisionPersistence, cpSpaceSetCollisionPersistence)
+lclass_getterf_and_setterf(cpSpace, *, number, Iterations, cpSpaceGetIterations, cpSpaceSetIterations)
+lclass_getterf_and_setterf_vec2(cpSpace, *, cpVect, Gravity, cpSpaceGetGravity, cpSpaceSetGravity)
+lclass_getterf_and_setterf(cpSpace, *, number, Damping, cpSpaceGetDamping, cpSpaceSetDamping)
+lclass_getterf_and_setterf(cpSpace, *, number, IdleSpeedThreshold, cpSpaceGetIdleSpeedThreshold, cpSpaceSetIdleSpeedThreshold)
+lclass_getterf_and_setterf(cpSpace, *, number, SleepTimeThreshold, cpSpaceGetSleepTimeThreshold, cpSpaceSetSleepTimeThreshold)
+lclass_getterf_and_setterf(cpSpace, *, number, CollisionSlop, cpSpaceGetCollisionSlop, cpSpaceSetCollisionSlop)
+lclass_getterf_and_setterf(cpSpace, *, number, CollisionBias, cpSpaceGetCollisionBias, cpSpaceSetCollisionBias)
+lclass_getterf_and_setterf(cpSpace, *, number, CollisionPersistence, cpSpaceGetCollisionPersistence, cpSpaceSetCollisionPersistence)
 cp_getter_and_setter_userdata(cpSpace)
-class_getterf_ud(cpSpace, *, cpBody, *, StaticBody, cpSpaceGetStaticBody)
-class_getterf(cpSpace, *, number, TimeStep, cpSpaceGetCurrentTimeStep)
-class_getterf(cpSpace, *, boolean, Locked, cpSpaceIsLocked)
+lclass_getterf_ud(cpSpace, *, cpBody, *, StaticBody, cpSpaceGetStaticBody)
+lclass_getterf(cpSpace, *, number, TimeStep, cpSpaceGetCurrentTimeStep)
+lclass_getterf(cpSpace, *, boolean, Locked, cpSpaceIsLocked)
 
 // TODO Collision handlers?
 
-class_func_ud_ud(cpSpace, *, AddShape, cpSpaceAddShape, cpShape, *, cpShape, *)
-class_func_ud_ud(cpSpace, *, AddBody, cpSpaceAddBody, cpBody, *, cpBody, *)
-class_func_ud_ud(cpSpace, *, AddConstraint, cpSpaceAddConstraint, cpConstraint, *, cpConstraint, *)
+lclass_func_ud_ud(cpSpace, *, AddShape, cpSpaceAddShape, cpShape, *, cpShape, *)
+lclass_func_ud_ud(cpSpace, *, AddBody, cpSpaceAddBody, cpBody, *, cpBody, *)
+lclass_func_ud_ud(cpSpace, *, AddConstraint, cpSpaceAddConstraint, cpConstraint, *, cpConstraint, *)
 
 void L_cpSpace_AddBodyAndShapes_iter(cpBody *body, cpShape *shape, cpSpace *space) {
     cpSpaceAddShape(space, shape);
@@ -40,13 +40,13 @@ int L_cpSpace_AddBodyAndShapes(lua_State *l) {
     return 1;
 }
 
-class_func_ud_0(cpSpace, *, RemoveShape, cpSpaceRemoveShape, cpShape, *)
-class_func_ud_0(cpSpace, *, RemoveBody, cpSpaceRemoveBody, cpBody, *)
-class_func_ud_0(cpSpace, *, RemoveConstraint, cpSpaceRemoveConstraint, cpConstraint, *)
+lclass_func_ud_0(cpSpace, *, RemoveShape, cpSpaceRemoveShape, cpShape, *)
+lclass_func_ud_0(cpSpace, *, RemoveBody, cpSpaceRemoveBody, cpBody, *)
+lclass_func_ud_0(cpSpace, *, RemoveConstraint, cpSpaceRemoveConstraint, cpConstraint, *)
 
-class_func_ud_1(cpSpace, *, ContainsShape, cpSpaceContainsShape, cpShape, *, boolean)
-class_func_ud_1(cpSpace, *, ContainsBody, cpSpaceContainsBody, cpBody, *, boolean)
-class_func_ud_1(cpSpace, *, ContainsConstraint, cpSpaceContainsConstraint, cpConstraint, *, boolean)
+lclass_func_ud_1(cpSpace, *, ContainsShape, cpSpaceContainsShape, cpShape, *, boolean)
+lclass_func_ud_1(cpSpace, *, ContainsBody, cpSpaceContainsBody, cpBody, *, boolean)
+lclass_func_ud_1(cpSpace, *, ContainsConstraint, cpSpaceContainsConstraint, cpConstraint, *, boolean)
 
 // TODO Post-Step Callbacks?
 
@@ -78,7 +78,7 @@ int L_cpSpace_PointQueryNearest(lua_State *l) {
     cpPointQueryInfo info;
     cpShape *nearestShape = cpSpacePointQueryNearest(space, point, maxDist, filter, &info);
     if (nearestShape) {
-        class_newuserdata(l, cpShape, nearestShape);
+        lclass_newuserdata(l, cpShape, nearestShape);
         lua_pushnumber(l, info.point.x);
         lua_pushnumber(l, info.point.y);
         lua_pushnumber(l, info.distance);
@@ -120,7 +120,7 @@ int L_cpSpace_SegmentQueryFirst(lua_State *l) {
     cpSegmentQueryInfo info;
     cpShape *nearestShape = cpSpaceSegmentQueryFirst(space, start, end, radius, filter, &info);
     if (nearestShape) {
-        class_newuserdata(l, cpShape, nearestShape);
+        lclass_newuserdata(l, cpShape, nearestShape);
         lua_pushnumber(l, info.alpha);
         lua_pushnumber(l, info.point.x);
         lua_pushnumber(l, info.point.y);
@@ -132,38 +132,38 @@ int L_cpSpace_SegmentQueryFirst(lua_State *l) {
 // TODO Iteration
 // Indexing?
 
-class_func_1_0(cpSpace, *, Step, cpSpaceStep, number)
+lclass_func_1_0(cpSpace, *, Step, cpSpaceStep, number)
 
-class_luaopen(cpSpace,
-    class_method_reg(cpSpace, NewSpace),
-    class_method_reg(cpSpace, __index),
-    class_method_reg(cpSpace, __newindex),
-    class_method_reg(cpSpace, __gc),
-    class_getter_and_setter_reg(cpSpace, Iterations),
-    class_getter_and_setter_reg(cpSpace, Gravity),
-    class_getter_and_setter_reg(cpSpace, Damping),
-    class_getter_and_setter_reg(cpSpace, IdleSpeedThreshold),
-    class_getter_and_setter_reg(cpSpace, SleepTimeThreshold),
-    class_getter_and_setter_reg(cpSpace, CollisionSlop),
-    class_getter_and_setter_reg(cpSpace, CollisionBias),
-    class_getter_and_setter_reg(cpSpace, CollisionPersistence),
-    class_getter_and_setter_reg(cpSpace, UserData),
-    class_getter_reg(cpSpace, StaticBody),
-    class_getter_reg(cpSpace, TimeStep),
-    class_getter_reg(cpSpace, Locked),
-    class_method_reg(cpSpace, AddShape),
-    class_method_reg(cpSpace, AddBody),
-    class_method_reg(cpSpace, AddConstraint),
-    class_method_reg(cpSpace, AddBodyAndShapes),
-    class_method_reg(cpSpace, RemoveShape),
-    class_method_reg(cpSpace, RemoveBody),
-    class_method_reg(cpSpace, RemoveConstraint),
-    class_method_reg(cpSpace, ContainsShape),
-    class_method_reg(cpSpace, ContainsBody),
-    class_method_reg(cpSpace, ContainsConstraint),
-    class_method_reg(cpSpace, PointQuery),
-    class_method_reg(cpSpace, PointQueryNearest),
-    class_method_reg(cpSpace, SegmentQuery),
-    class_method_reg(cpSpace, SegmentQueryFirst),
-    class_method_reg(cpSpace, Step)
+lclass_luaopen(cpSpace,
+    lclass_method_reg(cpSpace, NewSpace),
+    lclass_method_reg(cpSpace, __index),
+    lclass_method_reg(cpSpace, __newindex),
+    lclass_method_reg(cpSpace, __gc),
+    lclass_getter_and_setter_reg(cpSpace, Iterations),
+    lclass_getter_and_setter_reg(cpSpace, Gravity),
+    lclass_getter_and_setter_reg(cpSpace, Damping),
+    lclass_getter_and_setter_reg(cpSpace, IdleSpeedThreshold),
+    lclass_getter_and_setter_reg(cpSpace, SleepTimeThreshold),
+    lclass_getter_and_setter_reg(cpSpace, CollisionSlop),
+    lclass_getter_and_setter_reg(cpSpace, CollisionBias),
+    lclass_getter_and_setter_reg(cpSpace, CollisionPersistence),
+    lclass_getter_and_setter_reg(cpSpace, UserData),
+    lclass_getter_reg(cpSpace, StaticBody),
+    lclass_getter_reg(cpSpace, TimeStep),
+    lclass_getter_reg(cpSpace, Locked),
+    lclass_method_reg(cpSpace, AddShape),
+    lclass_method_reg(cpSpace, AddBody),
+    lclass_method_reg(cpSpace, AddConstraint),
+    lclass_method_reg(cpSpace, AddBodyAndShapes),
+    lclass_method_reg(cpSpace, RemoveShape),
+    lclass_method_reg(cpSpace, RemoveBody),
+    lclass_method_reg(cpSpace, RemoveConstraint),
+    lclass_method_reg(cpSpace, ContainsShape),
+    lclass_method_reg(cpSpace, ContainsBody),
+    lclass_method_reg(cpSpace, ContainsConstraint),
+    lclass_method_reg(cpSpace, PointQuery),
+    lclass_method_reg(cpSpace, PointQueryNearest),
+    lclass_method_reg(cpSpace, SegmentQuery),
+    lclass_method_reg(cpSpace, SegmentQueryFirst),
+    lclass_method_reg(cpSpace, Step)
 )

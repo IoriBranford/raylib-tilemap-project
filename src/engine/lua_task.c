@@ -4,7 +4,7 @@
 void Task_ResumeLuaThread(Task *t);
 void ReleaseLuaTask(Task *task);
 
-class_gc(Task, *, ReleaseLuaTask)
+lclass_gc(Task, *, ReleaseLuaTask)
 
 int L_RunTask(lua_State *l) {
     if (lua_isstring(l, 1)) {
@@ -37,7 +37,7 @@ int L_RunTask(lua_State *l) {
     if (result == LUA_OK || result == LUA_YIELD) {
         Task *task = NewTask(Task_ResumeLuaThread, NULL, priority);
         task->threadRef = threadRef;
-        class_newuserdata(l, Task, task);
+        lclass_newuserdata(l, Task, task);
         if (result == LUA_OK) {
             EndTask(task);
             task->taskRef = LUA_REFNIL;
@@ -80,31 +80,31 @@ int L_Task_end(lua_State *l) {
     return PushTaskResults(l, *ud);
 }
 
-class_getterf(Task, *, boolean, done, IsTaskDone)
+lclass_getterf(Task, *, boolean, done, IsTaskDone)
 
-class_func_1_0(Task, *, sleep, SleepTask, integer)
+lclass_func_1_0(Task, *, sleep, SleepTask, integer)
 
-class_index_and_newindex(Task)
-class_getter_and_setter(Task, *, number, priority)
-class_getter(Task, *, number, sleeping)
+lclass_index_and_newindex(Task)
+lclass_getter_and_setter(Task, *, number, priority)
+lclass_getter(Task, *, number, sleeping)
 
-class_luaopen(Task,
-    class_method_reg(Task, __index),
-    class_method_reg(Task, __newindex),
-    class_method_reg(Task, __gc),
-    class_getter_reg(Task, priority),
-    class_setter_reg(Task, priority),
-    class_getter_reg(Task, done),
-    class_getter_reg(Task, sleeping),
-    class_method_reg(Task, results),
-    class_method_reg(Task, sleep),
-    class_method_reg(Task, end)
+lclass_luaopen(Task,
+    lclass_method_reg(Task, __index),
+    lclass_method_reg(Task, __newindex),
+    lclass_method_reg(Task, __gc),
+    lclass_getter_reg(Task, priority),
+    lclass_setter_reg(Task, priority),
+    lclass_getter_reg(Task, done),
+    lclass_getter_reg(Task, sleeping),
+    lclass_method_reg(Task, results),
+    lclass_method_reg(Task, sleep),
+    lclass_method_reg(Task, end)
 )
 
 int luaopen_task(lua_State *l) {
     lua_getglobal(l, "_G");
     luaL_Reg task_r[] = {
-        l_func_reg(RunTask),
+        lfunc_reg(RunTask),
         {0}
     };
     luaL_register(l, NULL, task_r);

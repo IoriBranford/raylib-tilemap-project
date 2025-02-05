@@ -187,10 +187,10 @@ int luaopen_raylib(lua_State *l);
 int luaopen_tmx(lua_State *l);
 int luaopen_input(lua_State *l);
 
-l_func_2_0(ResetLuaEngine, string, integer)
+lfunc_2_0(ResetLuaEngine, string, integer)
 
 l_global_funcs_luaopen(engine,
-    l_func_reg(ResetLuaEngine)
+    lfunc_reg(ResetLuaEngine)
 )
 
 void InitLua() {

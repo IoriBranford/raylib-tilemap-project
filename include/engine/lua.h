@@ -6,8 +6,8 @@
 #include <lauxlib.h>
 #include <raylib.h>
 #include <stdint.h>
-#include "lua_func.h"
-#include "lua_class.h"
+#include "lfunc.h"
+#include "lclass.h"
 
 #if LUA_VERSION_RELEASE_NUM >= 504
 #define LUA54

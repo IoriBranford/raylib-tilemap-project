@@ -2,7 +2,7 @@
 
 void L_PointQuery_iter(cpShape *shape, cpVect point, cpFloat distance, cpVect gradient, lua_State *l) {
     lua_pushvalue(l, -1);
-    class_newuserdata(l, cpShape, shape);
+    lclass_newuserdata(l, cpShape, shape);
     lua_pushnumber(l, point.x);
     lua_pushnumber(l, point.y);
     lua_pushnumber(l, distance);
@@ -13,7 +13,7 @@ void L_PointQuery_iter(cpShape *shape, cpVect point, cpFloat distance, cpVect gr
 
 void L_SegmentQuery_iter(cpShape *shape, cpFloat t, cpVect n, lua_State *l) {
     lua_pushvalue(l, -1);
-    class_newuserdata(l, cpShape, shape);
+    lclass_newuserdata(l, cpShape, shape);
     lua_pushnumber(l, t);
     lua_pushnumber(l, n.x);
     lua_pushnumber(l, n.y);
