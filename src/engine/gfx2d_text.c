@@ -1,6 +1,27 @@
 #include "gfx2d.h"
 
 #include <math.h>
+#include <string.h>
+#include <assert.h>
+
+void SetSpriteTextN(Sprite *spr, const char *text, size_t n) {
+    assert(spr->behavior.type == SPRITETYPE_TEXT);
+    if (!n) n = 1;
+    if (!spr->text.text || n > spr->text.capacity) {
+        spr->text.text = MemRealloc(spr->text.text, n);
+        spr->text.capacity = n;
+    }
+    if (text) {
+        strncpy(spr->text.text, text, n);
+        spr->text.text[n-1] = '\0';
+    } else {
+        spr->text.text[0] = '\0';
+    }
+}
+
+void SetSpriteText(Sprite *spr, const char *text) {
+    SetSpriteTextN(spr, text, TextLength(text)+1);
+}
 
 bool IsWordChar(int c) {
     return c != ' ' && c != '\t' && c != '\n';

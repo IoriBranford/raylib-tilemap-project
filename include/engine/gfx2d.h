@@ -31,7 +31,8 @@ typedef struct SpriteBehavior {
 
 typedef struct SpriteText {
     Font font;
-    const char *text;
+    size_t capacity;
+    char *text;
     float fontSize;
     float spacing;
     float halign;   // 0 = left, 1 = right
@@ -116,6 +117,9 @@ size_t NumSpritesFree();
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
+void SetSpriteTextN(Sprite *spr, const char *text, size_t n);
+void SetSpriteText(Sprite *spr, const char *text);
+
 Sprite* NewTMXObjectSprite(tmx_object *o, tmx_map *map, Color color);
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color);
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map, Rectangle source, Rectangle rect);
