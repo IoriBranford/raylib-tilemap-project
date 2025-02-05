@@ -190,7 +190,7 @@ Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color) {
         if (!IsFontValid(spr->text.font))
             spr->text.font = GetFontDefault();
         if (!spr->text.fontSize)
-            spr->text.fontSize = 10;
+            spr->text.fontSize = spr->text.font.baseSize;
     }
     return spr;
 }
