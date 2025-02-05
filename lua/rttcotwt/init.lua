@@ -1,7 +1,7 @@
 -- bomb catch & throw-back game
 -- by iori branford
 
-require "pico8"
+require "rttcotwt.pico8"
 require "rttcotwt.assets"
 require "rttcotwt.bg"
 require "rttcotwt.bomb"
