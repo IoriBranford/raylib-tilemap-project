@@ -109,7 +109,7 @@ function poke(...) end --print("poke NYI") end
 function reload(...) end --print("reload NYI") end
 function txt(...) end
 function newtxt(t, x, y, c)
-    local s = sprite.text(t, x, y, 128, 128, c)
+    local s = sprite.text({text = t, spacing = 1}, x, y, 128, 128, c)
     s.z = SPRZ
     return s
 end
