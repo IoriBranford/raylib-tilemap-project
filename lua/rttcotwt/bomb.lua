@@ -18,9 +18,13 @@ function draw_bomb(o)
     end
     draw_obj_spr(o)
     if clr then
-        pset(o.x + 2 + rnd(4),
-            o.y - 1 + rnd(4),
-            clr)
+        o.fusespark = o.fusespark
+            or sprite.rectangle()
+        o.fusespark.z = o.spr.z + 1
+        sprpos(o.fusespark,
+            o.x + 2 + rnd(4),
+            o.y - 1 + rnd(4))
+        o.fusespark.color = clr
     end
 end
 
