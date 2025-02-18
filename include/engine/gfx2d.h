@@ -21,6 +21,7 @@ typedef enum SpriteType {
     SPRITETYPE_SHAPE,
     SPRITETYPE_TILELAYER,
     SPRITETYPE_ASEPRITETAG,
+    SPRITETYPE_RENDERTEXTURE,
     SPRITETYPE_TYPES
 } SpriteType;
 
@@ -75,6 +76,8 @@ struct Sprite {
             Rectangle source;
         } texture;
 
+        RenderTexture2D renderTexture;
+
         SpriteText text;
 
         struct SpriteTile {
@@ -125,6 +128,8 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map, Rectangle source, Rectangle rect);
 Sprite* NewImageLayerSprite(tmx_layer *layer);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
+Sprite* NewSpriteRenderTexture(int width, int height, float z);
+Sprite* NewDrawRenderTextureSprite(RenderTexture2D renderTexture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 
 tmx_tile* GetTMXObjectTile(tmx_object *o, tmx_map *map);
 void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);
