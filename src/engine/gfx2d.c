@@ -27,7 +27,7 @@ void DrawSprite_Rectangle(Sprite *spr) {
 
 void DrawSprite_Texture(Sprite *spr) {
     assert(spr->behavior.type == SPRITETYPE_TEXTURE);
-    DrawTexturePro(*spr->texture.texture, spr->texture.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
+    DrawTexturePro(spr->texture.texture, spr->texture.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
 void DrawSprite_Text(Sprite *spr) {
@@ -146,7 +146,7 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
     return spr;
 }
 
-Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
+Sprite* NewTextureSprite(Texture2D texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
     Sprite *spr = NewSprite();
     if (spr) {
         spr->active = true;
@@ -159,7 +159,7 @@ Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, V
         spr->color = color;
         spr->texture.texture = texture;
         if (source.width == 0 && source.height == 0)
-            source = (Rectangle){ 0, 0, texture->width, texture->height};
+            source = (Rectangle){ 0, 0, texture.width, texture.height };
         spr->texture.source = source;
     }
     return spr;

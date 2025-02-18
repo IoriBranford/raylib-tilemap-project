@@ -71,14 +71,14 @@ struct Sprite {
     SpriteBehavior behavior;
     union SpriteContent {
         struct SpriteTexture {
-            Texture2D *texture;
+            Texture2D texture;
             Rectangle source;
         } texture;
 
         SpriteText text;
 
         struct SpriteTile {
-            Texture2D *texture;
+            Texture2D texture;
             Rectangle source;
             tmx_tile *tile;
             unsigned frame;
@@ -115,7 +115,7 @@ size_t NumSpritesActive();
 size_t NumSpritesFree();
 
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
-Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
+Sprite* NewTextureSprite(Texture2D texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 void SetSpriteTextN(Sprite *spr, const char *text, size_t n);
 void SetSpriteText(Sprite *spr, const char *text);

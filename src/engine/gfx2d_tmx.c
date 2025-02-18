@@ -85,7 +85,7 @@ void SetSpriteTile(Sprite *spr, tmx_tile *tile) {
         return;
 
     spr->tile.tile = tile;
-    spr->tile.texture = image;
+    spr->tile.texture = *image;
     Vector2 flip = {spr->tile.source.width, spr->tile.source.height};
     GetTileSource(&spr->tile.source, tile, flip);
     GetTileOrigin(&spr->origin, tile, spr->size);
@@ -167,7 +167,7 @@ void UpdateSprite_Tile(Sprite *spr) {
 
 void DrawSprite_Tile(Sprite *spr) {
     assert(spr->behavior.type == SPRITETYPE_TILE);
-    DrawTexturePro(*spr->tile.texture, spr->tile.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
+    DrawTexturePro(spr->tile.texture, spr->tile.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
 Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color color) {
@@ -439,7 +439,7 @@ Sprite* NewImageLayerSprite(tmx_layer *layer) {
     if (layer->type != L_IMAGE) return NULL;
     Texture2D* texture = layer->content.image->resource_image;
     return NewTextureSprite(
-        texture,
+        *texture,
         (Rectangle){0},
         (Rectangle){
             layer->offsetx, layer->offsety,
