@@ -36,7 +36,7 @@ void Task_TMXObjectConfetti(Task *t) {
 void DrawTMXTileCollisionShapes(tmx_tile *tile, Vector2 position, float rotationDeg, Color color);
 
 void DrawSprite_ConfettiWithCollision(Sprite *spr) {
-    DrawTexturePro(*spr->tile.texture, spr->tile.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
+    DrawTexturePro(spr->tile.texture, spr->tile.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
     DrawRectangle(spr->x - 1, spr->y - 4, 2, 8, WHITE);
     DrawRectangle(spr->x - 4, spr->y - 1, 8, 2, WHITE);
     DrawTMXTileCollisionShapes(spr->tile.tile, spr->position, spr->rotationDeg, WHITE);

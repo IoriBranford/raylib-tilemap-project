@@ -21,6 +21,7 @@ typedef enum SpriteType {
     SPRITETYPE_SHAPE,
     SPRITETYPE_TILELAYER,
     SPRITETYPE_ASEPRITETAG,
+    SPRITETYPE_RENDERTEXTURE,
     SPRITETYPE_TYPES
 } SpriteType;
 
@@ -71,14 +72,16 @@ struct Sprite {
     SpriteBehavior behavior;
     union SpriteContent {
         struct SpriteTexture {
-            Texture2D *texture;
+            Texture2D texture;
             Rectangle source;
         } texture;
+
+        RenderTexture2D renderTexture;
 
         SpriteText text;
 
         struct SpriteTile {
-            Texture2D *texture;
+            Texture2D texture;
             Rectangle source;
             tmx_tile *tile;
             unsigned frame;
@@ -115,7 +118,7 @@ size_t NumSpritesActive();
 size_t NumSpritesFree();
 
 Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Color color);
-Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
+Sprite* NewTextureSprite(Texture2D texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 Sprite* NewTextSprite(SpriteText *text, Rectangle rect, Color color);
 void SetSpriteTextN(Sprite *spr, const char *text, size_t n);
 void SetSpriteText(Sprite *spr, const char *text);
@@ -125,6 +128,8 @@ Sprite* NewTileSprite(tmx_tile *tile, Rectangle rect, float rotationDeg, Color c
 Sprite* NewTileLayerSprite(tmx_layer *layer, tmx_map *map, Rectangle source, Rectangle rect);
 Sprite* NewImageLayerSprite(tmx_layer *layer);
 Sprite* NewSpriteCamera(Camera2D camera, Color color);
+Sprite* NewSpriteRenderTexture(int width, int height, float z);
+Sprite* NewDrawRenderTextureSprite(RenderTexture2D renderTexture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color);
 
 tmx_tile* GetTMXObjectTile(tmx_object *o, tmx_map *map);
 void GetTileOrigin(Vector2 *origin, tmx_tile *tile, Vector2 destSize);

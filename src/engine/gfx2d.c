@@ -20,6 +20,10 @@ void DrawSprite(Sprite *spr) {
     if (spr->behavior.draw) spr->behavior.draw(spr);
 }
 
+// void ReleaseSpriteContent(Sprite *spr) {
+//     if (spr->behavior.releaseContent) spr->behavior.releaseContent(spr);
+// }
+
 void DrawSprite_Rectangle(Sprite *spr) {
     assert(spr->behavior.type == SPRITETYPE_RECTANGLE);
     DrawRectanglePro(spr->rect, spr->origin, spr->rotationDeg, spr->color);
@@ -27,7 +31,7 @@ void DrawSprite_Rectangle(Sprite *spr) {
 
 void DrawSprite_Texture(Sprite *spr) {
     assert(spr->behavior.type == SPRITETYPE_TEXTURE);
-    DrawTexturePro(*spr->texture.texture, spr->texture.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
+    DrawTexturePro(spr->texture.texture, spr->texture.source, spr->rect, spr->origin, spr->rotationDeg, spr->color);
 }
 
 void DrawSprite_Text(Sprite *spr) {
@@ -59,6 +63,14 @@ void DrawSprite_Camera(Sprite *spr) {
         };
         BeginMode2D(currentCamera);
     }
+}
+
+void DrawSprite_RenderTexture(Sprite *spr) {
+    assert(spr->behavior.type == SPRITETYPE_RENDERTEXTURE);
+    if (spr->width > 0 && spr->height > 0)
+        BeginTextureMode(spr->renderTexture);
+    else
+        EndTextureMode();
 }
 
 static void InitEmptySprite(Sprite *spr) {
@@ -146,7 +158,7 @@ Sprite* NewRectangleSprite(Rectangle rect, Vector2 origin, float rotationDeg, Co
     return spr;
 }
 
-Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
+Sprite* NewTextureSprite(Texture2D texture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
     Sprite *spr = NewSprite();
     if (spr) {
         spr->active = true;
@@ -159,7 +171,7 @@ Sprite* NewTextureSprite(Texture2D *texture, Rectangle source, Rectangle rect, V
         spr->color = color;
         spr->texture.texture = texture;
         if (source.width == 0 && source.height == 0)
-            source = (Rectangle){ 0, 0, texture->width, texture->height};
+            source = (Rectangle){ 0, 0, texture.width, texture.height };
         spr->texture.source = source;
     }
     return spr;
@@ -219,6 +231,34 @@ Sprite* NewSpriteCamera(Camera2D camera, Color color) {
     return spr;
 }
 
+Sprite* NewSpriteRenderTexture(int width, int height, float z) {
+    Sprite *spr = NewSprite();
+    if (spr) {
+        spr->active = true;
+        spr->rect = (Rectangle) {
+            .x = 0, .y = 0,
+            .width = width,
+            .height = height
+        };
+        spr->z = z;
+        spr->origin = (Vector2){0};
+        spr->rotationDeg = 0;
+        spr->color = WHITE;
+        spr->behavior.type = SPRITETYPE_RENDERTEXTURE;
+        spr->behavior.update = NULL;
+        spr->behavior.draw = DrawSprite_RenderTexture;
+        if (width > 0 && height > 0)
+            spr->renderTexture = LoadRenderTexture(width, height);
+        else
+            spr->renderTexture = (RenderTexture2D){0};
+    }
+    return spr;
+}
+
+Sprite* NewDrawRenderTextureSprite(RenderTexture2D renderTexture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
+    return NewTextureSprite(renderTexture.texture, source, rect, origin, rotationDeg, color);
+}
+
 bool IsNearCamera2D(Vector2 position, Camera2D Camera) {
     float w = GetScreenWidth(), h = GetScreenHeight();
     Vector2 screenCenter = {w/2, h/2};
@@ -238,4 +278,13 @@ void ReleaseSprite(Sprite* spr) {
             MemFree(spr->text.text);
             spr->text.text = NULL;
         }
+    
+    if (spr->behavior.type ==  SPRITETYPE_RENDERTEXTURE) {
+        if (IsRenderTextureValid(spr->renderTexture)) {
+            UnloadRenderTexture(spr->renderTexture);
+            spr->renderTexture = (RenderTexture2D){0};
+        }
+    }
+
+    // if (spr->behavior.releaseContent) spr->behavior.releaseContent(spr);
 }
