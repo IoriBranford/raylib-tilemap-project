@@ -5,6 +5,21 @@ int L_Sprite_rectangle(lua_State *l) {
     if (!NumSpritesFree())
         return 0;
 
+    lua_Number z = 0;
+
+    if (lua_istable(l, 1)) {
+        lua_getfield(l, 1, "z");
+        z = luaL_optnumber(l, -1, 0);
+
+        lua_pop(l, lua_gettop(l) - 1);
+        L_tableToArgs(l, 1, 
+            "x", "y", "width", "height",
+            "originx", "originy",
+            "rotationDeg",
+            "color"
+        );
+    }
+
     Sprite *s = NewRectangleSprite(
         (Rectangle){
             .x = luaL_optnumber(l, 1, 0),
@@ -19,6 +34,7 @@ int L_Sprite_rectangle(lua_State *l) {
         luaL_optnumber(l, 7, 0),
         L_toColor(l, 8)
     );
+    s->z = z;
 
     lclass_newuserdata(l, Sprite, s);
     return 1;
@@ -118,6 +134,17 @@ int L_Sprite_drawrendertexture(lua_State *l) {
     );
     lclass_newuserdata(l, Sprite, spr);
     return 1;
+}
+
+int L_Sprite_setZs(lua_State *l) {
+    luaL_checktype(l, 1, LUA_TTABLE);
+    lua_pushnil(l);
+    while (lua_next(l, 1)) {
+        Sprite *spr = *(Sprite**)luaL_checkudata(l, -2, "Sprite");
+        spr->z = luaL_checknumber(l, -1);
+        lua_pop(l, 1);
+    }
+    return 0;
 }
 
 #define sprite_getter(SPRTYPE, sprcontent, fieldtype, field) \
