@@ -117,7 +117,7 @@ function sprtxt(s, t)
     s.text = t
 end
 
-function pico8_loop()
+function p8frame()
     _update60()
     _draw()
     if MUS then

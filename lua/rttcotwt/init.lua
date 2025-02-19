@@ -25,6 +25,6 @@ return function()
     start_title()
     while true do
         coroutine.yield()
-        pico8_loop()
+        p8frame()
     end
 end
