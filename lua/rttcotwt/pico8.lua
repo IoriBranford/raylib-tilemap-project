@@ -5,6 +5,13 @@ abs = math.abs
 min, max = math.min, math.max
 flr, ceil = math.floor, math.ceil
 
+renderTexture = sprite.rendertexture(128, 128, -10000)
+clearRenderTexture = sprite.rectangle(0, 0, 128, 128, 0, 0, 0, 0x000000FF)
+clearRenderTexture.z = -9999
+endRenderTexture = sprite.rendertexture(0, 0, 10000)
+drawRenderTexture = sprite.drawrendertexture(renderTexture, 0, 0, 384, 384)
+drawRenderTexture.z = 10001
+
 local MAP = LoadMap("resources/rttcotwt/rttcotwt.tmx") ---@type tmx_map
 local MAPLAYER = MAP:find_layer_by_name("map") ---@type tmx_layer
 local DATA = {}
