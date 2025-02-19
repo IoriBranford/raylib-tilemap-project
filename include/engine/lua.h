@@ -68,4 +68,13 @@ void UnrefLuaTask(int ref);
 uint32_t L_toColorInt(lua_State *l, int i);
 Color L_toColor(lua_State *l, int i);
 
+#define L_tableToArgs(l, t, ...) { \
+    static const char *FIELDS[] = {__VA_ARGS__}; \
+    static const size_t NFIELDS = sizeof(FIELDS)/sizeof(FIELDS[0]); \
+    for (int i = 1; i < NFIELDS; ++i) \
+        lua_getfield(l, t, FIELDS[i]); \
+    lua_getfield(l, t, FIELDS[0]); \
+    lua_replace(l, t); \
+}
+
 #endif /* F368B866_5240_4102_BE90_898768165E85 */
