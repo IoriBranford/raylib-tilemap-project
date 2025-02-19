@@ -245,12 +245,7 @@ lclass_getter(tmx_object, *, number, height)
 tmx_lclass_properties_getter(tmx_object)
 tmx_lclass_property_getter(tmx_object)
 
-int L_tmx_object_new_body(lua_State *l) {
-    tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
-    tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
-    lclass_newuserdata(l, cpBody, AddNewTMXObjectBody(*o, *m));
-    return 1;
-}
+lclass_func_ud_ud(tmx_object, *, new_body, AddNewTMXObjectBody, tmx_map, *, cpBody, *, )
 
 int L_tmx_object_new_sprite(lua_State *l) {
     tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
@@ -260,15 +255,7 @@ int L_tmx_object_new_sprite(lua_State *l) {
     return 1;
 }
 
-int L_tmx_object_get_tile(lua_State *l) {
-    tmx_object **o = luaL_checkudata(l, 1, "tmx_object");
-    tmx_map **m = luaL_checkudata(l, 2, "tmx_map");
-    tmx_tile *tile = GetTMXObjectTile(*o, *m);
-    if (!tile)
-        return 0;
-    lclass_newuserdata(l, tmx_tile, tile);
-    return 1;
-}
+lclass_func_ud_ud(tmx_object, *, get_tile, GetTMXObjectTile, tmx_map, *, tmx_tile, *, )
 
 lclass_index_and_newindex(tmx_tile)
 lclass_getter(tmx_tile, *, integer, id)
