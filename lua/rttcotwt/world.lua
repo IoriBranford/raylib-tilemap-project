@@ -120,8 +120,8 @@ end
 
 function obj_fall_out_y(o)
     if o.y < 0
-        and o.y + (o.w*8) < cam.y
-        or o.y > cam.y + 128 then
+        and o.y + (o.w*8) < camobj.y
+        or o.y > camobj.y + 128 then
         kill_obj(o)
     end
 end

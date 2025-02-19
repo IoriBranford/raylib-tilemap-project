@@ -35,18 +35,18 @@ function nin_update_held_bomb(o)
 end
 
 function cam_on_nin(o)
-    local vy = mid(-camtopspd, o.y - 96 - cam.y, camtopspd)
-    cam.y = min(cam.y + vy, worldbtm - 128)
+    local vy = mid(-camtopspd, o.y - 96 - camobj.y, camtopspd)
+    camobj.y = min(camobj.y + vy, worldbtm - 128)
 end
 
 function update_nin_death(o)
     update_obj_ani(o, sprs.ninja.blownup)
     o.vy = o.vy + ningrav
     o.y = o.y + o.vy
-    if o.y > cam.y + 128 then
+    if o.y > camobj.y + 128 then
         if o.life > 0 then
             o.dying = nil
-            o.y = cam.y + 128
+            o.y = camobj.y + 128
             start_nin_jumpin(o)
         else
             sfx(-1)
@@ -430,7 +430,7 @@ end
 function add_plane()
     return add_obj_spr {
         ani = sprs.plane.up,
-        x = -16, y = cam.y + 88,
+        x = -16, y = camobj.y + 88,
         w = 2, h = 2,
         vx = 2.5, vy = -2,
         ax = -1 / 32, ay = .0625,

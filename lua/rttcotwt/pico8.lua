@@ -9,7 +9,7 @@ renderTexture = sprite.rendertexture(128, 128, -10000)
 clearRenderTexture = sprite.rectangle(0, 0, 128, 128, 0, 0, 0, 0x000000FF)
 clearRenderTexture.z = -9999
 endRenderTexture = sprite.rendertexture(0, 0, 10000)
-drawRenderTexture = sprite.drawrendertexture(renderTexture, 0, 0, 384, 384)
+drawRenderTexture = sprite.drawrendertexture(renderTexture, 480, 270, 384, 384, 192, 192)
 drawRenderTexture.z = 10001
 
 local MAP = LoadMap("resources/rttcotwt/rttcotwt.tmx") ---@type tmx_map
@@ -76,8 +76,8 @@ function sfx(snd)
     snd:Play()
 end
 function sprpos(s, x, y)
-    if x then s.x = x end
-    if y then s.y = y end
+    if x then s.x = flr(x) end
+    if y then s.y = flr(y) end
 end
 function sprflip(s, fx, fy)
     if fx ~= nil then s.tileflipx = fx and -1 or 1 end

@@ -202,8 +202,8 @@ function enemy_say_taunt(o)
             x = 0, y = 16,
             clr = 0xFF8080FF,
             update = function(o)
-                o.x = cam.x
-                o.y = cam.y + 24
+                o.x = camobj.x
+                o.y = camobj.y + 24
                 if o.age >= 180 then
                     kill_obj(o)
                 end

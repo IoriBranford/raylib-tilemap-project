@@ -12,7 +12,9 @@ function update_credits()
 end
 
 function start_credits()
-    cam:setposition(0, 0)
+    camobj.x = 0
+    camobj.y = 0
+    camspr:setposition(0, 0)
     clear_game_objs()
     add_obj_text {
         x = 16, y = 128,
@@ -73,6 +75,7 @@ function update_game()
 end
 
 function draw_game()
+    camspr:setposition(flr(camobj.x), flr(camobj.y))
     draw_objs()
     if hazeptn and hazeclr then
         fillp(hazeptn)
@@ -82,10 +85,10 @@ end
 
 function start_game()
     local lvl = nil
-    cam.x = 0
-    cam.y = worldbtm - 128
+    camobj.x = 0
+    camobj.y = worldbtm - 128
     if lvl then
-        cam.y = cam.y - 128 * lvl
+        camobj.y = camobj.y - 128 * lvl
     end
     clear_game_objs()
     add_rooms()
@@ -124,7 +127,9 @@ function start_title()
     poke(0X5F5C, 0)
     clear_game_objs()
     clock_loadbest()
-    cam:setposition(0, 0)
+    camobj.x = 0
+    camobj.y = 0
+    camspr:setposition(0, 0)
     add_obj_text {
         x = 8, y = 48,
         text = [[
