@@ -256,6 +256,9 @@ Sprite* NewSpriteRenderTexture(int width, int height, float z) {
 }
 
 Sprite* NewDrawRenderTextureSprite(RenderTexture2D renderTexture, Rectangle source, Rectangle rect, Vector2 origin, float rotationDeg, Color color) {
+    if (source.width == 0 && source.height == 0)
+        source = (Rectangle){ 0, 0, renderTexture.texture.width, renderTexture.texture.height };
+    source.height = -source.height;
     return NewTextureSprite(renderTexture.texture, source, rect, origin, rotationDeg, color);
 }
 
