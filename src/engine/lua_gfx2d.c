@@ -79,6 +79,47 @@ int L_Sprite_text(lua_State *l) {
     return 1;
 }
 
+int L_Sprite_rendertexture(lua_State *l) {
+    Sprite *spr = NewSpriteRenderTexture(
+        luaL_optnumber(l, 1, 0),
+        luaL_optnumber(l, 2, 0),
+        luaL_optnumber(l, 3, 0)
+    );
+    lclass_newuserdata(l, Sprite, spr);
+    return 1;
+}
+
+int L_Sprite_drawrendertexture(lua_State *l) {
+    Sprite *renderTextureSpr = *(Sprite**)luaL_checkudata(l, 1, "Sprite");
+    if (renderTextureSpr->behavior.type != SPRITETYPE_RENDERTEXTURE)
+        return 0;
+    if (!IsRenderTextureValid(renderTextureSpr->renderTexture))
+        return 0;
+    Sprite *spr = NewDrawRenderTextureSprite(
+        renderTextureSpr->renderTexture,
+        (Rectangle){
+            .x = luaL_optnumber(l, 10, 0),
+            .y = luaL_optnumber(l, 11, 0),
+            .width = luaL_optnumber(l, 12, 0),
+            .height = luaL_optnumber(l, 13, 0)
+        },
+        (Rectangle){
+            .x = luaL_optnumber(l, 2, 0),
+            .y = luaL_optnumber(l, 3, 0),
+            .width = luaL_optnumber(l, 4, renderTextureSpr->width),
+            .height = luaL_optnumber(l, 5, renderTextureSpr->height)
+        },
+        (Vector2) {
+            .x = luaL_optnumber(l, 6, 0),
+            .y = luaL_optnumber(l, 7, 0)
+        },
+        luaL_optnumber(l, 8, 0),
+        L_toColor(l, 9)
+    );
+    lclass_newuserdata(l, Sprite, spr);
+    return 1;
+}
+
 #define sprite_getter(SPRTYPE, sprcontent, fieldtype, field) \
 int L_Sprite_get##field(lua_State *l) { \
     Sprite **o = (Sprite **)luaL_checkudata(l, 1, "Sprite"); \
@@ -241,6 +282,8 @@ int luaopen_gfx2d(lua_State *l) {
         lclass_method_reg(Sprite, rectangle),
         lclass_method_reg(Sprite, camera),
         lclass_method_reg(Sprite, text),
+        lclass_method_reg(Sprite, rendertexture),
+        lclass_method_reg(Sprite, drawrendertexture),
         {0}
     };
     luaL_register(l, "sprite", staticMethods);
