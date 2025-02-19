@@ -55,12 +55,14 @@ int L_##cls##_##name(lua_State *l) { \
     return 1; \
 }
 
-#define lclass_func_ud_ud(cls, p, name, f, acls, ap, rcls, rp)\
+#define lclass_func_ud_ud(cls, p, name, f, acls, ap, rcls, rp, rvalid) \
 int L_##cls##_##name(lua_State *l) { \
     cls p*o = (cls p*)luaL_checkudata(l, 1, #cls); \
     acls ap*a = (acls ap*)luaL_checkudata(l, 2, #acls); \
+    rcls rp rv = f(*o, *a); \
+    if (!rvalid(rv)) return 0; \
     rcls rp*r = (rcls rp*)lua_newuserdata(l, sizeof(rcls rp)); \
-    *r = f(*o, *a); \
+    *r = rv; \
     luaL_setmetatable(l, #rcls); \
     return 1; \
 }

@@ -24,9 +24,9 @@ lclass_getterf(cpSpace, *, boolean, Locked, cpSpaceIsLocked)
 
 // TODO Collision handlers?
 
-lclass_func_ud_ud(cpSpace, *, AddShape, cpSpaceAddShape, cpShape, *, cpShape, *)
-lclass_func_ud_ud(cpSpace, *, AddBody, cpSpaceAddBody, cpBody, *, cpBody, *)
-lclass_func_ud_ud(cpSpace, *, AddConstraint, cpSpaceAddConstraint, cpConstraint, *, cpConstraint, *)
+lclass_func_ud_ud(cpSpace, *, AddShape, cpSpaceAddShape, cpShape, *, cpShape, *, )
+lclass_func_ud_ud(cpSpace, *, AddBody, cpSpaceAddBody, cpBody, *, cpBody, *, )
+lclass_func_ud_ud(cpSpace, *, AddConstraint, cpSpaceAddConstraint, cpConstraint, *, cpConstraint, *, )
 
 void L_cpSpace_AddBodyAndShapes_iter(cpBody *body, cpShape *shape, cpSpace *space) {
     cpSpaceAddShape(space, shape);
