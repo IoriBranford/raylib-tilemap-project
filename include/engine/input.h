@@ -7,6 +7,7 @@ void UpdateInput();
 
 void MapInputToAction(const char *input, const char *action);
 void MapInputsToActions_ht(void *newInputActions);
+void MapInputsToActions(int n, const char **inputStrs, const char **actionStrs);
 
 int IsActionPressed(const char *action);
 int IsActionDown(const char *action);

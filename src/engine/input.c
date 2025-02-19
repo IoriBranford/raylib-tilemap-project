@@ -342,6 +342,11 @@ void MapInputsToActions_ht(void *newInputActions) {
     hashtable_foreach(newInputActions, (hashtable_foreach_functor)MapEachInputToAction, NULL);
 }
 
+void MapInputsToActions(int n, const char **inputStrs, const char **actionStrs) {
+    for (int i = 0; i < n; ++i)
+        MapInputToAction(inputStrs[i], actionStrs[i]);
+}
+
 bool IsPositionDown(float position) {
     return fabs(position) > DEADZONE;
 }
