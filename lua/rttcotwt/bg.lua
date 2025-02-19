@@ -5,12 +5,14 @@ stars = {}
 
 for y = 16, 80, 32 do
     for x = 16, 80, 32 do
-        local s = sprite.rectangle(
-            x + rnd(32), y + rnd(32),
-            1, 1,
-            0, 0,
-            0, 0xFFFFFFFF)
-        s.z = STARZ
+        local s = sprite.rectangle {
+            x = x + rnd(32),
+            y = y + rnd(32),
+            z = STARZ,
+            width = 1,
+            height = 1,
+            color = 0xFFFFFFFF
+        }
         add(stars, s)
     end
 end
